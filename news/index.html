@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>S4 class describing a problemInstance-object — problemInstance-class • sdcTable</title>
+<title>Changelog • sdcTable</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,7 @@
 
 
 
-<meta property="og:title" content="S4 class describing a problemInstance-object — problemInstance-class" />
-
-<meta property="og:description" content="An object of class problemInstance holds the main information that is
-required to solve the secondary cell suppression problem." />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="Changelog" />
 
 
 
@@ -51,7 +47,7 @@ required to solve the secondary cell suppression problem." />
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -106,57 +102,70 @@ required to solve the secondary cell suppression problem." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>S4 class describing a problemInstance-object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/classes.r'><code>R/classes.r</code></a></small>
-    <div class="hidden name"><code>problemInstance-class.Rd</code></div>
+      <h1>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    
-    <p>An object of class <code>problemInstance</code> holds the main information that is
-required to solve the secondary cell suppression problem.</p>
-    
-    </div>
-
-        
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <dl class='dl-horizontal'>
-<dt>slot <code>strID</code>:</dt><dd><p>a character vector (or NULL) of ID's identifying table cells</p></dd>
-<dt>slot <code>Freq</code>:</dt><dd><p>a numeric vector (or NULL) of counts for each table cell</p></dd>
-<dt>slot <code>w</code>:</dt><dd><p>a numeric vector (or NULL) of weights that should be used when solving the secondary cell suppression problem</p></dd>
-<dt>slot <code>numVars</code>:</dt><dd><p>a list (or NULL) with each element being a numeric vector holding values of specified numerical variables for each table cell</p></dd>
-<dt>slot <code>lb</code>:</dt><dd><p>numeric vector (or NULL) holding assumed lower bounds for each table cell</p></dd>
-<dt>slot <code>ub</code>:</dt><dd><p>numeric vector (or NULL) holding assumed upper bounds for each table cell</p></dd>
-<dt>slot <code>LPL</code>:</dt><dd><p>numeric vector (or NULL) holding required lower protection levels for each table cell</p></dd>
-<dt>slot <code>UPL</code>:</dt><dd><p>numeric vector (or NULL) holding required upper protection levels for each table cell</p></dd>
-<dt>slot <code>SPL</code>:</dt><dd><p>numeric vector (or NULL) holding required sliding protection levels for each table cell</p></dd>
-<dt>slot <code>sdcStatus</code>:</dt><dd><p>character vector (or NULL) holding the current anonymization state for each cell.
+    <div id="sdctable-0-26" class="section level1">
+<h1 class="page-header">
+<a href="#sdctable-0-26" class="anchor"></a>sdcTable 0.26<small> 2019-01-18 </small>
+</h1>
 <ul>
-<li><p><code>z</code>: cell is forced to be published and must not be suppressed</p></li>
-<li><p><code>u</code>: cell has been primary suppressed</p></li>
-<li><p><code>x</code>: cell is a secondary suppression</p></li>
-<li><p><code>s</code>: cell can be published</p></li>
-</ul></p></dd></dl>
-    
-    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
-
-    <p>objects of class <code>problemInstance</code> are used as input for slot <code>problemInstance</code> in class <code>sdcProblem</code></p>
-    
-
+<li>bugfix when computing indices for contributing units used in some primary suppression methods</li>
+</ul>
+</div>
+    <div id="sdctable-0-25" class="section level1">
+<h1 class="page-header">
+<a href="#sdctable-0-25" class="anchor"></a>sdcTable 0.25<small> 2018-11-14 </small>
+</h1>
+<ul>
+<li>better error messages in case invalid hierarchies have been specified</li>
+</ul>
+</div>
+    <div id="sdctable-0-24" class="section level1">
+<h1 class="page-header">
+<a href="#sdctable-0-24" class="anchor"></a>sdcTable 0.24<small> 2018-07-24 </small>
+</h1>
+<ul>
+<li>update in SIMPLEHEURISTIC-algorithm that now really respects cells (status <code>"z"</code>) that must not be suppressed</li>
+</ul>
+</div>
+    <div id="sdctable-0-23" class="section level1">
+<h1 class="page-header">
+<a href="#sdctable-0-23" class="anchor"></a>sdcTable 0.23<small> 2018-06-22 </small>
+</h1>
+<ul>
+<li>bugfix in SIMPLEHEURISTIC-algorithm</li>
+<li>code cleanup</li>
+<li>updated package vignette</li>
+<li>new functions <code><a href="../reference/manage_hierarchies.html">create_node()</a></code>, <code><a href="../reference/manage_hierarchies.html">add_nodes()</a></code> and <code><a href="../reference/manage_hierarchies.html">delete_nodes()</a></code> that allow a dynamic generation of hierarchies. For an example have a look at <code><a href="../reference/makeProblem.html">?makeProblem</a></code>
+</li>
+</ul>
+</div>
+    <div id="sdctable-0-22-x" class="section level1">
+<h1 class="page-header">
+<a href="#sdctable-0-22-x" class="anchor"></a>sdcTable 0.22.x<small> Unreleased </small>
+</h1>
+<ul>
+<li>Feature to create BATCH files suitable for <a href="https://github.com/sdcTools/tauargus"><strong>tau-argus</strong></a>
+</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#note">Note</a></li>
-          </ul>
-
-    <h2>Author</h2>
-    <p>Bernhard Meindl <a href='mailto:bernhard.meindl@statistik.gv.at'>bernhard.meindl@statistik.gv.at</a></p>
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#sdctable-0-26">0.26</a></li>
+        <li><a href="#sdctable-0-25">0.25</a></li>
+        <li><a href="#sdctable-0-24">0.24</a></li>
+        <li><a href="#sdctable-0-23">0.23</a></li>
+        <li><a href="#sdctable-0-22-x">0.22</a></li>
+      </ul>
+    </div>
   </div>
+
 </div>
 
       <footer>
