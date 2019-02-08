@@ -1,0 +1,24 @@
+<SEPARATOR> ","
+<SAFE> "S"
+<UNSAFE> "U"
+<PROTECT> "Z"
+region
+   <RECODEABLE>
+   <TOTCODE> "Total"
+   <HIERCODELIST> "/tmp/RtmpKzOpxr/file432420f55e94/reference/hier_mpMBtgqO5b_region.hrc"
+   <HIERLEADSTRING> "@"
+   <HIERARCHICAL>
+gender
+   <RECODEABLE>
+   <TOTCODE> "Total"
+   <HIERCODELIST> "/tmp/RtmpKzOpxr/file432420f55e94/reference/hier_mpMBtgqO5b_gender.hrc"
+   <HIERLEADSTRING> "@"
+   <HIERARCHICAL>
+sdcStatus
+   <STATUS>
+freq
+   <NUMERIC>
+lpl
+   <NUMERIC> <LOWERPL>
+upl
+   <NUMERIC> <UPPERPL>

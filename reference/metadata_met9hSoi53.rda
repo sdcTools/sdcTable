@@ -1,0 +1,22 @@
+<SEPARATOR> ","
+region 1
+   <RECODEABLE>
+   <HIERCODELIST> "/tmp/RtmpKzOpxr/file432420f55e94/reference/hier_met9hSoi53_region.hrc"
+   <HIERLEADSTRING> "@"
+   <HIERARCHICAL>
+gender 6
+   <RECODEABLE>
+   <HIERCODELIST> "/tmp/RtmpKzOpxr/file432420f55e94/reference/hier_met9hSoi53_gender.hrc"
+   <HIERLEADSTRING> "@"
+   <HIERARCHICAL>
+weight 3 "999"
+   <NUMERIC>
+   <WEIGHT>
+val 3 "999"
+   <NUMERIC>
+num1 6 "999999"
+   <NUMERIC>
+   <DECIMALS> 2
+num2 6 "999999"
+   <NUMERIC>
+   <DECIMALS> 2
