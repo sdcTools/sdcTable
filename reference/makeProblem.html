@@ -64,7 +64,7 @@ sdcProblem-class-objects." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.26</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.27</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@ sdcProblem-class-objects." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>create <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/export_functions.r'><code>R/export_functions.r</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/makeProblem.R'><code>R/makeProblem.R</code></a></small>
     <div class="hidden name"><code>makeProblem.Rd</code></div>
     </div>
 
@@ -134,34 +134,56 @@ hold information on sampling weights.</p></td>
     </tr>
     <tr>
       <th>dimList</th>
-      <td><p>a named list with each list element being either a data-frame or a link to a .csv-file containing the complete level-hierarchy of a dimensional variable using a top-to-bottom approach. The list names correspond to variable names that must exist in argument <code>data</code>. The level-hierarchy must be specified as follows:</p><ul>
-<li><p>list-element is a data-frame that must contain exactly 2 columns with the first column specifying levels and the second column holding variable-codes.</p><ul>
-<li><p>first column: a character vector specifying levels with each vector element being a string only containing of '@'s from length 1 to n. If a vector element consists of <code>i</code>-chars, the corresponding code is of level <code>i</code>. The code '@' (one character) equals the grand total (level=1).</p></li>
+      <td><p>a named list where the names refer to variable names in 
+input <code>data</code>. Each list element can be one of:</p><ul>
+<li><p><code>tree</code>: generated with <code>hier_*()</code> functions from the 
+sdcHierarchies package</p></li>
+<li><p><code>data.frame</code>: a two column <code>data.frame</code> containing 
+the complete level hierarchy of a dimensional variable using a 
+top-to-bottom approach. The format of the <code>data.frame</code> is as follows:
+<ul>
+<li><p>first column: a character vector specifying levels with each vector 
+element being a string only containing of '@'s from length 1 to n. 
+If a vector element consists of <code>i</code>-chars, the corresponding code 
+is of level <code>i</code>. The code '@' (one character) equals the grand 
+total (level=1), the code `@@` (two characters) is of level 2 (directly
+below the overall total).</p></li>
 <li><p>second column: a character vector specifying level codes</p></li>
-</ul></li>
-<li><p>list-element is full path to a .csv-file with two columns seperated by semicolons (;) having the same structure as the data.frame described above</p></li>
+</ul></p></li>
+<li><p><code>path</code>: absolute or relative path to a <code>.csv</code> file that
+contains two columns seperated by semicolons (;) having the same structure 
+as the <code>"@;levelname"</code>-structure described above</p></li>
 </ul></td>
     </tr>
     <tr>
       <th>dimVarInd</th>
-      <td><p>numeric vector (or NULL) defining the column-indices of dimensional variables (defining the table) within argument <code>data</code>. If <code>NULL</code>,
-the names of argument <code>dimList</code> are used to calculate the indices of the dimensional variables within <code>data</code> internally.</p></td>
+      <td><p>numeric vector (or NULL) defining the column-indices of 
+dimensional variables (defining the table) within argument <code>data</code>. 
+If <code>NULL</code>, the names of argument <code>dimList</code> are used to calculate 
+the indices of the dimensional variables within <code>data</code> internally.</p></td>
     </tr>
     <tr>
       <th>freqVarInd</th>
-      <td><p>numeric vector (or NULL) defining the column-indices of a variable holding counts within argument <code>data</code></p></td>
+      <td><p>numeric vector (or NULL) defining the column-indices 
+of a variable holding counts within argument <code>data</code></p></td>
     </tr>
     <tr>
       <th>numVarInd</th>
-      <td><p>numeric vector (or NULL) defining the column-indices of additional numeric variables available in argument <code>data</code></p></td>
+      <td><p>numeric vector (or NULL) defining the column-indices 
+of additional numeric variables available in argument <code>data</code></p></td>
     </tr>
     <tr>
       <th>weightInd</th>
-      <td><p>numeric vector of length 1 (or NULL) defining the column-index of a variable holding weights that should be used during as objective coefficients during the cut and branch algorithm to protect primary sensitive cells within argument <code>data</code></p></td>
+      <td><p>numeric vector of length 1 (or NULL) defining the 
+column-index of a variable holding weights that should be used during 
+as objective coefficients during the cut and branch algorithm to 
+protect primary sensitive cells within argument <code>data</code></p></td>
     </tr>
     <tr>
       <th>sampWeightInd</th>
-      <td><p>numeric vector of length 1 (or NULL) defining the column-index of a variable holding sampling weights within argument <code>data</code></p></td>
+      <td><p>numeric vector of length 1 (or NULL) defining 
+the column-index of a variable holding sampling weights within 
+argument <code>data</code></p></td>
     </tr>
     </table>
     
@@ -191,13 +213,10 @@ the names of argument <code>dimList</code> are used to calculate the indices of 
 
 <span class='co'># specify structure of hierarchical variable 'gender'</span>
 <span class='co'># using create_node() and add_nodes() (see ?manage_hierarchies)</span>
-<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='manage_hierarchies.html'>create_node</a></span>(<span class='kw'>total_lab</span><span class='kw'>=</span><span class='st'>"Total"</span>)
-<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='manage_hierarchies.html'>add_nodes</a></span>(<span class='no'>dim.gender</span>,
-  <span class='kw'>node_labs</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"male"</span>,<span class='st'>"female"</span>), <span class='kw'>reference_node</span><span class='kw'>=</span><span class='st'>"Total"</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>dim.gender</span>)</div><div class='output co'>#&gt;    levelName
-#&gt; 1 Total     
-#&gt; 2  ¦--male  
-#&gt; 3  °--female</div><div class='input'>
+<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>))
+<span class='fu'>hier_display</span>(<span class='no'>dim.gender</span>)</div><div class='output co'>#&gt; Total
+#&gt; ├─female
+#&gt; └─male</div><div class='input'>
 <span class='co'># create a named list with each element being a data-frame</span>
 <span class='co'># containing information on one dimensional variable and</span>
 <span class='co'># the names referring to variables in the input data</span>
@@ -227,20 +246,20 @@ the names of argument <code>dimList</code> are used to calculate the indices of 
 <span class='fu'><a href='sdcProb2df.html'>sdcProb2df</a></span>(<span class='no'>problem</span>, <span class='kw'>addDups</span><span class='kw'>=</span><span class='fl'>TRUE</span>,
   <span class='kw'>addNumVars</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>dimCodes</span><span class='kw'>=</span><span class='st'>"original"</span>)</div><div class='output co'>#&gt;     strID freq sdcStatus  val region gender
 #&gt;  1:  0000  100         s 1284  Total  Total
-#&gt;  2:  0001   55         s  802  Total   male
-#&gt;  3:  0002   45         s  482  Total female
+#&gt;  2:  0001   45         s  482  Total female
+#&gt;  3:  0002   55         s  802  Total   male
 #&gt;  4:  0100   20         s  198      A  Total
-#&gt;  5:  0101   18         s  178      A   male
-#&gt;  6:  0102    2         s   20      A female
+#&gt;  5:  0101    2         s   20      A female
+#&gt;  6:  0102   18         s  178      A   male
 #&gt;  7:  0200   33         s  344      B  Total
-#&gt;  8:  0201   14         s  140      B   male
-#&gt;  9:  0202   19         s  204      B female
+#&gt;  8:  0201   19         s  204      B female
+#&gt;  9:  0202   14         s  140      B   male
 #&gt; 10:  0300   22         s  224      C  Total
-#&gt; 11:  0301   12         s  118      C   male
-#&gt; 12:  0302   10         s  106      C female
+#&gt; 11:  0301   10         s  106      C female
+#&gt; 12:  0302   12         s  118      C   male
 #&gt; 13:  0400   25         s  518      D  Total
-#&gt; 14:  0401   11         s  366      D   male
-#&gt; 15:  0402   14         s  152      D female</div></pre>
+#&gt; 14:  0401   14         s  152      D female
+#&gt; 15:  0402   11         s  366      D   male</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

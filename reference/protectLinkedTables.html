@@ -66,7 +66,7 @@ tables." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.26</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.27</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@ tables." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>protect two <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects that have common cells</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/export_functions.r'><code>R/export_functions.r</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/protectLinkedTables.R'><code>R/protectLinkedTables.R</code></a></small>
     <div class="hidden name"><code>protectLinkedTables.Rd</code></div>
     </div>
 
@@ -189,64 +189,88 @@ tables.</p>
 
 <span class='co'># we need to create information on the hierarchies</span>
 <span class='co'># variable 'region': exists only in microDat2</span>
-<span class='no'>dim.region</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>h</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>), <span class='kw'>l</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Tot'</span>, <span class='st'>'R1'</span>,<span class='st'>'R2'</span>))
+<span class='no'>d_region</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Tot"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"R1"</span>, <span class='st'>"R2"</span>))
 
 <span class='co'># variable 'gender': exists in both datasets</span>
-<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>h</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>), <span class='kw'>l</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Tot'</span>, <span class='st'>'m'</span>,<span class='st'>'f'</span>))
+<span class='no'>d_gender</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Tot"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"m"</span>, <span class='st'>"f"</span>))
 
-<span class='co'># variable 'ecoOld': exists only in microDat1</span>
-<span class='no'>dim.ecoOld</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(
- <span class='kw'>h</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@@'</span>),
- <span class='kw'>l</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Tot'</span>,<span class='st'>'A'</span>,<span class='st'>'Aa'</span>,<span class='st'>'Ab'</span>,<span class='st'>'B'</span>,<span class='st'>'Ba'</span>,<span class='st'>'Bb'</span>))
+<span class='co'># variable 'eco1': exists only in microDat1</span>
+<span class='no'>d_eco1</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Tot"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>))
+<span class='no'>d_eco1</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_add</span>(<span class='no'>d_eco1</span>, <span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"A"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Aa"</span>, <span class='st'>"Ab"</span>))
+<span class='no'>d_eco1</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_add</span>(<span class='no'>d_eco1</span>, <span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"B"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Ba"</span>, <span class='st'>"Bb"</span>))
 
 <span class='co'># variable 'ecoNew': exists only in microDat2</span>
-<span class='no'>dim.ecoNew</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(
- <span class='kw'>h</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@@'</span>),
- <span class='kw'>l</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Tot'</span>,<span class='st'>'C'</span>,<span class='st'>'Ca'</span>,<span class='st'>'Cb'</span>,<span class='st'>'Cc'</span>,<span class='st'>'D'</span>,<span class='st'>'Da'</span>,<span class='st'>'Db'</span>,<span class='st'>'Dc'</span>))
+<span class='no'>d_eco2</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Tot"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"C"</span>, <span class='st'>"D"</span>))
+<span class='no'>d_eco2</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_add</span>(<span class='no'>d_eco2</span>, <span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"C"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Ca"</span>, <span class='st'>"Cb"</span>, <span class='st'>"Cc"</span>))
+<span class='no'>d_eco2</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_add</span>(<span class='no'>d_eco2</span>, <span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"D"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Da"</span>, <span class='st'>"Db"</span>, <span class='st'>"Dc"</span>))
 
 <span class='co'># creating objects holding information on dimensions</span>
-<span class='no'>dimList1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>gender</span><span class='kw'>=</span><span class='no'>dim.gender</span>, <span class='kw'>ecoOld</span><span class='kw'>=</span><span class='no'>dim.ecoOld</span>)
-<span class='no'>dimList2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>region</span><span class='kw'>=</span><span class='no'>dim.region</span>, <span class='kw'>gender</span><span class='kw'>=</span><span class='no'>dim.gender</span>, <span class='kw'>ecoNew</span><span class='kw'>=</span><span class='no'>dim.ecoNew</span>)
+<span class='no'>dl1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>d_gender</span>, <span class='kw'>ecoOld</span> <span class='kw'>=</span> <span class='no'>d_eco1</span>)
+<span class='no'>dl2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>region</span> <span class='kw'>=</span> <span class='no'>d_region</span>, <span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>d_gender</span>, <span class='kw'>ecoNew</span> <span class='kw'>=</span> <span class='no'>d_eco2</span>)
 
 <span class='co'># creating input objects for further processing. For details have a look at</span>
 <span class='co'># \code{\link{makeProblem}}.</span>
-<span class='no'>problem1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(<span class='kw'>data</span><span class='kw'>=</span><span class='no'>microData1</span>, <span class='kw'>dimList</span><span class='kw'>=</span><span class='no'>dimList1</span>, <span class='kw'>dimVarInd</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>),
-         <span class='kw'>numVarInd</span><span class='kw'>=</span><span class='fl'>3</span>)
-<span class='no'>problem2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(<span class='kw'>data</span><span class='kw'>=</span><span class='no'>microData2</span>, <span class='kw'>dimList</span><span class='kw'>=</span><span class='no'>dimList2</span>, <span class='kw'>dimVarInd</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span>),
-         <span class='kw'>numVarInd</span><span class='kw'>=</span><span class='fl'>4</span>)
+<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dl1</span>,
+  <span class='kw'>dimVarInd</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>2</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>3</span>
+)
+<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData2</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dl2</span>,
+  <span class='kw'>dimVarInd</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>4</span>
+)
 
-<span class='co'># the cell specified by gender=='Tot' and ecoOld=='A'</span>
+<span class='co'># the cell specified by gender == "Tot" and ecoOld == "A"</span>
 <span class='co'># is one of the common cells! -&gt; we mark it as primary suppression</span>
-<span class='no'>problem1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='changeCellStatus.html'>changeCellStatus</a></span>(<span class='no'>problem1</span>, <span class='kw'>characteristics</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Tot'</span>, <span class='st'>'A'</span>),
-     <span class='kw'>varNames</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'gender'</span>,<span class='st'>'ecoOld'</span>), <span class='kw'>rule</span><span class='kw'>=</span><span class='st'>'u'</span>, <span class='kw'>verbose</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='changeCellStatus.html'>changeCellStatus</a></span>(
+  <span class='kw'>object</span> <span class='kw'>=</span> <span class='no'>p1</span>,
+  <span class='kw'>characteristics</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Tot"</span>, <span class='st'>"A"</span>),
+  <span class='kw'>varNames</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"ecoOld"</span>),
+  <span class='kw'>rule</span> <span class='kw'>=</span> <span class='st'>"u"</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)
 
-<span class='co'># the cell specified by region=='Tot' and gender=='f' and ecoNew=='C'</span>
+<span class='co'># the cell specified by region == "Tot" and gender == "f" and ecoNew == "C"</span>
 <span class='co'># is one of the common cells! -&gt; we mark it as primary suppression</span>
-<span class='no'>problem2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='changeCellStatus.html'>changeCellStatus</a></span>(<span class='no'>problem2</span>, <span class='kw'>characteristics</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Tot'</span>, <span class='st'>'f'</span>, <span class='st'>'C'</span>),
- <span class='kw'>varNames</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'region'</span>,<span class='st'>'gender'</span>, <span class='st'>'ecoNew'</span>), <span class='kw'>rule</span><span class='kw'>=</span><span class='st'>'u'</span>, <span class='kw'>verbose</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='changeCellStatus.html'>changeCellStatus</a></span>(
+  <span class='kw'>object</span> <span class='kw'>=</span> <span class='no'>p2</span>,
+  <span class='kw'>characteristics</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Tot"</span>, <span class='st'>"f"</span>, <span class='st'>"C"</span>),
+  <span class='kw'>varNames</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"gender"</span>, <span class='st'>"ecoNew"</span>),
+  <span class='kw'>rule</span> <span class='kw'>=</span> <span class='st'>"u"</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)
 
 <span class='co'># specifying input to define common cells</span>
-<span class='no'>commonCells</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
+<span class='no'>common_cells</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
 
 <span class='co'># variable "gender"</span>
-<span class='no'>commonCells</span>$<span class='no'>v.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
-<span class='no'>commonCells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>'gender'</span> <span class='co'># variable name in 'problem1'</span>
-<span class='no'>commonCells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>'gender'</span> <span class='co'># variable name in 'problem2'</span>
-<span class='co'># 'gender' has equal characteristics on both datasets -&gt; keyword 'ALL'</span>
-<span class='no'>commonCells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>3</span>]] <span class='kw'>&lt;-</span> <span class='st'>'ALL'</span>
+<span class='no'>common_cells</span>$<span class='no'>v.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
+<span class='no'>common_cells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>"gender"</span> <span class='co'># variable name in "p1"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>"gender"</span> <span class='co'># variable name in "p2"</span>
+<span class='co'># "gender" has equal characteristics on both datasets -&gt; keyword "ALL"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>3</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ALL"</span>
 
-<span class='co'># variable: ecoOld and ecoNew</span>
-<span class='no'>commonCells</span>$<span class='no'>v.eco</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
-<span class='no'>commonCells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>'ecoOld'</span>   <span class='co'># variable name in 'problem1'</span>
-<span class='no'>commonCells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>'ecoNew'</span>   <span class='co'># variable name in 'problem2'</span>
+<span class='co'># variables: "ecoOld" and "ecoNew"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>()
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ecoOld"</span>   <span class='co'># variable name in "p1"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ecoNew"</span>   <span class='co'># variable name in "p2"</span>
 
-<span class='co'># vector of common characteristics: A and B in variable 'ecoOld' in 'problem1'</span>
-<span class='no'>commonCells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>3</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>,<span class='st'>"B"</span>)
-<span class='co'># correspond to characteristics 'C' and 'D' in variable 'ecoNew' in 'problem2'</span>
-<span class='no'>commonCells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>4</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"C"</span>,<span class='st'>"D"</span>)
+<span class='co'># vector of common characteristics: "A" and "B" in variable "ecoOld" in 'p1'</span>
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>3</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>)
+<span class='co'># correspond to characteristics "C" and "D" in variable "ecoNew" in "p2"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>4</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"C"</span>, <span class='st'>"D"</span>)
 
 <span class='co'># protect the linked data</span>
-<span class='no'>result</span> <span class='kw'>&lt;-</span> <span class='fu'>protectLinkedTables</span>(<span class='no'>problem1</span>, <span class='no'>problem2</span>, <span class='no'>commonCells</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>'HITAS'</span>, <span class='kw'>verbose</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+<span class='no'>result</span> <span class='kw'>&lt;-</span> <span class='fu'>protectLinkedTables</span>(
+  <span class='kw'>objectA</span> <span class='kw'>=</span> <span class='no'>p1</span>,
+  <span class='kw'>objectB</span> <span class='kw'>=</span> <span class='no'>p2</span>,
+  <span class='kw'>commonCells</span> <span class='kw'>=</span> <span class='no'>common_cells</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"HITAS"</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
 
 <span class='co'># having a look at the results</span>
 <span class='no'>result.tab1</span> <span class='kw'>&lt;-</span> <span class='no'>result</span><span class='kw'>[[</span><span class='fl'>1</span>]]
