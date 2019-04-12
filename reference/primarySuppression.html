@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>perform primary suppression in <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects — primarySuppression • sdcTable</title>
+<title>Apply primary suppression — primarySuppression • sdcTable</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -16,7 +16,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -30,10 +31,10 @@
 
 
 
-<meta property="og:title" content="perform primary suppression in <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects — primarySuppression" />
+<meta property="og:title" content="Apply primary suppression — primarySuppression" />
 
-<meta property="og:description" content="Function primarySuppression is used to identify and suppress primary
-sensitive table cells in sdcProblem-class objects.
+<meta property="og:description" content="Function primarySuppression() is used to identify and suppress primary
+sensitive table cells in sdcProblem objects.
 Argument type allows to select a rule that should be used to identify
 primary sensitive cells. At the moment it is possible to identify and
 suppress sensitive table cells using the frequency-rule, the nk-dominance
@@ -76,7 +77,7 @@ rule and the p-percent rule." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -94,7 +95,7 @@ rule and the p-percent rule." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/sdcTools/sdcTable">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -110,15 +111,15 @@ rule and the p-percent rule." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>perform primary suppression in <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects</h1>
+    <h1>Apply primary suppression</h1>
     <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/primarySuppression.R'><code>R/primarySuppression.R</code></a></small>
     <div class="hidden name"><code>primarySuppression.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Function <code>primarySuppression</code> is used to identify and suppress primary
-sensitive table cells in <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects.
+    <p>Function <code>primarySuppression()</code> is used to identify and suppress primary
+sensitive table cells in <a href='sdcProblem-class.html'>sdcProblem</a> objects.
 Argument <code>type</code> allows to select a rule that should be used to identify
 primary sensitive cells. At the moment it is possible to identify and
 suppress sensitive table cells using the frequency-rule, the nk-dominance
@@ -133,11 +134,12 @@ rule and the p-percent rule.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>a <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> object</p></td>
+      <td><p>a <a href='sdcProblem-class.html'>sdcProblem</a> object</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>character vector of length 1 defining the primary suppression rule. Allowed types are:</p><ul>
+      <td><p>character vector of length 1 defining the primary suppression
+rule. Allowed types are:</p><ul>
 <li><p><code>freq</code>: apply frequency rule with parameters <code>maxN</code> and <code>allowZeros</code></p></li>
 <li><p><code>nk</code>: apply nk-dominance rule with parameters <code>n</code>, <code>k</code> and <code>numVarInd</code></p></li>
 <li><p><code>p</code>: apply p-percent rule with parameters <code>p</code> and <code>numVarInd</code></p></li>
@@ -146,62 +148,94 @@ rule and the p-percent rule.</p>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>parameters used in the identification of primary sensitive cells. Parameters that can be modified|changed are:</p><ul>
-<li><p><code>maxN</code>: numeric vector of length 1 used when applying the frequency rule. All cells having counts &lt;= <code>maxN</code> are set as primary suppressed. The default value of <code>maxN</code> is 3.</p></li>
-<li><p><code>allowZeros</code>: logical vector of length 1 specifying if empty cells (count==0) should be considered sensitive when using the frequency rule. The default value of <code>allowZeros</code> is 'FALSE' so that empty cells are not considered primary sensitive by default.</p></li>
-<li><p><code>p</code>: numeric vector of length 1 specifying parameter <code>p</code> that is used when applying the p-percent rule with default value of 80.</p></li>
-<li><p><code>pq</code>: numeric vector of length 2 specifying parameters <code>p</code> and <code>q</code> that are used when applying the pq-rule with the default being c(25, 50).</p></li>
-<li><p><code>n</code>: numeric vector of length 1 specifying parameter <code>n</code> that is used when applying the nk-dominance rule. Parameter <code>n</code> is set to 2 by default.</p></li>
-<li><p><code>k</code>: numeric vector of length 1 specifying parameter <code>k</code> that is used when applying the nk-dominance rule. Parameter <code>n</code> is set to 85 by default.</p></li>
-<li><p><code>numVarInd</code>: numeric vector of length 1 specifying the index of the numerical variable that should be used to identify cells that are dominated by 2 (p-percent rule) or n (nk-dominance)-rule. If <code>type</code> is either 'nk', 'p' or 'pq', it is mandatory to specify <code>numVarInd</code>.</p></li>
+      <td><p>parameters used in the identification of primary sensitive cells.
+Parameters that can be modified|changed are:</p><ul>
+<li><p><code>maxN</code>: numeric vector of length 1 used when applying the frequency rule.
+All cells having counts &lt;= <code>maxN</code> are set as primary suppressed. The default
+value of <code>maxN</code> is <code>3</code>.</p></li>
+<li><p><code>allowZeros</code>: logical vector of length 1 specifying if empty cells
+(count==0) should be considered sensitive when using the frequency rule.
+The default value of <code>allowZeros</code> is <code>FALSE</code> so that empty cells are not
+considered primary sensitive by default.</p></li>
+<li><p><code>p</code>: numeric vector of length 1 specifying parameter <code>p</code> that is used
+when applying the p-percent rule with default value of <code>80</code>.</p></li>
+<li><p><code>pq</code>: numeric vector of length 2 specifying parameters <code>p</code> and <code>q</code> that
+are used when applying the pq-rule with the default being c(<code>25</code>, <code>50</code>).</p></li>
+<li><p><code>n</code>: numeric vector of length 1 specifying parameter <code>n</code> that is used
+when applying the nk-dominance rule. Parameter <code>n</code> is set to <code>2</code> by default.</p></li>
+<li><p><code>k</code>: scalar numeric specifying parameter <code>k</code> that is used
+when applying the nk-dominance rule. Parameter <code>n</code> is set to <code>85</code> by default.</p></li>
+<li><p><code>numVarName</code>: character scalar specifying the name
+of the numerical variable that should be used to identify cells that are
+dominated by dominance rules (<code>p-rule</code>, <code>pq-rule</code> or <code>nk-rule</code>).
+If <code>type</code> is either 'nk', 'p' or 'pq', it is mandatory to
+specify either <code>numVarInd</code> or <code>numVarName</code>.</p></li>
+<li><p><code>numVarInd</code>: same as <code>numVarName</code> but a scalar numeric
+specifying the index of the variable is expected. If both <code>numVarName</code>
+and <code>numVarInd</code> are specified, <code>numVarName</code> is used.</p></li>
 </ul></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> object</p>
+    <p>a <a href='sdcProblem-class.html'>sdcProblem</a> object</p>
     
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>the nk-dominance rule, the p-percent rule and the pq-rule can only be applied if micro data have been used as input data to function <code><a href='makeProblem.html'>makeProblem</a></code>.</p>
+    <p>the nk-dominance rule, the p-percent rule and the pq-rule can only
+be applied if micro data have been used as input data to function <code><a href='makeProblem.html'>makeProblem()</a></code></p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load micro data</span>
-<span class='no'>sp</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/search'>searchpaths</a></span>()
-<span class='no'>fn</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste</a></span>(<span class='no'>sp</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/grep'>grep</a></span>(<span class='st'>"sdcTable"</span>, <span class='no'>sp</span>)], <span class='st'>"/data/microData1.RData"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)
-<span class='no'>microData</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/get'>get</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/load'>load</a></span>(<span class='no'>fn</span>))
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"microData1"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sdcTable"</span>)
 
-<span class='co'># load problem (as it was created in the example in \code{\link{makeProblem}})</span>
-<span class='no'>fn</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/paste'>paste</a></span>(<span class='no'>sp</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/grep'>grep</a></span>(<span class='st'>"sdcTable"</span>, <span class='no'>sp</span>)], <span class='st'>"/data/problem.RData"</span>, <span class='kw'>sep</span><span class='kw'>=</span><span class='st'>""</span>)
-<span class='no'>problem</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/get'>get</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/load'>load</a></span>(<span class='no'>fn</span>))
+<span class='co'># load problem (as it was created in the example in ?makeProblem</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"problem"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"sdcTable"</span>)
 
 <span class='co'># we have a look at the frequency table by gender and region</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>microData</span>)) ~ <span class='no'>gender</span> + <span class='no'>region</span>, <span class='kw'>data</span><span class='kw'>=</span><span class='no'>microData</span>)</div><div class='output co'>#&gt;         region
+<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/xtabs'>xtabs</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow</a></span>(<span class='no'>microData1</span>)) ~ <span class='no'>gender</span> + <span class='no'>region</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>)</div><div class='output co'>#&gt;         region
 #&gt; gender    A  B  C  D
 #&gt;   female  2 19 10 14
 #&gt;   male   18 14 12 11</div><div class='input'>
-<span class='co'># cell with region=='A' and gender=='female' has 2 units contributing to it</span>
-<span class='co'># this cell should be considered sensitive according the the freq-rule with 'maxN' equal to 2!</span>
-<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'>primarySuppression</span>(<span class='no'>problem</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'freq'</span>, <span class='kw'>maxN</span><span class='kw'>=</span><span class='fl'>2</span>)
+<span class='co'># 2 units contribute to cell with region=='A' and gender=='female'</span>
+<span class='co'># --&gt; this cell is considered sensitive according the the</span>
+<span class='co'># freq-rule with 'maxN' equal to 2!</span>
+<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'>primarySuppression</span>(
+  <span class='kw'>object</span> <span class='kw'>=</span> <span class='no'>problem</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"freq"</span>,
+  <span class='kw'>maxN</span> <span class='kw'>=</span> <span class='fl'>2</span>
+)
 
-<span class='co'># we can also apply a p-percent rule with parameter 'p' being 30 as below.</span>
-<span class='co'># This is only possible if we are dealing with micro data and we also have to specify the index of</span>
-<span class='co'># a numeric variable.</span>
-<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'>primarySuppression</span>(<span class='no'>problem</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'p'</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='fl'>30</span>, <span class='kw'>numVarInd</span><span class='kw'>=</span><span class='fl'>1</span>)
+<span class='co'># we can also apply a p-percent rule with parameter "p" being 30 as below.</span>
+<span class='co'># This is only possible if we are dealing with micro data and we also</span>
+<span class='co'># have to specify the name of a numeric variable.</span>
+<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'>primarySuppression</span>(
+  <span class='kw'>object</span> <span class='kw'>=</span> <span class='no'>problem</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"p"</span>,
+  <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>30</span>,
+  <span class='kw'>numVarName</span> <span class='kw'>=</span> <span class='st'>"val"</span>
+)
 
-<span class='co'># looking at anonymization states we see, that one cell is primary suppressed (sdcStatus=='u')</span>
-<span class='co'># and the remaining cells are possible candidates for secondary suppression (sdcStatus=='s') given</span>
-<span class='co'># the frequency rule with parameter 'maxN=2'.</span>
-<span class='co'># Applying the p-percent rule with parameter 'p=30' resulted in two primary suppressions.</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>p1.sdc</span><span class='kw'>=</span><span class='fu'><a href='getInfo.html'>getInfo</a></span>(<span class='no'>p1</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>'sdcStatus'</span>), <span class='kw'>p2.sdc</span><span class='kw'>=</span><span class='fu'><a href='getInfo.html'>getInfo</a></span>(<span class='no'>p2</span>, <span class='kw'>type</span><span class='kw'>=</span><span class='st'>"sdcStatus"</span>))</div><div class='output co'>#&gt;    p1.sdc p2.sdc
+<span class='co'># looking at anonymization states we see, that one cell is primary</span>
+<span class='co'># suppressed (sdcStatus == "u")</span>
+<span class='co'># the remaining cells are possible candidates for secondary cell</span>
+<span class='co'># suppression (sdcStatus == "s") given the frequency rule with</span>
+<span class='co'># parameter "maxN = 2".</span>
+<span class='co'>#</span>
+<span class='co'># Applying the p-percent rule with parameter 'p = 30' resulted in</span>
+<span class='co'># two primary suppressions.</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(
+  <span class='kw'>p1_sdc</span> <span class='kw'>=</span> <span class='fu'><a href='getInfo.html'>getInfo</a></span>(<span class='no'>p1</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"sdcStatus"</span>),
+  <span class='kw'>p2_sdc</span> <span class='kw'>=</span> <span class='fu'><a href='getInfo.html'>getInfo</a></span>(<span class='no'>p2</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"sdcStatus"</span>)
+)</div><div class='output co'>#&gt;    p1_sdc p2_sdc
 #&gt; 1       s      s
 #&gt; 2       s      s
 #&gt; 3       s      s
 #&gt; 4       s      s
 #&gt; 5       s      s
-#&gt; 6       u      u
+#&gt; 6       u      s
 #&gt; 7       s      s
 #&gt; 8       s      s
 #&gt; 9       s      s
@@ -209,9 +243,8 @@ rule and the p-percent rule.</p>
 #&gt; 11      s      s
 #&gt; 12      s      s
 #&gt; 13      s      s
-#&gt; 14      s      u
-#&gt; 15      s      s</div><div class='input'>
-</div></pre>
+#&gt; 14      s      s
+#&gt; 15      s      s</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
