@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>create <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects — makeProblem • sdcTable</title>
+<title>Create a problem instance — makeProblem • sdcTable</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -22,8 +22,9 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -31,10 +32,9 @@
 
 
 
-<meta property="og:title" content="create <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects — makeProblem" />
+<meta property="og:title" content="Create a problem instance — makeProblem" />
 
-<meta property="og:description" content="Function makeProblem is used to create
-sdcProblem-class-objects." />
+<meta property="og:description" content="Function makeProblem() is used to create sdcProblem objects." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -107,15 +107,14 @@ sdcProblem-class-objects." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>create <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects</h1>
+    <h1>Create a problem instance</h1>
     <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/makeProblem.R'><code>R/makeProblem.R</code></a></small>
     <div class="hidden name"><code>makeProblem.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Function <code>makeProblem</code> is used to create
-<code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-objects.</p>
+    <p>Function <code>makeProblem()</code> is used to create <a href='sdcProblem-class.html'>sdcProblem</a> objects.</p>
     
     </div>
 
@@ -135,69 +134,70 @@ hold information on sampling weights.</p></td>
     </tr>
     <tr>
       <th>dimList</th>
-      <td><p>a named list where the names refer to variable names in
-input <code>data</code>. Each list element can be one of:</p><ul>
-<li><p><code>tree</code>: generated with <code>hier_*()</code> functions from the
-sdcHierarchies package</p></li>
-<li><p><code>data.frame</code>: a two column <code>data.frame</code> containing
-the complete level hierarchy of a dimensional variable using a
-top-to-bottom approach. The format of the <code>data.frame</code> is as follows:
-<ul>
-<li><p>first column: a character vector specifying levels with each vector
-element being a string only containing of '@'s from length 1 to n.
+      <td><p>a (named) list where the names refer to variable names in
+input <code>data</code>. If the list is not named, it is required to specify argument
+<code>dimVarInd</code>. Each list element can be one of:</p><ul>
+<li><p><code>tree</code>: generated with <code>hier_*()</code> functions from package <code>sdcHierarchies</code></p></li>
+<li><p><code>data.frame</code>: a two column <code>data.frame</code> containing the full hierarchy of
+a dimensional variable using a top-to-bottom approach. The format of this
+<code>data.frame</code> is as follows:</p><ul>
+<li><p><strong>first column:</strong> a character vector specifying levels with each vector
+element being a string only containing of <code>@</code>s from length 1 to n.
 If a vector element consists of <code>i</code>-chars, the corresponding code
-is of level <code>i</code>. The code '@' (one character) equals the grand
-total (level=1), the code `@@` (two characters) is of level 2 (directly
+is of level <code>i</code>. The code <code>@</code> (one character) equals the grand
+total (level=1), the code <code>@@</code> (two characters) is of level 2 (directly
 below the overall total).</p></li>
-<li><p>second column: a character vector specifying level codes</p></li>
-</ul></p></li>
+<li><p><strong>second column:</strong> a character vector specifying level codes</p></li>
+</ul></li>
 <li><p><code>path</code>: absolute or relative path to a <code>.csv</code> file that
-contains two columns seperated by semicolons (;) having the same structure
+contains two columns seperated by semicolons (<code>;</code>) having the same structure
 as the <code>"@;levelname"</code>-structure described above</p></li>
 </ul></td>
     </tr>
     <tr>
       <th>dimVarInd</th>
-      <td><p>numeric vector (or NULL) defining the column-indices of
-dimensional variables (defining the table) within argument <code>data</code>.
-If <code>NULL</code>, the names of argument <code>dimList</code> are used to calculate
-the indices of the dimensional variables within <code>data</code> internally.</p></td>
+      <td><p>if <code>dimList</code> is a named list, this argument is
+ignored (<code>NULL</code>). Else either a numeric or character vector
+defining the column indices or names of dimensional variables
+(specifying the table) within argument <code>data</code> are expected.</p></td>
     </tr>
     <tr>
       <th>freqVarInd</th>
-      <td><p>numeric vector (or NULL) defining the column-indices
-of a variable holding counts within argument <code>data</code></p></td>
+      <td><p>if not <code>NULL</code>, a scalar numeric or character vector
+defining the column index or variable name of a variable holding counts
+in <code>data</code></p></td>
     </tr>
     <tr>
       <th>numVarInd</th>
-      <td><p>numeric vector (or NULL) defining the column-indices
-of additional numeric variables available in argument <code>data</code></p></td>
+      <td><p>if not <code>NULL</code>, a numeric or character vector
+defining the column indices or variable names of additional numeric
+variables with respect to <code>data</code></p></td>
     </tr>
     <tr>
       <th>weightInd</th>
-      <td><p>numeric vector of length 1 (or NULL) defining the
-column-index of a variable holding weights that should be used during
-as objective coefficients during the cut and branch algorithm to
-protect primary sensitive cells within argument <code>data</code></p></td>
+      <td><p>if not <code>NULL</code>, a scalar numeric or character vector
+defining the column index or variable name holding costs within <code>data</code>
+that should be used as objective coefficients when solving the secondary
+cell suppression problem.</p></td>
     </tr>
     <tr>
       <th>sampWeightInd</th>
-      <td><p>numeric vector of length 1 (or NULL) defining
-the column-index of a variable holding sampling weights within
-argument <code>data</code></p></td>
+      <td><p>if not <code>NULL</code>, a scalar numeric or character vector
+defining the column index or variable name of a variable holding sampling
+weights within <code>data</code></p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-object</p>
+    <p>a <a href='sdcProblem-class.html'>sdcProblem</a> object</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># loading micro data</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/data'>data</a></span>(<span class='st'>"microData1"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"sdcTable"</span>)
-<span class='no'>microData</span> <span class='kw'>&lt;-</span> <span class='no'>microData1</span>; <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rm'>rm</a></span>(<span class='no'>microData1</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: object 'microData1' not found</span></div><div class='input'><span class='co'># having a look at the data structure</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/utils/topics/str'>str</a></span>(<span class='no'>microData</span>)</div><div class='output co'>#&gt; 'data.frame':	100 obs. of  3 variables:
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"microData1"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"sdcTable"</span>)
+<span class='co'># having a look at the data structure</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>microData1</span>)</div><div class='output co'>#&gt; 'data.frame':	100 obs. of  3 variables:
 #&gt;  $ region: chr  "C" "C" "A" "A" ...
 #&gt;  $ gender: chr  "male" "male" "male" "male" ...
 #&gt;  $ val   : num  9 11 10 11 18 10 6 9 5 12 ...</div><div class='input'>
@@ -207,45 +207,51 @@ argument <code>data</code></p></td>
 
 <span class='co'># specify structure of hierarchical variable 'region'</span>
 <span class='co'># levels 'A' to 'D' sum up to a Total</span>
-<span class='no'>dim.region</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(
- <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>),
- <span class='kw'>codes</span><span class='kw'>=</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>'Total'</span>, <span class='st'>'A'</span>,<span class='st'>'B'</span>,<span class='st'>'C'</span>,<span class='st'>'D'</span>),
+<span class='no'>dim.region</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
+ <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>),
+ <span class='kw'>codes</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'Total'</span>, <span class='st'>'A'</span>,<span class='st'>'B'</span>,<span class='st'>'C'</span>,<span class='st'>'D'</span>),
  <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
 
 <span class='co'># specify structure of hierarchical variable 'gender'</span>
 <span class='co'># using create_node() and add_nodes() (see ?manage_hierarchies)</span>
-<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>))
+<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>))
 <span class='fu'>hier_display</span>(<span class='no'>dim.gender</span>)</div><div class='output co'>#&gt; Total
 #&gt; ├─female
 #&gt; └─male</div><div class='input'>
 <span class='co'># create a named list with each element being a data-frame</span>
 <span class='co'># containing information on one dimensional variable and</span>
 <span class='co'># the names referring to variables in the input data</span>
-<span class='no'>dimList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='kw'>region</span><span class='kw'>=</span><span class='no'>dim.region</span>, <span class='kw'>gender</span><span class='kw'>=</span><span class='no'>dim.gender</span>)
+<span class='no'>dimList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span> <span class='kw'>=</span> <span class='no'>dim.region</span>, <span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>dim.gender</span>)
 
 <span class='co'># third column containts a numeric variable</span>
 <span class='no'>numVarInd</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
 
 <span class='co'># no variables holding counts, numeric values, weights or sampling</span>
 <span class='co'># weights are available in the input data</span>
-<span class='no'>freqVarInd</span> <span class='kw'>&lt;-</span> <span class='no'>weightInd</span> <span class='kw'>&lt;-</span> <span class='no'>sampWeightInd</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+<span class='co'># creating an problem instance using numeric indices</span>
+<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'>makeProblem</span>(
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dimList</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>3</span> <span class='co'># third variable in `data`</span>
+)
 
-<span class='co'># creating an object of class \code{\link{sdcProblem-class}}</span>
-<span class='no'>problem</span> <span class='kw'>&lt;-</span> <span class='fu'>makeProblem</span>(
- <span class='kw'>data</span><span class='kw'>=</span><span class='no'>microData</span>,
- <span class='kw'>dimList</span><span class='kw'>=</span><span class='no'>dimList</span>,
- <span class='kw'>freqVarInd</span><span class='kw'>=</span><span class='no'>freqVarInd</span>,
- <span class='kw'>numVarInd</span><span class='kw'>=</span><span class='no'>numVarInd</span>,
- <span class='kw'>weightInd</span><span class='kw'>=</span><span class='no'>weightInd</span>,
- <span class='kw'>sampWeightInd</span><span class='kw'>=</span><span class='no'>sampWeightInd</span>)
+<span class='co'># using variable names is also possible</span>
+<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'>makeProblem</span>(
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dimList</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='st'>"val"</span>
+)
 
 <span class='co'># what do we have?</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/class'>class</a></span>(<span class='no'>problem</span>))</div><div class='output co'>#&gt; [1] "sdcProblem"
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>p1</span>))</div><div class='output co'>#&gt; [1] "sdcProblem"
 #&gt; attr(,"package")
 #&gt; [1] "sdcTable"</div><div class='input'>
 <span class='co'># have a look at the data</span>
-<span class='fu'><a href='sdcProb2df.html'>sdcProb2df</a></span>(<span class='no'>problem</span>, <span class='kw'>addDups</span><span class='kw'>=</span><span class='fl'>TRUE</span>,
-  <span class='kw'>addNumVars</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>dimCodes</span><span class='kw'>=</span><span class='st'>"original"</span>)</div><div class='output co'>#&gt;     strID freq sdcStatus  val region gender
+<span class='no'>df1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sdcProb2df.html'>sdcProb2df</a></span>(<span class='no'>p1</span>, <span class='kw'>addDups</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>addNumVars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>dimCodes</span> <span class='kw'>=</span> <span class='st'>"original"</span>)
+<span class='no'>df2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='sdcProb2df.html'>sdcProb2df</a></span>(<span class='no'>p2</span>, <span class='kw'>addDups</span><span class='kw'>=</span><span class='fl'>TRUE</span>,
+  <span class='kw'>addNumVars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>dimCodes</span> <span class='kw'>=</span> <span class='st'>"original"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>df1</span>)</div><div class='output co'>#&gt;     strID freq sdcStatus  val region gender
 #&gt;  1:  0000  100         s 1284  Total  Total
 #&gt;  2:  0001   45         s  482  Total female
 #&gt;  3:  0002   55         s  802  Total   male
@@ -260,7 +266,8 @@ argument <code>data</code></p></td>
 #&gt; 12:  0302   12         s  118      C   male
 #&gt; 13:  0400   25         s  518      D  Total
 #&gt; 14:  0401   14         s  152      D female
-#&gt; 15:  0402   11         s  366      D   male</div></pre>
+#&gt; 15:  0402   11         s  366      D   male</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/identical.html'>identical</a></span>(<span class='no'>df1</span>, <span class='no'>df2</span>)</div><div class='output co'>#&gt; [1] TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -273,7 +280,7 @@ argument <code>data</code></p></td>
     </ul>
 
     <h2>Author</h2>
-    <p>Bernhard Meindl <a href='mailto:bernhard.meindl@statistik.gv.at'>bernhard.meindl@statistik.gv.at</a></p>
+    <p>Bernhard Meindl</p>
   </div>
 </div>
 
@@ -283,7 +290,7 @@ argument <code>data</code></p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
 </div>
       </footer>
    </div>
