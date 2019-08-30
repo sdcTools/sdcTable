@@ -11,35 +11,35 @@ expect_equal(sum(p1.sdc == "u"), 1)
 expect_equal(which(p1.sdc == "u"), 6)
 
 expect_error(primarySuppression(problem, type = "nk", n = 2, k = 80))
-p2 <- primarySuppression(problem, type = "nk", n = 2, k = 75, numVarInd = 1)
+p2 <- primarySuppression(problem, type = "nk", n = 2, k = 75, numVarName = "val")
 p2.sdc <- get.problemInstance(p2@problemInstance, "sdcStatus")
 expect_is(p2, "sdcProblem")
 expect_equal(sum(p2.sdc == "u"), 2)
 expect_equal(which(p2.sdc == "u"), c(6, 14))
 
 expect_error(primarySuppression(problem, type = "p", p = 80))
-expect_error(primarySuppression(problem, type = "p", p = 0, numVarInd = 1))
-expect_error(primarySuppression(problem, type = "p", p = 100, numVarInd = 1))
-p3 <- primarySuppression(problem, type = "p", p = 70, numVarInd = 1)
+expect_error(primarySuppression(problem, type = "p", p = 0, numVarName = "val"))
+expect_error(primarySuppression(problem, type = "p", p = 100, numVarName = "val"))
+p3 <- primarySuppression(problem, type = "p", p = 70, numVarName = "val")
 p3.sdc <- get.problemInstance(p3@problemInstance, "sdcStatus")
 expect_is(p3, "sdcProblem")
 expect_equal(sum(p3.sdc == "u"), 2)
 expect_equal(which(p3.sdc == "u"), c(6, 14))
 
 expect_error(primarySuppression(problem, type = "pq", pq = c(80, 90)))
-expect_error(primarySuppression(problem, type = "pq", pq = c(85, 80), numVarInd = 1))
-expect_error(primarySuppression(problem, type = "pq", pq = c(85, 180), numVarInd = 1))
-expect_error(primarySuppression(problem, type = "pq", pq = c(110, 120), numVarInd = 1))
-p4 <- primarySuppression(problem, type = "pq", pq = c(60, 80), numVarInd = 1)
+expect_error(primarySuppression(problem, type = "pq", pq = c(85, 80), numVarName = "val"))
+expect_error(primarySuppression(problem, type = "pq", pq = c(85, 180), numVarName = "val"))
+expect_error(primarySuppression(problem, type = "pq", pq = c(110, 120), numVarName = "val"))
+p4 <- primarySuppression(problem, type = "pq", pq = c(60, 80), numVarName = "val")
 p4.sdc <- get.problemInstance(p4@problemInstance, "sdcStatus")
 expect_is(p4, "sdcProblem")
 expect_equal(sum(p4.sdc == "u"), 2)
 expect_equal(which(p4.sdc == "u"), c(6, 14))
 
 problem@dataObj@rawData$val[5] <- -5
-expect_error(primarySuppression(problem, type = "nk", n = 2, k = 80, numVarInd = 1))
-expect_error(primarySuppression(problem, type = "p", p = 70, numVarInd = 1))
-expect_error(primarySuppression(problem, type = "pq", pq = c(60, 80), numVarInd = 1))
+expect_error(primarySuppression(problem, type = "nk", n = 2, k = 80, numVarName = "val"))
+expect_error(primarySuppression(problem, type = "p", p = 70, numVarName = "val"))
+expect_error(primarySuppression(problem, type = "pq", pq = c(60, 80), numVarName = "val"))
 
 
 # use weights
@@ -63,8 +63,7 @@ problem <- makeProblem(
   dimList = dimList,
   freqVarInd = NULL,
   numVarInd = 3,
-  sampWeightInd = 4
-)
+  sampWeightInd = 4)
 
 # no numVarInd or numVarName
 expect_error(
@@ -85,9 +84,9 @@ res <- primarySuppression(
   type = "nk",
   n = 2,
   k = 80,
-  numVarName = "samp_weights"
-)
-res <- sdcProb2df(res, addDups = FALSE)
+  numVarName = "val")
+
+res <- sdcProb2df(res, addDups = FALSE, addNumVars = TRUE)
 expect_equal(res[sdcStatus == "s", .N], 15)
 expect_equal(res[sdcStatus == "z", .N], 3)
 
@@ -98,10 +97,9 @@ res <- primarySuppression(
   n = 2,
   k = 80,
   allowZeros = TRUE,
-  numVarName = "samp_weights"
+  numVarName = "val"
 )
 res <- sdcProb2df(res, addDups = FALSE)
-
 
 expect_error(primarySuppression(
   object = problem,
