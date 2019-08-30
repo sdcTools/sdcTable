@@ -17,9 +17,6 @@ calc.sdcProblem(object, type, input)
 \item{type}{a character vector of length 1 defining what to calculate|return|modify. Allowed types are:}
 \itemize{
 \item rule.freq: modify suppression status within \code{object} according to frequency suppression rule
-\item rule.nk: modify sdcStatus of \code{object} according to nk-dominance rule
-\item rule.p: modify sdcStatus of \code{object} according to p-percent rule
-\item rule.pq: modify sdcStatus of \code{object} according to pq-rule
 \item heuristicSolution: obtain a heuristic (greedy) solution to the problem defined by \code{object}
 \item cutAndBranch: solve a secondary cell suppression problem defined by \code{object} using cut and branch
 \item anonWorker: is used to solve the suppression problem depending on information provided with argument \code{input}
@@ -38,7 +35,7 @@ calc.sdcProblem(object, type, input)
 
 \item{input}{a list depending on argument \code{type}.}
 \itemize{
-\item a list (typically generated using genParaObj()) specifying parameters for primary cell suppression if argument \code{type} matches 'rule.freq', 'rule.nk' or 'rule.p'
+\item a list (typically generated using genParaObj()) specifying parameters for primary cell suppression if argument \code{type} matches 'rule.freq'
 \item a list if argument \code{type} matches 'heuristicSolution' having the following elements:
 \itemize{
 \item element 'aProb': an object of class \code{linProb} defining the attacker's problem
@@ -86,7 +83,7 @@ calc.sdcProblem(object, type, input)
 \value{
 information from objects of class \code{sdcProblem} depending on argument \code{type}
 \itemize{
-\item an object of class \code{sdcProblem} if argument \code{type} matches 'rule.freq', 'rule.nk', 'rule.p', 'cutAndBranch', 'anonWorker', 'ghmiter', 'ghmiter.supressQuader', 'ghmiter.suppressAdditionalQuader' or 'reduceProblem'
+\item an object of class \code{sdcProblem} if argument \code{type} matches 'rule.freq', 'cutAndBranch', 'anonWorker', 'ghmiter', 'ghmiter.supressQuader', 'ghmiter.suppressAdditionalQuader' or 'reduceProblem'
 \item a numeric vector with elements being 0 or 1 if argument \code{type} matches 'heuristicSolution'
 \item a list if argument \code{type} matches 'preprocess' having following elements:
 \itemize{

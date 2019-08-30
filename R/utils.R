@@ -55,7 +55,7 @@ domRule <- function(object, params, type) {
     # randomly round upwards and downwards?
     if (!is_integerish(w)) {
       dir <- sample(c(-1, 1), length(vals), replace = TRUE)
-      w[dir == -1] <- floor(w[dir == -11])
+      w[dir == -1] <- floor(w[dir == -1])
       w[dir == 1] <- ceiling(w[dir == 1])
     }
     vals <- rep(vals, times = w)
@@ -77,7 +77,7 @@ domRule <- function(object, params, type) {
   }
 
   if (!g_is_microdata(g_dataObj(object))) {
-    e <- "nk-dominance rule can only be applied if micro-data are available!"
+    e <- "dominance rules can only be applied if micro-data are available!"
     stop(e, call. = FALSE)
   }
 
@@ -92,9 +92,8 @@ domRule <- function(object, params, type) {
 
   pI <- g_problemInstance(object)
   dataObj <- g_dataObj(object)
-  numVarInds <- g_numvar_ind(dataObj)
   strIDs <- g_strID(pI)
-  numVal <- g_raw_data(dataObj)[[numVarInds[params$numVarInd]]]
+  numVal <- g_raw_data(dataObj)[[params$numVarName]]
 
   if (any(na.omit(numVal) < 0)) {
     e <- c(

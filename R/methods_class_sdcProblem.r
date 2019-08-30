@@ -40,8 +40,7 @@ setMethod(f="get.sdcProblem", signature=c("sdcProblem", "character"),
 #' @rdname set.sdcProblem-method
 setMethod(f="set.sdcProblem", signature=c("sdcProblem", "character", "list"),
   definition=function(object, type, input) {
-    if ( !type %in% c("problemInstance", "partition", "rule.freq", "rule.nk",
-        "rule.p", "rule.pk", "startI", "startJ", "indicesDealtWith", "elapsedTime") ) {
+    if ( !type %in% c("problemInstance", "partition", "rule.freq", "startI", "startJ", "indicesDealtWith", "elapsedTime") ) {
       stop("set.sdcProblem:: check argument 'type'!\n")
     }
     if ( type == "problemInstance" ) {
@@ -71,7 +70,7 @@ setMethod(f="set.sdcProblem", signature=c("sdcProblem", "character", "list"),
 #' @rdname calc.sdcProblem-method
 setMethod(f="calc.sdcProblem", signature=c("sdcProblem", "character", "list"),
   definition=function(object, type, input) {
-    if ( !type %in% c("rule.freq", "rule.nk", "rule.p", "rule.pq", "heuristicSolution",
+    if ( !type %in% c("rule.freq", "heuristicSolution",
       "cutAndBranch", "anonWorker", "ghmiter", "preprocess", "cellID",
       "finalize", "ghmiter.diagObj", "ghmiter.calcInformation",
       "ghmiter.suppressQuader", "ghmiter.selectQuader",
@@ -82,18 +81,6 @@ setMethod(f="calc.sdcProblem", signature=c("sdcProblem", "character", "list"),
     # frequency-rule
     if ( type == "rule.freq" ) {
       return(c_rule_freq(object, input))
-    }
-    # nk-dominance rule
-    if ( type == "rule.nk" ) {
-      return(c_rule_nk(object, input))
-    }
-    # p%-rule
-    if ( type == "rule.p" ) {
-      return(c_rule_p(object, input))
-    }
-    # pq-rule
-    if ( type == "rule.pq" ) {
-      return(c_rule_pq(object, input))
     }
     if ( type == "heuristicSolution" ) {
       return(c_heuristic_solution(object, input))
@@ -385,18 +372,6 @@ setMethod("c_rule_freq", signature=c("sdcProblem", "list"), definition=function(
   s_problemInstance(object) <- pI
   validObject(object)
   return(object)
-})
-
-setMethod("c_rule_nk", signature = c("sdcProblem", "list"), definition = function(object, input) {
-  domRule(object = object, params = input, type = "nk")
-})
-
-setMethod("c_rule_p", signature = c("sdcProblem", "list"), definition = function(object, input) {
-  domRule(object = object, params = input, type = "p")
-})
-
-setMethod("c_rule_pq", signature = c("sdcProblem", "list"), definition = function(object, input) {
-  domRule(object = object, params = input, type = "pq")
 })
 
 setMethod("c_heuristic_solution", signature=c("sdcProblem", "list"), definition=function(object, input) {

@@ -7,12 +7,15 @@
 #' suppress sensitive table cells using the frequency-rule, the nk-dominance
 #' rule and the p-percent rule.
 #'
+#' @details since versions `>= 0.29` it is no longer possible to specify underlying
+#' variables for dominance rules (`"p"`, `"pq"` or `"nk"`) by index; these variables must
+#' be set by name using argument `numVarName`.
 #' @param object a [sdcProblem-class] object
 #' @param type character vector of length 1 defining the primary suppression
 #' rule. Allowed types are:
 #' - `freq`: apply frequency rule with parameters `maxN` and `allowZeros`
-#' - `nk`: apply nk-dominance rule with parameters `n`, `k` and `numVarInd`
-#' - `p`: apply p-percent rule with parameters `p` and `numVarInd`
+#' - `nk`: apply nk-dominance rule with parameters `n`, `k` 
+#' - `p`: apply p-percent rule with parameter `p`
 #' - `pq`: apply pq-rule with parameters `p` and `q`
 #' @param ... parameters used in the identification of primary sensitive cells.
 #' Parameters that can be modified|changed are:
@@ -33,12 +36,15 @@
 #' when applying the nk-dominance rule. Parameter `n` is set to `85` by default.
 #' - `numVarName`: character scalar specifying the name
 #' of the numerical variable that should be used to identify cells that are
-#' dominated by dominance rules (`p-rule`, `pq-rule` or `nk-rule`).
+#' dominated by dominance rules (`p-rule`, `pq-rule` or `nk-rule`). This setting
+#' is mandatory in package versions `>= 0.29`
 #' If `type` is either 'nk', 'p' or 'pq', it is mandatory to
 #' specify either `numVarInd` or `numVarName`.
 #' - `numVarInd`: same as `numVarName` but a scalar numeric
 #' specifying the index of the variable is expected. If both `numVarName`
-#' and `numVarInd` are specified, `numVarName` is used.
+#' and `numVarInd` are specified, `numVarName` is used. The index refers to the
+#' index of the specified numvars in [makeProblem()]. This argument is no longer
+#' respected in versions `>= 0.29` where `numVarName` must be used.
 #' @return a [sdcProblem-class] object
 #' @md
 #' @export
@@ -109,30 +115,31 @@ primarySuppression <- function(object, type, ...) {
 
   if (type %in% c("nk", "p", "pq")) {
     pp <- list(...)
-    if (is.na(paraList$numVarInd) & is.null(pp$numVarName)) {
-      stop("Please specify either `numVarInd` or `numVarName`.", call. = FALSE)
+    if (is.null(pp$numVarName)) {
+      stop("Please specify argument `numVarName`.", call. = FALSE)
     }
 
-    cn <- colnames(dt)
-    if (!is.null(pp$numVarName)) {
-      if (!pp$numVarName %in% cn) {
-        e <- "Variable specified in `numVarName` does not exist in the data."
-        stop(e, call. = FALSE)
-      }
-      paraList$numVarInd <- match(pp$numVarName, cn)
+    numVarName <- pp$numVarName
+    if (!rlang::is_scalar_character(numVarName)) {
+      stop("`numVarName` must be a scalar character.")
     }
+    numvars <- names(dt)[numVarsIndices]
+    if (!numVarName %in% numvars) {
+      e <- "Variable specified in `numVarName` does not exist in the data."
+      stop(e, call. = FALSE)
+    }
+    paraList$numVarName <- numVarName
   }
-
   if (type == "nk") {
-    object <- c_rule_nk(object, input = paraList)
+    object <- domRule(object = object, params = paraList, type = "nk")
   }
 
   if (type == "p") {
-    object <- c_rule_p(object, input = paraList)
+    object <- domRule(object = object, params = paraList, type = "p")
   }
 
   if (type == "pq") {
-    object <- c_rule_pq(object, input = paraList)
+    object <- domRule(object = object, params = paraList, type = "pq")
   }
 
   elapsed.time <- g_elapsedTime(object) + (proc.time() - start.time)[3]

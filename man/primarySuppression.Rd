@@ -13,8 +13,8 @@ primarySuppression(object, type, ...)
 rule. Allowed types are:
 \itemize{
 \item \code{freq}: apply frequency rule with parameters \code{maxN} and \code{allowZeros}
-\item \code{nk}: apply nk-dominance rule with parameters \code{n}, \code{k} and \code{numVarInd}
-\item \code{p}: apply p-percent rule with parameters \code{p} and \code{numVarInd}
+\item \code{nk}: apply nk-dominance rule with parameters \code{n}, \code{k}
+\item \code{p}: apply p-percent rule with parameter \code{p}
 \item \code{pq}: apply pq-rule with parameters \code{p} and \code{q}
 }}
 
@@ -38,12 +38,15 @@ when applying the nk-dominance rule. Parameter \code{n} is set to \code{2} by de
 when applying the nk-dominance rule. Parameter \code{n} is set to \code{85} by default.
 \item \code{numVarName}: character scalar specifying the name
 of the numerical variable that should be used to identify cells that are
-dominated by dominance rules (\code{p-rule}, \code{pq-rule} or \code{nk-rule}).
+dominated by dominance rules (\code{p-rule}, \code{pq-rule} or \code{nk-rule}). This setting
+is mandatory in package versions \code{>= 0.29}
 If \code{type} is either 'nk', 'p' or 'pq', it is mandatory to
 specify either \code{numVarInd} or \code{numVarName}.
 \item \code{numVarInd}: same as \code{numVarName} but a scalar numeric
 specifying the index of the variable is expected. If both \code{numVarName}
-and \code{numVarInd} are specified, \code{numVarName} is used.
+and \code{numVarInd} are specified, \code{numVarName} is used. The index refers to the
+index of the specified numvars in \code{\link[=makeProblem]{makeProblem()}}. This argument is no longer
+respected in versions \code{>= 0.29} where \code{numVarName} must be used.
 }}
 }
 \value{
@@ -56,6 +59,11 @@ Argument \code{type} allows to select a rule that should be used to identify
 primary sensitive cells. At the moment it is possible to identify and
 suppress sensitive table cells using the frequency-rule, the nk-dominance
 rule and the p-percent rule.
+}
+\details{
+since versions \code{>= 0.29} it is no longer possible to specify underlying
+variables for dominance rules (\code{"p"}, \code{"pq"} or \code{"nk"}) by index; these variables must
+be set by name using argument \code{numVarName}.
 }
 \note{
 the nk-dominance rule, the p-percent rule and the pq-rule can only
