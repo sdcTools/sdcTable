@@ -1,3 +1,7 @@
+# sdcTable 0.29
+- change in `primarySuppression()`: for dominance rule it is now only possible to specify underlying variables by name (using argument `numVarName`) and no longer by index to avoid errors
+- fixes in primary suppression for dominance rules
+
 # sdcTable 0.28
 - new function `contributing_indices()`
 - call `.Defunct` for old exported functions
