@@ -22,32 +22,24 @@
 #'
 #' # create hierarchies
 #' dimList <- list(
-#'   region = hier_create(
-#'     root = "Total",
-#'     nodes = LETTERS[1:4]
-#'   ),
-#'   gender = hier_create(
-#'     root = "Total",
-#'     nodes = c("male", "female")
-#'   )
-#' )
+#'   region = hier_create(root = "Total", nodes = LETTERS[1:4]),
+#'   gender = hier_create(root = "Total", nodes = c("male", "female")))
 #'
 #' # create a problem instance
 #' prob <- makeProblem(
 #'   data = microData1,
 #'   dimList = dimList,
-#'   numVarInd = "val"
-#' )
+#'   numVarInd = "val")
 #'
 #' # create suitable input for `writeJJFormat`
 #' inp <- createJJFormat(prob); inp
 #'
 #' # write files to disk
 #' # frequency table by default
-#' writeJJFormat(inp, path = "prob_freqs.jj", overwrite = TRUE)
+#' writeJJFormat(inp, path = file.path(tempdir(), "prob_freqs.jj"), overwrite = TRUE)
 #'
 #' # or using the numeric variable `val` previously specified
-#' writeJJFormat(inp, tabvar = "val", path = "prob_val.jj", overwrite = TRUE)
+#' writeJJFormat(inp, tabvar = "val", path = file.path(tempdir(), "prob_val.jj"), overwrite = TRUE)
 writeJJFormat <- function(x, tabvar = "freqs", path = "out.jj", overwrite = FALSE) {
   if (!inherits(x, "jjformat")) {
     e <- "Invalid input. Please use `createJJFormat()`."

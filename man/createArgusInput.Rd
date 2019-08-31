@@ -2,7 +2,7 @@
 % Please edit documentation in R/createArgusInput.R
 \name{createArgusInput}
 \alias{createArgusInput}
-\title{createArgusInput}
+\title{Create input files for tauArgus}
 \usage{
 createArgusInput(obj, typ = "microdata", verbose = FALSE,
   path = getwd(), solver = "FREE", method, primSuppRules = NULL,
@@ -10,9 +10,9 @@ createArgusInput(obj, typ = "microdata", verbose = FALSE,
   requestvar = NULL, holdingvar = NULL, ...)
 }
 \arguments{
-\item{obj}{an object of class \code{\link{sdcProblem-class}} from \code{sdcTable}}
+\item{obj}{an object of class \linkS4class{sdcProblem} from \code{sdcTable}}
 
-\item{typ}{(character) either \code{microdata} or \code{tabular}}
+\item{typ}{(character) either \code{"microdata"} or \code{"tabular"}}
 
 \item{verbose}{(logical) if TRUE, the contents of the batch-file are written to the prompt}
 
@@ -21,31 +21,32 @@ Each file written to this folder belonging to the same problem contains a random
 
 \item{solver}{which solver should be used. allowed choices are
 \itemize{
-\item "FREE"
-\item "CPLEX"
-\item "XPRESS"
+\item \code{"FREE"}
+\item \code{"CPLEX"}
+\item \code{"XPRESS"}
 }
-In case "CPLEX" is used, it is also mandatory to specify argument 'licensefile' which needs to be
+
+In case \code{"CPLEX"} is used, it is also mandatory to specify argument \code{licensefile} which needs to be
 the absolute path the the cplex license file}
 
 \item{method}{secondary cell suppression algorithm, possible choices include:
 \itemize{
-\item MOD: modular approach. If specified, the following arguments in \code{...} can additionally be set:
+\item \code{"MOD"}: modular approach. If specified, the following arguments in \code{...} can additionally be set:
 \itemize{
-\item MaxTimePerSubtable: number specifiying max. time (in minutes) spent for each subtable
-\item SingleSingle: 0/1 (default=1)
-\item SingleMultiple: 0/1 (default=1)
-\item MinFreq: 0/1 (default=1)
+\item \code{MaxTimePerSubtable}: number specifiying max. time (in minutes) spent for each subtable
+\item \code{SingleSingle}: 0/1 (default=1)
+\item \code{SingleMultiple}: 0/1 (default=1)
+\item \code{MinFreq}: 0/1 (default=1)
 }
-\item GH: hypercube. If specified, the following arguments in \code{...} can additionally be set:
+\item \code{"GH"}: hypercube. If specified, the following arguments in \code{...} can additionally be set:
 \itemize{
-\item BoundPercentage: Default percentage to proctect primary suppressed cells, default 75
-\item ModelSize: are we dealing with a small (0) or large (1) model? (default=1)
-\item ApplySingleton: should singletons be additionally protected? 0/1 (default=1)
+\item \code{BoundPercentage}: Default percentage to proctect primary suppressed cells, default 75
+\item \code{ModelSize}: are we dealing with a small (0) or large (1) model? (default=1)
+\item \code{ApplySingleton}: should singletons be additionally protected? 0/1 (default=1)
 }
-\item OPT: optimal cell suppression. If specified, the following arguments in \code{...} can additionally be set:
+\item \code{"OPT"}: optimal cell suppression. If specified, the following arguments in \code{...} can additionally be set:
 \itemize{
-\item MaxComputingTime: number specifiying max. allowed computing time (in minutes)
+\item \code{MaxComputingTime}: number specifiying max. allowed computing time (in minutes)
 }
 }}
 
@@ -54,22 +55,26 @@ the absolute path the the cplex license file}
 
 \item{responsevar}{which variable should be tabulated (defaults to frequencies). For details see tau-argus manual section 4.4.4.}
 
-\item{shadowvar}{if specified, this variable is used to apply the safety rules, defaults to \code{responsevar}. For details see tau-argus manual section 4.4.4.}
+\item{shadowvar}{if specified, this variable is used to apply the safety rules, defaults to \code{responsevar}. For details
+see tau-argus manual section 4.4.4.}
 
-\item{costvar}{if specified, this variable describes the costs of suppressing each individual cell. For details see tau-argus manual section 4.4.4.}
+\item{costvar}{if specified, this variable describes the costs of suppressing each individual cell. For details see tau-argus
+manual section 4.4.4.}
 
-\item{requestvar}{if specified, this variable (0/1-coded) contains information about records that request protection. Records with 1 will be protected in case a corresponding request rule matches. It is ignored, if tabular input is used.}
+\item{requestvar}{if specified, this variable (0/1-coded) contains information about records that request protection.
+Records with 1 will be protected in case a corresponding request rule matches. It is ignored, if tabular input is used.}
 
-\item{holdingvar}{if specified, this variable contains information about records that should be grouped together. It is ignored, if tabular input is used.}
+\item{holdingvar}{if specified, this variable contains information about records that should be grouped together.
+It is ignored, if tabular input is used.}
 
 \item{...}{allows to specify additional parameters for selected suppression-method as described above
-as well as \code{licensefile} in clase "CPLEX" was specified in argument \code{solver}.}
+as well as \code{licensefile} in clase \code{"CPLEX"} was specified in argument \code{solver}.}
 }
 \value{
 the filepath to the batch-file
 }
 \description{
-create required input-files and batch-file for tau-argus given an \code{sdcProblem-obj} object
+create required input-files and batch-file for tau-argus given an \linkS4class{sdcProblem} object
 }
 \examples{
 # loading micro data from sdcTable
@@ -78,68 +83,81 @@ microData1$num1 <- rnorm(mean=100, sd=25, nrow(microData1))
 microData1$num2 <- round(rnorm(mean=500, sd=125, nrow(microData1)),2)
 microData1$weight <- sample(10:100, nrow(microData1), replace=TRUE)
 
-dim.region <- data.frame(
-  levels=c('@','@@','@@','@@','@@'),
-  codes=c('Total', 'A','B','C','D'),
-  stringsAsFactors=FALSE)
+dim_region <- hier_create(root = "Total", nodes = LETTERS[1:4])
 
-dim.region_dupl <- data.frame(
-  levels=c('@','@@','@@','@@@','@@','@@','@@@'),
-  codes=c('Total', 'A','B','b1','C','D','d1'),
-  stringsAsFactors=FALSE)
+dim_region_dupl <- hier_create(root = "Total", nodes = LETTERS[1:4])
+dim_region_dupl <- hier_add(dim_region_dupl, root = "B", nodes = c("b1"))
+dim_region_dupl <- hier_add(dim_region_dupl, root = "D", nodes = c("d1"))
 
-dim.gender <- data.frame(
-  levels=c('@','@@','@@'),
-  codes=c('Total', 'male','female'),
-  stringsAsFactors=FALSE)
+dim_gender <- hier_create(root = "Total", nodes = c("male", "female"))
 
-dimList <- list(region=dim.region, gender=dim.gender)
-dimList_dupl  <- list(region=dim.region_dupl, gender=dim.gender)
-dimVarInd <- c(1,2)
+dimList <- list(region = dim_region, gender = dim_gender)
+dimList_dupl  <- list(region = dim_region_dupl, gender = dim_gender)
+dimVarInd <- 1:2
 numVarInd <- 3:5
 sampWeightInd <- 6
 
-freqVarInd <- weightInd <- NULL
-
 # creating an object of class \\code{\\link{sdcProblem-class}}
 obj <- makeProblem(
-  data=microData1,
-  dimList=dimList,
-  dimVarInd=dimVarInd,
-  freqVarInd=freqVarInd,
-  numVarInd=numVarInd,
-  weightInd=weightInd,
-  sampWeightInd=sampWeightInd)
+  data = microData1,
+  dimList = dimList,
+  dimVarInd = dimVarInd,
+  numVarInd = numVarInd,
+  sampWeightInd = sampWeightInd)
 
 # creating an object of class \\code{\\link{sdcProblem-class}} containing "duplicated" codes
 obj_dupl <- makeProblem(
-  data=microData1,
-  dimList=dimList_dupl,
-  dimVarInd=dimVarInd,
-  freqVarInd=freqVarInd,
-  numVarInd=numVarInd,
-  weightInd=weightInd,
-  sampWeightInd=sampWeightInd)
+  data = microData1,
+  dimList = dimList_dupl,
+  dimVarInd = dimVarInd,
+  numVarInd = numVarInd,
+  sampWeightInd = sampWeightInd)
 
 ## create primary suppression rules
 primSuppRules <- list()
-primSuppRules[[1]] <- list(type="freq", n=5, rg=20)
-primSuppRules[[2]] <- list(type="p", n=5, p=20)
+primSuppRules[[1]] <- list(type = "freq", n = 5, rg = 20)
+primSuppRules[[2]] <- list(type = "p", n = 5, p = 20)
 # other supported formats are:
-# list(type="nk", n=5, k=20)
-# list(type="zero", rg=5)
-# list(type="mis", val=1)
-# list(type="wgt", val=1)
-# list(type="man", val=20)
+# list(type = "nk", n=5, k=20)
+# list(type = "zero", rg = 5)
+# list(type = "mis", val = 1)
+# list(type = "wgt", val = 1)
+# list(type = "man", val = 20)
 
 ## create batchInput object
-bO_md1 <- createArgusInput(obj, typ="microdata", path=getwd(), solver="FREE", method="OPT",
-  primSuppRules=primSuppRules, responsevar="num1")
-bO_td1 <- createArgusInput(obj, typ="tabular", path=getwd(), solver="FREE", method="OPT")
-bO_td2 <- createArgusInput(obj_dupl, typ="tabular", path=getwd(), solver="FREE", method="OPT")
+bO_md1 <- createArgusInput(
+  ob = obj, 
+  typ = "microdata", 
+  path = tempdir(), 
+  solver = "FREE", 
+  method = "OPT",
+  primSuppRules = primSuppRules, 
+  responsevar = "num1")
+  
+bO_td1 <- createArgusInput(
+  obj = obj, 
+  typ = "tabular", 
+  path = tempdir(), 
+  solver = "FREE", 
+  method = "OPT")
+  
+bO_td2 <- createArgusInput(
+  obj = obj_dupl, 
+  typ = "tabular", 
+  path = tempdir(),
+  solver = "FREE", 
+  method = "OPT")
+  
 \dontrun{
 ## in case CPLEX should be used, it is required to specify argument licensefile
-bO_md2 <- createArgusInput(obj, typ="microdata", path=getwd(), solver="CPLEX", method="OPT",
-  primSuppRules=primSuppRules, responsevar="num1", licensefile="/path/to/my/cplexlicense")
+bO_md2 <- createArgusInput(
+  obj = obj, 
+  typ = "microdata", 
+  path = tempdir(), 
+  solver = "CPLEX", 
+  method = "OPT",
+  primSuppRules = primSuppRules, 
+  responsevar = "num1",
+  licensefile = "/path/to/my/cplexlicense")
 }
 }
