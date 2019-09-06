@@ -61,7 +61,7 @@ createJJFormat <- function(x) {
 
   # the fifth element of the list are the
   # linear dependences as vector
-  mm <- data.table(v1 = rep("0.0", nr_constraints))
+  mm <- data.table(v1 = rep("0", nr_constraints))
   mm$v2 <- as.character(table(slot(st, "i")))
   mm$v3 <- rep(":", nr_constraints)
 
