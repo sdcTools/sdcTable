@@ -81,7 +81,7 @@ writeJJFormat <- function(x, tabvar = "freqs", path = "out.jj", overwrite = FALS
     stop("Invalid name detected in argument `tabvar`.", call. = FALSE)
   }
 
-  keep <- c("ind", tabvar, "costs", "lbi", "ubi", "LPL", "UPL", "SPL")
+  keep <- c("ind", tabvar, "costs", "status", "lbi", "ubi", "LPL", "UPL", "SPL")
   x[[3]] <- x[[3]][, keep, with = FALSE]
   lapply(x, function(y) {
     write.table(
