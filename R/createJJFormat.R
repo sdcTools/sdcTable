@@ -71,7 +71,7 @@ createJJFormat <- function(x) {
     v = slot(st, "v")
   )
   setkey(dt, i)
-  con <- dt[, paste(j, "(", v, ")", collapse = " ") , by = key(dt)]
+  con <- dt[, paste0(j, "(", v, ")", collapse = " ") , by = key(dt)]
 
   mm$v4 <- con[["V1"]]
   jj[[5]] <- mm
