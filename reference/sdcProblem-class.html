@@ -8,11 +8,13 @@
 
 <title>S4 class describing a sdcProblem-object — sdcProblem-class • sdcTable</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -32,8 +34,8 @@
 
 
 
-<meta property="og:title" content="S4 class describing a sdcProblem-object — sdcProblem-class" />
 
+<meta property="og:title" content="S4 class describing a sdcProblem-object — sdcProblem-class" />
 <meta property="og:description" content="An object of class sdcProblem contains the entire information that is
 required to protect the complete table that is given by the dimensional
 variables. Such an object holds the data itself  (slot dataObj), the
@@ -49,6 +51,7 @@ subtables have already been protected while performing a heuristic method
 
 
 
+
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -57,6 +60,7 @@ subtables have already been protected while performing a heuristic method
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -75,7 +79,7 @@ subtables have already been protected while performing a heuristic method
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.28</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.29</span>
       </span>
     </div>
 
@@ -97,7 +101,6 @@ subtables have already been protected while performing a heuristic method
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/sdcTools/sdcTable">
@@ -112,6 +115,7 @@ subtables have already been protected while performing a heuristic method
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -123,7 +127,6 @@ subtables have already been protected while performing a heuristic method
     </div>
 
     <div class="ref-description">
-    
     <p>An object of class <code>sdcProblem</code> contains the entire information that is
 required to protect the complete table that is given by the dimensional
 variables. Such an object holds the data itself  (slot <code>dataObj</code>), the
@@ -135,13 +138,14 @@ approach (slot <code>partition</code>, information on which groups or rather
 subtables have already been protected while performing a heuristic method
 (slots <code>startI</code> and <code>startJ</code>) and the time that has been elapsed
 (slot <code>elapsedTime</code>).</p>
-    
     </div>
 
-        
+
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <dl class='dl-horizontal'>
+    
+<dl class='dl-horizontal'>
 <dt>slot <code>dataObj</code>:</dt><dd><p>an object of class <code>dataObj</code> (or NULL) holding information on the underlying data</p></dd>
 <dt>slot <code>dimInfo</code>:</dt><dd><p>an object of class <code>dimInfo</code> (or NULL) containing information on all dimensional variables</p></dd>
 <dt>slot <code>problemInstance</code>:</dt><dd><p>an object of class <code>problemInstance</code> holding information on values, bounds, required protection levels as well as the anonymization state for all table cells</p></dd>
@@ -150,27 +154,26 @@ subtables have already been protected while performing a heuristic method
 <dt>slot <code>startJ</code>:</dt><dd><p>a numeric vector of length 1 defining the number of the table within the group defined by parameter <code>startI</code> at which a heuristic algorithm needs to start. All tables in the group having an index <code>j</code> smaller than <code>startJ</code> have already been protected</p></dd>
 <dt>slot <code>indicesDealtWith</code>:</dt><dd><p>a numeric vector holding indices of table cells that have protected and whose anonymization state must remain fixed</p></dd>
 <dt>slot <code>elapsedTime</code>:</dt><dd><p>a numeric vector of length 1 holding the time that has already been elapsed during the anonymization process</p></dd>
- </dl>
-    
+ 
+</dl>
+
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>objects of class <code>sdcProblem</code> are typically generated by function <code><a href='makeProblem.html'>makeProblem</a></code> and are the input of functions <code><a href='primarySuppression.html'>primarySuppression</a></code> and <code><a href='protectTable.html'>protectTable</a></code></p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      
       <li><a href="#details">Details</a></li>
-
       <li><a href="#note">Note</a></li>
-          </ul>
+    </ul>
 
     <h2>Author</h2>
     <p>Bernhard Meindl <a href='mailto:bernhard.meindl@statistik.gv.at'>bernhard.meindl@statistik.gv.at</a></p>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -178,13 +181,16 @@ subtables have already been protected while performing a heuristic method
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.9000.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

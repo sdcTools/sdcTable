@@ -6,13 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>createArgusInput — createArgusInput • sdcTable</title>
+<title>Create input files for tauArgus — createArgusInput • sdcTable</title>
+
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -32,10 +34,11 @@
 
 
 
-<meta property="og:title" content="createArgusInput — createArgusInput" />
 
-<meta property="og:description" content="create required input-files and batch-file for tau-argus given an sdcProblem-obj object" />
+<meta property="og:title" content="Create input files for tauArgus — createArgusInput" />
+<meta property="og:description" content="create required input-files and batch-file for tau-argus given an sdcProblem object" />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -47,6 +50,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -65,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.28</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.29</span>
       </span>
     </div>
 
@@ -87,7 +91,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/sdcTools/sdcTable">
@@ -102,37 +105,36 @@
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>createArgusInput</h1>
+    <h1>Create input files for tauArgus</h1>
     <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/createArgusInput.R'><code>R/createArgusInput.R</code></a></small>
     <div class="hidden name"><code>createArgusInput.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
-    <p>create required input-files and batch-file for tau-argus given an <code>sdcProblem-obj</code> object</p>
-    
+    <p>create required input-files and batch-file for tau-argus given an <a href='sdcProblem-class.html'>sdcProblem</a> object</p>
     </div>
 
     <pre class="usage"><span class='fu'>createArgusInput</span>(<span class='no'>obj</span>, <span class='kw'>typ</span> <span class='kw'>=</span> <span class='st'>"microdata"</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(), <span class='kw'>solver</span> <span class='kw'>=</span> <span class='st'>"FREE"</span>, <span class='no'>method</span>, <span class='kw'>primSuppRules</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>responsevar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>shadowvar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>costvar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>requestvar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>holdingvar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>obj</th>
-      <td><p>an object of class <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> from <code>sdcTable</code></p></td>
+      <td><p>an object of class <a href='sdcProblem-class.html'>sdcProblem</a> from <code>sdcTable</code></p></td>
     </tr>
     <tr>
       <th>typ</th>
-      <td><p>(character) either <code>microdata</code> or <code>tabular</code></p></td>
+      <td><p>(character) either <code>"microdata"</code> or <code>"tabular"</code></p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -146,28 +148,30 @@ Each file written to this folder belonging to the same problem contains a random
     <tr>
       <th>solver</th>
       <td><p>which solver should be used. allowed choices are</p><ul>
-<li><p>"FREE"</p></li>
-<li><p>"CPLEX"</p></li>
-<li><p>"XPRESS"</p></li>
-</ul><p>In case "CPLEX" is used, it is also mandatory to specify argument 'licensefile' which needs to be
+<li><p><code>"FREE"</code></p></li>
+<li><p><code>"CPLEX"</code></p></li>
+<li><p><code>"XPRESS"</code></p></li>
+</ul>
+
+<p>In case <code>"CPLEX"</code> is used, it is also mandatory to specify argument <code>licensefile</code> which needs to be
 the absolute path the the cplex license file</p></td>
     </tr>
     <tr>
       <th>method</th>
       <td><p>secondary cell suppression algorithm, possible choices include:</p><ul>
-<li><p>MOD: modular approach. If specified, the following arguments in <code>...</code> can additionally be set:</p><ul>
-<li><p>MaxTimePerSubtable: number specifiying max. time (in minutes) spent for each subtable</p></li>
-<li><p>SingleSingle: 0/1 (default=1)</p></li>
-<li><p>SingleMultiple: 0/1 (default=1)</p></li>
-<li><p>MinFreq: 0/1 (default=1)</p></li>
+<li><p><code>"MOD"</code>: modular approach. If specified, the following arguments in <code>...</code> can additionally be set:</p><ul>
+<li><p><code>MaxTimePerSubtable</code>: number specifiying max. time (in minutes) spent for each subtable</p></li>
+<li><p><code>SingleSingle</code>: 0/1 (default=1)</p></li>
+<li><p><code>SingleMultiple</code>: 0/1 (default=1)</p></li>
+<li><p><code>MinFreq</code>: 0/1 (default=1)</p></li>
 </ul></li>
-<li><p>GH: hypercube. If specified, the following arguments in <code>...</code> can additionally be set:</p><ul>
-<li><p>BoundPercentage: Default percentage to proctect primary suppressed cells, default 75</p></li>
-<li><p>ModelSize: are we dealing with a small (0) or large (1) model? (default=1)</p></li>
-<li><p>ApplySingleton: should singletons be additionally protected? 0/1 (default=1)</p></li>
+<li><p><code>"GH"</code>: hypercube. If specified, the following arguments in <code>...</code> can additionally be set:</p><ul>
+<li><p><code>BoundPercentage</code>: Default percentage to proctect primary suppressed cells, default 75</p></li>
+<li><p><code>ModelSize</code>: are we dealing with a small (0) or large (1) model? (default=1)</p></li>
+<li><p><code>ApplySingleton</code>: should singletons be additionally protected? 0/1 (default=1)</p></li>
 </ul></li>
-<li><p>OPT: optimal cell suppression. If specified, the following arguments in <code>...</code> can additionally be set:</p><ul>
-<li><p>MaxComputingTime: number specifiying max. allowed computing time (in minutes)</p></li>
+<li><p><code>"OPT"</code>: optimal cell suppression. If specified, the following arguments in <code>...</code> can additionally be set:</p><ul>
+<li><p><code>MaxComputingTime</code>: number specifiying max. allowed computing time (in minutes)</p></li>
 </ul></li>
 </ul></td>
     </tr>
@@ -182,31 +186,34 @@ the absolute path the the cplex license file</p></td>
     </tr>
     <tr>
       <th>shadowvar</th>
-      <td><p>if specified, this variable is used to apply the safety rules, defaults to <code>responsevar</code>. For details see tau-argus manual section 4.4.4.</p></td>
+      <td><p>if specified, this variable is used to apply the safety rules, defaults to <code>responsevar</code>. For details
+see tau-argus manual section 4.4.4.</p></td>
     </tr>
     <tr>
       <th>costvar</th>
-      <td><p>if specified, this variable describes the costs of suppressing each individual cell. For details see tau-argus manual section 4.4.4.</p></td>
+      <td><p>if specified, this variable describes the costs of suppressing each individual cell. For details see tau-argus
+manual section 4.4.4.</p></td>
     </tr>
     <tr>
       <th>requestvar</th>
-      <td><p>if specified, this variable (0/1-coded) contains information about records that request protection. Records with 1 will be protected in case a corresponding request rule matches. It is ignored, if tabular input is used.</p></td>
+      <td><p>if specified, this variable (0/1-coded) contains information about records that request protection.
+Records with 1 will be protected in case a corresponding request rule matches. It is ignored, if tabular input is used.</p></td>
     </tr>
     <tr>
       <th>holdingvar</th>
-      <td><p>if specified, this variable contains information about records that should be grouped together. It is ignored, if tabular input is used.</p></td>
+      <td><p>if specified, this variable contains information about records that should be grouped together.
+It is ignored, if tabular input is used.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>allows to specify additional parameters for selected suppression-method as described above
-as well as <code>licensefile</code> in clase "CPLEX" was specified in argument <code>solver</code>.</p></td>
+as well as <code>licensefile</code> in clase <code>"CPLEX"</code> was specified in argument <code>solver</code>.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>the filepath to the batch-file</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># loading micro data from sdcTable</span>
@@ -215,82 +222,95 @@ as well as <code>licensefile</code> in clase "CPLEX" was specified in argument <
 <span class='no'>microData1</span>$<span class='no'>num2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='kw'>mean</span><span class='kw'>=</span><span class='fl'>500</span>, <span class='kw'>sd</span><span class='kw'>=</span><span class='fl'>125</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>microData1</span>)),<span class='fl'>2</span>)
 <span class='no'>microData1</span>$<span class='no'>weight</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>10</span>:<span class='fl'>100</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>microData1</span>), <span class='kw'>replace</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
-<span class='no'>dim.region</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
-  <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>),
-  <span class='kw'>codes</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'Total'</span>, <span class='st'>'A'</span>,<span class='st'>'B'</span>,<span class='st'>'C'</span>,<span class='st'>'D'</span>),
-  <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+<span class='no'>dim_region</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='no'>LETTERS</span>[<span class='fl'>1</span>:<span class='fl'>4</span>])
 
-<span class='no'>dim.region_dupl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
-  <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@@'</span>),
-  <span class='kw'>codes</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'Total'</span>, <span class='st'>'A'</span>,<span class='st'>'B'</span>,<span class='st'>'b1'</span>,<span class='st'>'C'</span>,<span class='st'>'D'</span>,<span class='st'>'d1'</span>),
-  <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+<span class='no'>dim_region_dupl</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='no'>LETTERS</span>[<span class='fl'>1</span>:<span class='fl'>4</span>])
+<span class='no'>dim_region_dupl</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_add</span>(<span class='no'>dim_region_dupl</span>, <span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"B"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"b1"</span>))
+<span class='no'>dim_region_dupl</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_add</span>(<span class='no'>dim_region_dupl</span>, <span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"D"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"d1"</span>))
 
-<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
-  <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>),
-  <span class='kw'>codes</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'Total'</span>, <span class='st'>'male'</span>,<span class='st'>'female'</span>),
-  <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+<span class='no'>dim_gender</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>))
 
-<span class='no'>dimList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span><span class='kw'>=</span><span class='no'>dim.region</span>, <span class='kw'>gender</span><span class='kw'>=</span><span class='no'>dim.gender</span>)
-<span class='no'>dimList_dupl</span>  <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span><span class='kw'>=</span><span class='no'>dim.region_dupl</span>, <span class='kw'>gender</span><span class='kw'>=</span><span class='no'>dim.gender</span>)
-<span class='no'>dimVarInd</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>)
+<span class='no'>dimList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span> <span class='kw'>=</span> <span class='no'>dim_region</span>, <span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>dim_gender</span>)
+<span class='no'>dimList_dupl</span>  <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span> <span class='kw'>=</span> <span class='no'>dim_region_dupl</span>, <span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>dim_gender</span>)
+<span class='no'>dimVarInd</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>:<span class='fl'>2</span>
 <span class='no'>numVarInd</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>:<span class='fl'>5</span>
 <span class='no'>sampWeightInd</span> <span class='kw'>&lt;-</span> <span class='fl'>6</span>
 
-<span class='no'>freqVarInd</span> <span class='kw'>&lt;-</span> <span class='no'>weightInd</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
-
 <span class='co'># creating an object of class \code{\link{sdcProblem-class}}</span>
 <span class='no'>obj</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
-  <span class='kw'>data</span><span class='kw'>=</span><span class='no'>microData1</span>,
-  <span class='kw'>dimList</span><span class='kw'>=</span><span class='no'>dimList</span>,
-  <span class='kw'>dimVarInd</span><span class='kw'>=</span><span class='no'>dimVarInd</span>,
-  <span class='kw'>freqVarInd</span><span class='kw'>=</span><span class='no'>freqVarInd</span>,
-  <span class='kw'>numVarInd</span><span class='kw'>=</span><span class='no'>numVarInd</span>,
-  <span class='kw'>weightInd</span><span class='kw'>=</span><span class='no'>weightInd</span>,
-  <span class='kw'>sampWeightInd</span><span class='kw'>=</span><span class='no'>sampWeightInd</span>)
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dimList</span>,
+  <span class='kw'>dimVarInd</span> <span class='kw'>=</span> <span class='no'>dimVarInd</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='no'>numVarInd</span>,
+  <span class='kw'>sampWeightInd</span> <span class='kw'>=</span> <span class='no'>sampWeightInd</span>)
 
 <span class='co'># creating an object of class \code{\link{sdcProblem-class}} containing "duplicated" codes</span>
 <span class='no'>obj_dupl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
-  <span class='kw'>data</span><span class='kw'>=</span><span class='no'>microData1</span>,
-  <span class='kw'>dimList</span><span class='kw'>=</span><span class='no'>dimList_dupl</span>,
-  <span class='kw'>dimVarInd</span><span class='kw'>=</span><span class='no'>dimVarInd</span>,
-  <span class='kw'>freqVarInd</span><span class='kw'>=</span><span class='no'>freqVarInd</span>,
-  <span class='kw'>numVarInd</span><span class='kw'>=</span><span class='no'>numVarInd</span>,
-  <span class='kw'>weightInd</span><span class='kw'>=</span><span class='no'>weightInd</span>,
-  <span class='kw'>sampWeightInd</span><span class='kw'>=</span><span class='no'>sampWeightInd</span>)
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dimList_dupl</span>,
+  <span class='kw'>dimVarInd</span> <span class='kw'>=</span> <span class='no'>dimVarInd</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='no'>numVarInd</span>,
+  <span class='kw'>sampWeightInd</span> <span class='kw'>=</span> <span class='no'>sampWeightInd</span>)
 
 <span class='co'>## create primary suppression rules</span>
 <span class='no'>primSuppRules</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
-<span class='no'>primSuppRules</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span><span class='kw'>=</span><span class='st'>"freq"</span>, <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>rg</span><span class='kw'>=</span><span class='fl'>20</span>)
-<span class='no'>primSuppRules</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span><span class='kw'>=</span><span class='st'>"p"</span>, <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>5</span>, <span class='kw'>p</span><span class='kw'>=</span><span class='fl'>20</span>)
+<span class='no'>primSuppRules</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"freq"</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>rg</span> <span class='kw'>=</span> <span class='fl'>20</span>)
+<span class='no'>primSuppRules</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"p"</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>20</span>)
 <span class='co'># other supported formats are:</span>
-<span class='co'># list(type="nk", n=5, k=20)</span>
-<span class='co'># list(type="zero", rg=5)</span>
-<span class='co'># list(type="mis", val=1)</span>
-<span class='co'># list(type="wgt", val=1)</span>
-<span class='co'># list(type="man", val=20)</span>
+<span class='co'># list(type = "nk", n=5, k=20)</span>
+<span class='co'># list(type = "zero", rg = 5)</span>
+<span class='co'># list(type = "mis", val = 1)</span>
+<span class='co'># list(type = "wgt", val = 1)</span>
+<span class='co'># list(type = "man", val = 20)</span>
 
 <span class='co'>## create batchInput object</span>
-<span class='no'>bO_md1</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(<span class='no'>obj</span>, <span class='kw'>typ</span><span class='kw'>=</span><span class='st'>"microdata"</span>, <span class='kw'>path</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(), <span class='kw'>solver</span><span class='kw'>=</span><span class='st'>"FREE"</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"OPT"</span>,
-  <span class='kw'>primSuppRules</span><span class='kw'>=</span><span class='no'>primSuppRules</span>, <span class='kw'>responsevar</span><span class='kw'>=</span><span class='st'>"num1"</span>)
-<span class='no'>bO_td1</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(<span class='no'>obj</span>, <span class='kw'>typ</span><span class='kw'>=</span><span class='st'>"tabular"</span>, <span class='kw'>path</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(), <span class='kw'>solver</span><span class='kw'>=</span><span class='st'>"FREE"</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"OPT"</span>)
-<span class='no'>bO_td2</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(<span class='no'>obj_dupl</span>, <span class='kw'>typ</span><span class='kw'>=</span><span class='st'>"tabular"</span>, <span class='kw'>path</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(), <span class='kw'>solver</span><span class='kw'>=</span><span class='st'>"FREE"</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"OPT"</span>)</div><span class='co'># NOT RUN {</span>
+<span class='no'>bO_md1</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(
+  <span class='kw'>ob</span> <span class='kw'>=</span> <span class='no'>obj</span>,
+  <span class='kw'>typ</span> <span class='kw'>=</span> <span class='st'>"microdata"</span>,
+  <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
+  <span class='kw'>solver</span> <span class='kw'>=</span> <span class='st'>"FREE"</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"OPT"</span>,
+  <span class='kw'>primSuppRules</span> <span class='kw'>=</span> <span class='no'>primSuppRules</span>,
+  <span class='kw'>responsevar</span> <span class='kw'>=</span> <span class='st'>"num1"</span>)
+
+<span class='no'>bO_td1</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(
+  <span class='kw'>obj</span> <span class='kw'>=</span> <span class='no'>obj</span>,
+  <span class='kw'>typ</span> <span class='kw'>=</span> <span class='st'>"tabular"</span>,
+  <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
+  <span class='kw'>solver</span> <span class='kw'>=</span> <span class='st'>"FREE"</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"OPT"</span>)
+
+<span class='no'>bO_td2</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(
+  <span class='kw'>obj</span> <span class='kw'>=</span> <span class='no'>obj_dupl</span>,
+  <span class='kw'>typ</span> <span class='kw'>=</span> <span class='st'>"tabular"</span>,
+  <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
+  <span class='kw'>solver</span> <span class='kw'>=</span> <span class='st'>"FREE"</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"OPT"</span>)
+
+<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='co'>## in case CPLEX should be used, it is required to specify argument licensefile</span>
-<span class='no'>bO_md2</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(<span class='no'>obj</span>, <span class='kw'>typ</span><span class='kw'>=</span><span class='st'>"microdata"</span>, <span class='kw'>path</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span>(), <span class='kw'>solver</span><span class='kw'>=</span><span class='st'>"CPLEX"</span>, <span class='kw'>method</span><span class='kw'>=</span><span class='st'>"OPT"</span>,
-  <span class='kw'>primSuppRules</span><span class='kw'>=</span><span class='no'>primSuppRules</span>, <span class='kw'>responsevar</span><span class='kw'>=</span><span class='st'>"num1"</span>, <span class='kw'>licensefile</span><span class='kw'>=</span><span class='st'>"/path/to/my/cplexlicense"</span>)
-<span class='co'># }</span></pre>
+<span class='no'>bO_md2</span> <span class='kw'>&lt;-</span> <span class='fu'>createArgusInput</span>(
+  <span class='kw'>obj</span> <span class='kw'>=</span> <span class='no'>obj</span>,
+  <span class='kw'>typ</span> <span class='kw'>=</span> <span class='st'>"microdata"</span>,
+  <span class='kw'>path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
+  <span class='kw'>solver</span> <span class='kw'>=</span> <span class='st'>"CPLEX"</span>,
+  <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"OPT"</span>,
+  <span class='kw'>primSuppRules</span> <span class='kw'>=</span> <span class='no'>primSuppRules</span>,
+  <span class='kw'>responsevar</span> <span class='kw'>=</span> <span class='st'>"num1"</span>,
+  <span class='kw'>licensefile</span> <span class='kw'>=</span> <span class='st'>"/path/to/my/cplexlicense"</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -298,13 +318,16 @@ as well as <code>licensefile</code> in clase "CPLEX" was specified in argument <
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.9000.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
