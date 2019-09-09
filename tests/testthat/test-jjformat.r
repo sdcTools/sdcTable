@@ -25,7 +25,7 @@ expect_error(createJJFormat(x = 5))
 
 # create inputs for jj format
 inp <- createJJFormat(prob)
-expect_identical(digest::digest(inp), "8d0372b82939b2c571195d488fa70f85")
+expect_identical(digest::digest(inp), "accb193e8f09427be7f8ccd1787a9815")
 
 # no numvar
 prob <- makeProblem(
@@ -33,4 +33,4 @@ prob <- makeProblem(
   dimList = dimList
 )
 inp <- createJJFormat(prob)
-expect_identical(digest::digest(inp), "4ac42d469bf1d2f8321906af1bf617a1")
+expect_identical(digest::digest(inp), "dbba270f1edc3cedff83e97f82eeae49")
