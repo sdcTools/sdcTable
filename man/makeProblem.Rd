@@ -51,12 +51,13 @@ variables with respect to \code{data}}
 
 \item{weightInd}{if not \code{NULL}, a scalar numeric or character vector
 defining the column index or variable name holding costs within \code{data}
-that should be used as objective coefficients when solving the secondary
-cell suppression problem.}
+that should be used as objective coefficients when solving secondary
+cell suppression problems.}
 
 \item{sampWeightInd}{if not \code{NULL}, a scalar numeric or character vector
 defining the column index or variable name of a variable holding sampling
-weights within \code{data}}
+weights within \code{data}. In case a complete table is provided, this parameter is
+ignored.}
 }
 \value{
 a \linkS4class{sdcProblem} object

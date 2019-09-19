@@ -2,34 +2,90 @@
 % Please edit documentation in R/sdcProb2df.R
 \name{sdcProb2df}
 \alias{sdcProb2df}
-\title{sdcProb2df}
+\title{Transform a problem instance}
 \usage{
 sdcProb2df(obj, addDups = TRUE, addNumVars = FALSE,
   dimCodes = "both")
 }
 \arguments{
-\item{obj}{an object of class \code{\link{sdcProblem-class}} from \code{sdcTable}}
+\item{obj}{an \linkS4class{sdcProblem} object}
 
 \item{addDups}{(logical), if \code{TRUE}, duplicated cells are included in the output}
 
-\item{addNumVars}{(logical), if \code{TRUE}, numerical variables (if defined in \code{\link{makeProblem}}) will
-be included in the output.}
+\item{addNumVars}{(logical), if \code{TRUE}, numerical variables (if defined in
+\code{\link[=makeProblem]{makeProblem()}} will be included in the output.}
 
 \item{dimCodes}{(character) allows to specify in which coding the dimensional variables should be returned. Possible choices are:
 \itemize{
-\item "both": both original and internally used, standardized codes are included in the output
-\item "original": only original codes of dimensional variables are included in the output
-\item "default": only internally used, standardized codes are included in the output
+\item \code{"both"}: both original and internally used, standardized codes are included
+in the output
+\item \code{"original"}: only original codes of dimensional variables
+are included in the output
+\item \code{"default"}: only internally used, standardized codes
+are included in the output
 }}
 }
 \value{
-a \code{data.table} containing information about all cells of the given sdc problem
-instance is returned.
+a \code{data.table} containing information about all cells of the given problem
 }
 \description{
-returns a \code{data.frame} or \code{data.table} from an \code{\link{sdcProblem-class}}-object which contains the
-current state of the problem instance.
+\code{\link[=sdcProb2df]{sdcProb2df()}} returns a \code{data.table} given an \linkS4class{sdcProblem} input object.
 }
 \examples{
-## have a look at ?makeProblem
+# loading micro data
+data("microData1", package="sdcTable")
+# having a look at the data structure
+str(microData1)
+
+# we can observe that we have a micro data set consisting
+# of two spanning variables ('region' and 'gender') and one
+# numeric variable ('val')
+
+# specify structure of hierarchical variable 'region'
+# levels 'A' to 'D' sum up to a Total
+dim.region <- data.frame(
+ levels=c('@','@@','@@','@@','@@'),
+ codes=c('Total', 'A','B','C','D'),
+ stringsAsFactors=FALSE)
+
+# specify structure of hierarchical variable 'gender'
+# using create_node() and add_nodes() (see ?manage_hierarchies)
+dim.gender <- hier_create(root = "Total", nodes = c("male", "female"))
+hier_display(dim.gender)
+
+# create a named list with each element being a data-frame
+# containing information on one dimensional variable and
+# the names referring to variables in the input data
+dimList <- list(region = dim.region, gender = dim.gender)
+
+# third column containts a numeric variable
+numVarInd <- 3
+
+# no variables holding counts, numeric values, weights or sampling
+# weights are available in the input data
+# creating an problem instance using numeric indices
+p1 <- makeProblem(
+  data = microData1,
+  dimList = dimList,
+  numVarInd = 3 # third variable in `data`
+)
+
+# using variable names is also possible
+p2 <- makeProblem(
+  data = microData1,
+  dimList = dimList,
+  numVarInd = "val"
+)
+
+# what do we have?
+print(class(p1))
+
+# have a look at the data
+df1 <- sdcProb2df(p1, addDups = TRUE,
+  addNumVars = TRUE, dimCodes = "original")
+df2 <- sdcProb2df(p2, addDups=TRUE,
+  addNumVars = TRUE, dimCodes = "original")
+print(df1)
+
+identical(df1, df2)
 }

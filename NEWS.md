@@ -1,3 +1,11 @@
+# sdcTable 0.30
+- various fixes and improvements in `createJJFormat()`
+- ignore sampling weights in case the input in `makeProblem()` is a complete table
+and not microdata
+- `sdcProb2df():` if numeric variables are shown; display their weighted values (in case)
+sampling weights have been specified in `makeProblem`
+- [todo]: check dominance rules (unweighted variables are used)
+
 # sdcTable 0.29
 - change in `primarySuppression()`: for dominance rule it is now only possible to specify underlying variables by name (using argument `numVarName`) and no longer by index to avoid errors
 - fixes in primary suppression for dominance rules
