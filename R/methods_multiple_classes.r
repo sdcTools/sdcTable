@@ -233,14 +233,15 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
 
   # we have to aggregate if we are dealing with microdata
   if (g_is_microdata(x)) {
-    rawData <- datO[, lapply(.SD, sum, na.rm=TRUE), by=key(datO), .SDcols=setdiff(colnames(datO), key(datO))]
+    sdvars <- setdiff(colnames(datO), key(datO))
+    rawData <- datO[, lapply(.SD, sum, na.rm = TRUE), by = key(datO), .SDcols = sdvars]
   } else {
     rawData <- copy(datO)
   }
   ind.dimvars <- g_dimvar_ind(x)
   ind.freq <- g_freqvar_ind(x)
 
-  codes <- list(); length(codes) <- length(ind.dimvars)
+  codes <- vector("list", length = length(ind.dimvars))
   for (i in 1:length(codes)) {
     codes[[i]] <- rawData[[ind.dimvars[i]]]
     cDefault <- g_default_codes(dimObj[[i]])
@@ -264,9 +265,11 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
   ## if any combinations are missing (missing.codes), we have to set them to 0 later
   strID <- as.character(pasteStrVec(unlist(codes), length(codes)))
   exDims <- pasteStrVec(unlist(codes), length(codes))
-  possDims <- sort(pasteStrVec(as.character(expand(lapply(dimObj, function(x) {
-    g_minimal_default_codes(x)
-  }), vector=TRUE)), length(dimObj)))
+  possDims <- sort(pasteStrVec(as.character(expand(
+      lapply(dimObj, function(x) {
+        g_minimal_default_codes(x)
+      }), vector = TRUE
+    )), length(dimObj)))
   missing.codes <- setdiff(possDims, exDims)
 
   ## fill the table
@@ -289,32 +292,34 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
   setkeyv(rawData, colnames(rawData)[ind.dimvars])
 
   ## replace NAs in rawData by 0 (required for aggregation)
-  cols <- colnames(rawData)[(length(dimObj)+1):ncol(rawData)]
-  ind.na <- list(); length(ind.na) <- length(cols); k <- 1
+  cols <- colnames(rawData)[(length(dimObj) + 1):ncol(rawData)]
+  ind.na <- vector("list", length = length(cols))
+  k <- 1
   for (j in cols) {
     ind.na[[k]] <- which(is.na(rawData[[j]]))
     set(rawData, ind.na[[k]], j, 0)
-    k <- k+1
-  }; rm(k)
+    k <- k + 1
+  }
+  rm(k)
 
   ## merge minDat to fullDat
-  fullTabObj <- merge(fullTabObj, rawData, all.x=TRUE)
-
+  fullTabObj <- merge(fullTabObj, rawData, all.x = TRUE)
+  
   ## set missing combinations of lowest levels to 0
   ## problematic are all levels that should exist, but do not exist
   ## they are filled with 0 so that we can aggregate
   dim.vars <- colnames(fullTabObj)[ind.dimvars]
   # performance improvement
-  cmd <- paste0("fullTabObj[,strID:=paste0(",dim.vars[1])
-  if (length(dim.vars)>1) {
+  cmd <- paste0("fullTabObj[, strID := paste0(", dim.vars[1])
+  if (length(dim.vars) > 1) {
     for (i in 2:length(dim.vars)) {
-      cmd <- paste0(cmd, ", ",dim.vars[i])
+      cmd <- paste0(cmd, ", ", dim.vars[i])
     }
   }
-  cmd <- paste0(cmd,")]")
-  eval(parse(text=cmd))
+  cmd <- paste0(cmd, ")]")
+  eval(parse(text = cmd))
   strID <- fullTabObj$strID
-  fullTabObj[,strID:=NULL]
+  fullTabObj[, strID := NULL]
 
   if (length(missing.codes) > 0) {
     index <- which(strID%in%missing.codes)
@@ -346,12 +351,12 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
       cur.dim <- dimObj[[i]]@dims
       for (j in length(cur.dim):1) {
         cur.levs <-  cur.dim[[j]]
-        cmd <- paste0("out <- fullTabObj[",dim.vars[i],"%in% cur.levs[-1],]")
-        eval(parse(text=cmd))
-        if (length(dim.vars)==1) {
-          out <- out[,lapply(.SD,sum), .SDcols=col.names]
+        cmd <- paste0("out <- fullTabObj[", dim.vars[i], "%in% cur.levs[-1],]")
+        eval(parse(text = cmd))
+        if (length(dim.vars) == 1) {
+          out <- out[, lapply(.SD, sum), .SDcols = col.names]
         } else {
-          out <- out[,lapply(.SD,sum), .SDcols=col.names, by=key(out)]
+          out <- out[, lapply(.SD, sum), .SDcols = col.names, by = key(out)]
         }
         cmd <- paste0("row.ind <- fullTabObj[",dim.vars[i],"==cur.levs[1],id]")
         eval(parse(text=cmd))
@@ -361,29 +366,29 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
         }
       }
     }
-    if (!is.na(fullTabObj[1,ind.freq,with=FALSE])) {
+    if (!is.na(fullTabObj[1, ind.freq, with = FALSE])) {
       not.finished <- FALSE
     } else {
-      cat("nrMissings:",sum(is.na(fullTabObj$freq)),"\n")
+      message("nrMissings: ", sum(is.na(fullTabObj$freq)))
     }
   }
-  fullTabObj[,id:=NULL]
-
+  fullTabObj[, id := NULL]
+  
   nrV <- nrow(fullTabObj)
   f <- fullTabObj[[ind.freq]]
-  strID <- apply(fullTabObj[,dim.vars,with=FALSE],1,paste0, collapse="")
-
+  strID <- apply(fullTabObj[, dim.vars, with = FALSE], 1, paste0, collapse = "")
+  
   # performance improvement
-  cmd <- paste0("fullTabObj[,strID:=paste0(",dim.vars[1])
-  if (length(dim.vars)>1) {
+  cmd <- paste0("fullTabObj[,strID:=paste0(", dim.vars[1])
+  if (length(dim.vars) > 1) {
     for (i in 2:length(dim.vars)) {
-      cmd <- paste0(cmd, ", ",dim.vars[i])
+      cmd <- paste0(cmd, ", ", dim.vars[i])
     }
   }
-  cmd <- paste0(cmd,")]")
-  eval(parse(text=cmd))
+  cmd <- paste0(cmd, ")]")
+  eval(parse(text = cmd))
   strID <- fullTabObj$strID
-  fullTabObj[,strID:=NULL]
+  fullTabObj[, strID := NULL]
 
   w <- numVarsList <- NULL
   w.ind <- g_weightvar_ind(x)

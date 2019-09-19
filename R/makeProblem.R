@@ -36,11 +36,12 @@
 #' variables with respect to `data`
 #' @param weightInd if not `NULL`, a scalar numeric or character vector
 #' defining the column index or variable name holding costs within `data`
-#' that should be used as objective coefficients when solving the secondary
-#' cell suppression problem.
+#' that should be used as objective coefficients when solving secondary
+#' cell suppression problems.
 #' @param sampWeightInd if not `NULL`, a scalar numeric or character vector
 #' defining the column index or variable name of a variable holding sampling
-#' weights within `data`
+#' weights within `data`. In case a complete table is provided, this parameter is
+#' ignored.
 #'
 #' @return a [sdcProblem-class] object
 #' @rdname makeProblem
@@ -117,21 +118,24 @@ makeProblem <- function(data,
   # since it also recodes inputData eventually, it was renamed
   doPrep <- function(inputData, inputDims) {
     if (any(sapply(inputDims, class) != "dimVar")) {
-      stop("Error: all elements of 'inputDims' must be of class 'dimVar'!\n")
+      stop("Not all elements of `inputDims` are of class `dimVar`.", call. = FALSE)
     }
     if (class(inputData) != "dataObj") {
-      stop("Error: 'inputData' be of class 'dataObj'!\n")
+      stop("`inputData` is not of class `dataObj`.", call. = FALSE)
     }
 
+    ## check if all variable names listed in inputDims exist in the
+    ## specified dimensions of the input data
     varNames <- g_var_name(inputData)
     varNamesInDims <- sapply(1:length(dimList), function(x) {
       g_varname(dimList[[x]])
     })
-
+    
     if (!all(varNamesInDims %in% varNames)) {
-      stop("makeProblem::doPrep() mismatch in variable names in 'inputData' and 'inputDims'!\n")
+      e <- "Some dimensional variables are missing in the data."
+      stop(e, call. = FALSE)
     }
-
+    
     rawData <- g_raw_data(inputData)
 
     # variable names in dataObj
@@ -152,23 +156,22 @@ makeProblem <- function(data,
       })
 
       if (any(vNamesInDimList != varNames)) {
-        stop("Error: Matching failed!\n")
+        stop("Matching failed.", call. = FALSE)
       }
     }
 
     posIndex <- match(vNamesInData, vNamesInDimList)
     dimVarInd <- g_dimvar_ind(inputData)
     if (length(posIndex) < 1) {
-      stop("Error: matching of variable names failed. Please check 'inputData' and/or 'inputDims'!\n")
+      stop("Matching of variable names failed.", call. = FALSE)
+    } 
+    if (any(is.na(posIndex))) {
+      dimVarInd <- setdiff(dimVarInd, which(is.na(posIndex)))
+      vNamesInData <- vNamesInData[dimVarInd]
+      inputDims <- inputDims[na.omit(posIndex)]
     } else {
-      if (any(is.na(posIndex))) {
-        dimVarInd <- setdiff(dimVarInd, which(is.na(posIndex)))
-        vNamesInData <- vNamesInData[dimVarInd]
-        inputDims <- inputDims[na.omit(posIndex)]
-      } else {
-        # correct order
-        inputDims <- inputDims[posIndex]
-      }
+      # correct order
+      inputDims <- inputDims[posIndex]
     }
 
     ss <- list()
@@ -273,7 +276,11 @@ makeProblem <- function(data,
   } else {
     # we just need to check the names match
     if (!all(names(dimList) == names(data)[dimVarInd])) {
-      stop("Names of dimensional variables specified in 'dimList' do not match with variables names in 'data' specified in 'dimVarInd'!\n")
+      e <- c(
+        "Variable names specified in `dimList` do not match with variable",
+        "names in `data` as specified in `dimVarInd`."
+      )
+      stop(paste(e, collapse = " "), call. = FALSE)
     }
   }
 
@@ -297,18 +304,7 @@ makeProblem <- function(data,
       sampWeightInd = .convert_to_ind(cn, v = sampWeightInd)
     )
   )
-
-  ## check if all variable names listed in inputDims exist in the
-  ## specified dimensions of the input data
-  varNames <- g_var_name(inputData)
-  varNamesInDims <- sapply(1:length(dimList), function(x) {
-    g_varname(dimList[[x]])
-  })
-
-  if (!all(varNamesInDims %in% varNames)) {
-    stop("makeProblem:: mismatch in variable names in 'inputData' and 'inputDims'!\n")
-  }
-
+  
   ## calculate the dimInfoObj and eventually recode inputData
   ## (eventually recode rawData slot of inputData if "rawData" contains "wrong" dups)
   out <- doPrep(inputData, dimList)

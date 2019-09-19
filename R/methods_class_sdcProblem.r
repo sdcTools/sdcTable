@@ -276,9 +276,9 @@ setMethod("g_df", signature="sdcProblem", definition=function(object, addDups=FA
   dt <- data.table(
     strID=g_strID(pI),
     freq=g_freq(pI),
-    sdcStatus=g_sdcStatus(pI)
-  )
-  if (addNumVars & !is.null(pI@numVars) ) {
+    sdcStatus=g_sdcStatus(pI))
+  
+  if (addNumVars & !is.null(pI@numVars)) {
     dt <- cbind(dt, as.data.table(pI@numVars))
   }
   dI <- g_dimInfo(object)
