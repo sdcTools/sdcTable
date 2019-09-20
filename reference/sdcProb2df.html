@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>sdcProb2df — sdcProb2df • sdcTable</title>
+<title>Transform a problem instance — sdcProb2df • sdcTable</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,8 @@
 
 
 
-<meta property="og:title" content="sdcProb2df — sdcProb2df" />
-<meta property="og:description" content="returns a data.frame or data.table from an sdcProblem-class-object which contains the
-current state of the problem instance." />
+<meta property="og:title" content="Transform a problem instance — sdcProb2df" />
+<meta property="og:description" content="sdcProb2df() returns a data.table given an sdcProblem input object." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -70,7 +69,7 @@ current state of the problem instance." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.29</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.30</span>
       </span>
     </div>
 
@@ -112,14 +111,13 @@ current state of the problem instance." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>sdcProb2df</h1>
+    <h1>Transform a problem instance</h1>
     <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/sdcProb2df.R'><code>R/sdcProb2df.R</code></a></small>
     <div class="hidden name"><code>sdcProb2df.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>returns a <code>data.frame</code> or <code>data.table</code> from an <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code>-object which contains the
-current state of the problem instance.</p>
+    <p><code>sdcProb2df()</code> returns a <code>data.table</code> given an <a href='sdcProblem-class.html'>sdcProblem</a> input object.</p>
     </div>
 
     <pre class="usage"><span class='fu'>sdcProb2df</span>(<span class='no'>obj</span>, <span class='kw'>addDups</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>addNumVars</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
@@ -130,7 +128,7 @@ current state of the problem instance.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>obj</th>
-      <td><p>an object of class <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> from <code>sdcTable</code></p></td>
+      <td><p>an <a href='sdcProblem-class.html'>sdcProblem</a> object</p></td>
     </tr>
     <tr>
       <th>addDups</th>
@@ -138,27 +136,101 @@ current state of the problem instance.</p>
     </tr>
     <tr>
       <th>addNumVars</th>
-      <td><p>(logical), if <code>TRUE</code>, numerical variables (if defined in <code><a href='makeProblem.html'>makeProblem</a></code>) will
-be included in the output.</p></td>
+      <td><p>(logical), if <code>TRUE</code>, numerical variables (if defined in
+<code><a href='makeProblem.html'>makeProblem()</a></code> will be included in the output.</p></td>
     </tr>
     <tr>
       <th>dimCodes</th>
       <td><p>(character) allows to specify in which coding the dimensional variables should be returned. Possible choices are:</p><ul>
-<li><p>"both": both original and internally used, standardized codes are included in the output</p></li>
-<li><p>"original": only original codes of dimensional variables are included in the output</p></li>
-<li><p>"default": only internally used, standardized codes are included in the output</p></li>
+<li><p><code>"both"</code>: both original and internally used, standardized codes are included
+in the output</p></li>
+<li><p><code>"original"</code>: only original codes of dimensional variables
+are included in the output</p></li>
+<li><p><code>"default"</code>: only internally used, standardized codes
+are included in the output</p></li>
 </ul></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a <code>data.table</code> containing information about all cells of the given sdc problem
-instance is returned.</p>
+    <p>a <code>data.table</code> containing information about all cells of the given problem</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>## have a look at ?makeProblem
-</div></pre>
+    <pre class="examples"><div class='input'><span class='co'># loading micro data</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>"microData1"</span>, <span class='kw'>package</span><span class='kw'>=</span><span class='st'>"sdcTable"</span>)
+<span class='co'># having a look at the data structure</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>microData1</span>)</div><div class='output co'>#&gt; 'data.frame':	100 obs. of  3 variables:
+#&gt;  $ region: chr  "C" "C" "A" "A" ...
+#&gt;  $ gender: chr  "male" "male" "male" "male" ...
+#&gt;  $ val   : num  9 11 10 11 18 10 6 9 5 12 ...</div><div class='input'>
+<span class='co'># we can observe that we have a micro data set consisting</span>
+<span class='co'># of two spanning variables ('region' and 'gender') and one</span>
+<span class='co'># numeric variable ('val')</span>
+
+<span class='co'># specify structure of hierarchical variable 'region'</span>
+<span class='co'># levels 'A' to 'D' sum up to a Total</span>
+<span class='no'>dim.region</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(
+ <span class='kw'>levels</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>,<span class='st'>'@@'</span>),
+ <span class='kw'>codes</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'Total'</span>, <span class='st'>'A'</span>,<span class='st'>'B'</span>,<span class='st'>'C'</span>,<span class='st'>'D'</span>),
+ <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
+
+<span class='co'># specify structure of hierarchical variable 'gender'</span>
+<span class='co'># using create_node() and add_nodes() (see ?manage_hierarchies)</span>
+<span class='no'>dim.gender</span> <span class='kw'>&lt;-</span> <span class='fu'>hier_create</span>(<span class='kw'>root</span> <span class='kw'>=</span> <span class='st'>"Total"</span>, <span class='kw'>nodes</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"male"</span>, <span class='st'>"female"</span>))
+<span class='fu'>hier_display</span>(<span class='no'>dim.gender</span>)</div><div class='output co'>#&gt; Total
+#&gt; ├─female
+#&gt; └─male</div><div class='input'>
+<span class='co'># create a named list with each element being a data-frame</span>
+<span class='co'># containing information on one dimensional variable and</span>
+<span class='co'># the names referring to variables in the input data</span>
+<span class='no'>dimList</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span> <span class='kw'>=</span> <span class='no'>dim.region</span>, <span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>dim.gender</span>)
+
+<span class='co'># third column containts a numeric variable</span>
+<span class='no'>numVarInd</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
+
+<span class='co'># no variables holding counts, numeric values, weights or sampling</span>
+<span class='co'># weights are available in the input data</span>
+<span class='co'># creating an problem instance using numeric indices</span>
+<span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dimList</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>3</span> <span class='co'># third variable in `data`</span>
+)
+
+<span class='co'># using variable names is also possible</span>
+<span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
+  <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
+  <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dimList</span>,
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='st'>"val"</span>
+)
+
+<span class='co'># what do we have?</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span>(<span class='no'>p1</span>))</div><div class='output co'>#&gt; [1] "sdcProblem"
+#&gt; attr(,"package")
+#&gt; [1] "sdcTable"</div><div class='input'>
+<span class='co'># have a look at the data</span>
+<span class='no'>df1</span> <span class='kw'>&lt;-</span> <span class='fu'>sdcProb2df</span>(<span class='no'>p1</span>, <span class='kw'>addDups</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>addNumVars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>dimCodes</span> <span class='kw'>=</span> <span class='st'>"original"</span>)
+<span class='no'>df2</span> <span class='kw'>&lt;-</span> <span class='fu'>sdcProb2df</span>(<span class='no'>p2</span>, <span class='kw'>addDups</span><span class='kw'>=</span><span class='fl'>TRUE</span>,
+  <span class='kw'>addNumVars</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>dimCodes</span> <span class='kw'>=</span> <span class='st'>"original"</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>df1</span>)</div><div class='output co'>#&gt;     strID freq sdcStatus  val region gender
+#&gt;  1:  0000  100         s 1284  Total  Total
+#&gt;  2:  0001   45         s  482  Total female
+#&gt;  3:  0002   55         s  802  Total   male
+#&gt;  4:  0100   20         s  198      A  Total
+#&gt;  5:  0101    2         s   20      A female
+#&gt;  6:  0102   18         s  178      A   male
+#&gt;  7:  0200   33         s  344      B  Total
+#&gt;  8:  0201   19         s  204      B female
+#&gt;  9:  0202   14         s  140      B   male
+#&gt; 10:  0300   22         s  224      C  Total
+#&gt; 11:  0301   10         s  106      C female
+#&gt; 12:  0302   12         s  118      C   male
+#&gt; 13:  0400   25         s  518      D  Total
+#&gt; 14:  0401   14         s  152      D female
+#&gt; 15:  0402   11         s  366      D   male</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/identical.html'>identical</a></span>(<span class='no'>df1</span>, <span class='no'>df2</span>)</div><div class='output co'>#&gt; [1] TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -178,7 +250,7 @@ instance is returned.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
 </div>
 
       </footer>
