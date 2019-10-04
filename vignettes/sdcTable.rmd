@@ -335,7 +335,7 @@ anonymization state. The possible codes are listed below:
 
 - `"u"`: cell is primary suppressed and needs to be protected
 - `"x"`: cell has been secondary suppressed
-- `"x"`: cell can be published
+- `"s"`: cell can be published
 - `"z"`: cell must not be suppressed
 
 The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of `s` to `u`. The easiest way is to use function `primarySuppression()` directly:
