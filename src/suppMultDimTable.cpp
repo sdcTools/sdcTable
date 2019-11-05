@@ -33,7 +33,7 @@ IntegerVector sdcstatus_to_num(CharacterVector sdc_status) {
 
 // [[Rcpp::export]]
 List greedyMultDimSuppression(DataFrame dat, List indices, List subIndices, IntegerVector dimVars, bool verbose) {
-  bool debug = true;
+  bool debug = false;
   Function cpp_print("print");
 
   /* start protection of data() */
@@ -41,7 +41,7 @@ List greedyMultDimSuppression(DataFrame dat, List indices, List subIndices, Inte
   if (verbose == true) {
     Rcout << "We have to protect an " << nr_dims << " dimensional dataset." << std::endl;
   }
-  
+
   /* extracting input data from list */
   IntegerVector freq = dat["freq"];
   NumericVector weights = dat["weights"];
@@ -239,7 +239,7 @@ List greedyMultDimSuppression(DataFrame dat, List indices, List subIndices, Inte
                       Named("cur_id") = cur_id,
                       Named("cur_freq") = cur_freq,
                       Named("cur_weights") = cur_weights,
-                      
+
                       Named("cur_sub_ids") = cur_sub_ids,
                       Named("is_candidate") = is_candidate,
                       Named("cur_sdcstatus") = cur_sdcstatus,
@@ -358,7 +358,7 @@ List greedyMultDimSuppression(DataFrame dat, List indices, List subIndices, Inte
   }
   IntegerVector total_new_suppsv(1);
   total_new_suppsv[0] = total_new_supps;
-  
+
   return Rcpp::List::create(
     Rcpp::Named("id") = id,
     Rcpp::Named("freq") = freq,
