@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>protect two <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects that have common cells — protectLinkedTables • sdcTable</title>
+<title>Protect two tables with common cells — protectLinkedTables • sdcTable</title>
 
 
 <!-- jquery -->
@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/all.min.css" integrity="sha256-PbSmjxuVAzJ6FPvNYsrXygfGhNJYyZ2GktDbkMBqQZg=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="protect two <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects that have common cells — protectLinkedTables" />
-<meta property="og:description" content="protectLinkedTables can be used to protect tables, that have
+<meta property="og:title" content="Protect two tables with common cells — protectLinkedTables" />
+<meta property="og:description" content="protectLinkedTables() can be used to protect tables that have
 common cells. It is of course required that after the anonymization process
 has finished, all common cells have the same anonymization state in both
 tables." />
@@ -114,13 +114,13 @@ tables." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>protect two <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects that have common cells</h1>
+    <h1>Protect two tables with common cells</h1>
     <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/protectLinkedTables.R'><code>R/protectLinkedTables.R</code></a></small>
     <div class="hidden name"><code>protectLinkedTables.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>protectLinkedTables</code> can be used to protect tables, that have
+    <p><code>protectLinkedTables()</code> can be used to protect tables that have
 common cells. It is of course required that after the anonymization process
 has finished, all common cells have the same anonymization state in both
 tables.</p>
@@ -133,48 +133,60 @@ tables.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>objectA</th>
-      <td><p>a <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> object</p></td>
+      <td><p>a <a href='sdcProblem-class.html'>sdcProblem</a> object</p></td>
     </tr>
     <tr>
       <th>objectB</th>
-      <td><p>a <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> object</p></td>
+      <td><p>a <a href='sdcProblem-class.html'>sdcProblem</a> object</p></td>
     </tr>
     <tr>
       <th>commonCells</th>
-      <td><p>a list object defining common cells in <code>objectA</code> and <code>objectB</code>. For each variable that has one or more common codes in both tables, a list element needs to be specified.</p><ul>
-<li><p>List-elements of length 3: Variable has exact same levels and structure in both tables</p><ul>
-<li><p><code>first element</code>: character vector of length 1 specifying the variable name in argument <code>objectA</code></p></li>
-<li><p><code>second element</code>: character vector of length 1 specifying the variable name in argument <code>objectB</code></p></li>
-<li><p><code>third element</code>: character vector of length 1 being with keyword <code>ALL</code></p></li>
+      <td><p>a list object defining common cells in
+<code>objectA</code> and <code>objectB</code>. For each variable that has one or more common
+codes in both tables, a list element needs to be specified.</p><ul>
+<li><p>List-elements of length 3: Variable has exact same levels and structure
+in both input tables</p><ul>
+<li><p><code>first element</code>: scalar character vector specifying the variable
+name in argument <code>objectA</code></p></li>
+<li><p><code>second element</code>: scalar character vector specifying the variable
+name in argument <code>objectB</code></p></li>
+<li><p><code>third element</code>: scalar character vector being with keyword <code>"ALL"</code></p></li>
 </ul></li>
-<li><p>List-elements of length 4: Variable has different codes and levels in tables <code>objectA</code> and <code>objectB</code></p><ul>
-<li><p><code>first element</code>: character vector of length 1 specifying the variable name in argument <code>objectA</code></p></li>
-<li><p><code>second element</code>: character vector of length 1 specifying the variable name in argument <code>objectB</code></p></li>
+<li><p>List-elements of length <code>4</code>: Variable has different codes and levels
+in tables <code>objectA</code> and <code>objectB</code></p><ul>
+<li><p><code>first element</code>: scalar character vector specifying the variable
+name in argument <code>objectA</code></p></li>
+<li><p><code>second element</code>: scalar character vector specifying the variable
+name in argument <code>objectB</code></p></li>
 <li><p><code>third element</code>: character vector defining codes within <code>objectA</code></p></li>
-<li><p><code>fourth element</code>: character vector with length that equals the length of the third list-element. The vector defines codes of the variable in <code>objectB</code> that match the codes given in the third list-element for <code>objectA</code>.</p></li>
+<li><p><code>fourth element</code>: character vector with length that equals the length
+of the third list-element. This vector defines codes of the dimensional
+variable in <code>objectB</code> that match the codes given in the third list-element
+for <code>objectA</code>.</p></li>
 </ul></li>
 </ul></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>a character vector of length 1 specifying the algorithm that should be used to protect the primary sensitive table cells. Allowed values are:</p><ul>
-<li><p><code>HITAS</code>:</p></li>
-<li><p><code>SIMPLEHEURISTIC</code>:</p></li>
-<li><p><code>OPT</code>:</p></li>
-</ul></td>
+      <td><p>scalar character vector defining the algorithm
+that should be used to protect the primary sensitive table cells. The possible
+values are <code>"HITAS"</code>, <code>"SIMPLEHEURISTIC"</code> and <code>"OPT"</code>; For details please see
+<code><a href='protectTable.html'>protectTable()</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional arguments to control the secondary cell suppression algorithm. For details, see <code><a href='protectTable.html'>protectTable</a></code>.</p></td>
+      <td><p>additional arguments to control the secondary cell suppression
+algorithm. For details, see <code><a href='protectTable.html'>protectTable()</a></code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list of length 2 with each list-element being an <code><a href='safeObj-class.html'>safeObj-class</a></code> object</p>
+    <p>a list of length <code>2</code> with each list-element being an
+<a href='safeObj-class.html'>safeObj</a> object</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='protectTable.html'>protectTable</a></code></p></div>
+    <div class='dont-index'><p><code><a href='protectTable.html'>protectTable()</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
@@ -210,20 +222,19 @@ tables.</p>
 <span class='no'>dl1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>d_gender</span>, <span class='kw'>ecoOld</span> <span class='kw'>=</span> <span class='no'>d_eco1</span>)
 <span class='no'>dl2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>region</span> <span class='kw'>=</span> <span class='no'>d_region</span>, <span class='kw'>gender</span> <span class='kw'>=</span> <span class='no'>d_gender</span>, <span class='kw'>ecoNew</span> <span class='kw'>=</span> <span class='no'>d_eco2</span>)
 
-<span class='co'># creating input objects for further processing. For details have a look at</span>
-<span class='co'># \code{\link{makeProblem}}.</span>
+<span class='co'># creating input objects for further processing. </span>
+<span class='co'># For details, see ?makeProblem.</span>
 <span class='no'>p1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
   <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData1</span>,
   <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dl1</span>,
   <span class='kw'>dimVarInd</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>2</span>,
-  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>3</span>
-)
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>3</span>)
+
 <span class='no'>p2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='makeProblem.html'>makeProblem</a></span>(
   <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>microData2</span>,
   <span class='kw'>dimList</span> <span class='kw'>=</span> <span class='no'>dl2</span>,
   <span class='kw'>dimVarInd</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>,
-  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>4</span>
-)
+  <span class='kw'>numVarInd</span> <span class='kw'>=</span> <span class='fl'>4</span>)
 
 <span class='co'># the cell specified by gender == "Tot" and ecoOld == "A"</span>
 <span class='co'># is one of the common cells! -&gt; we mark it as primary suppression</span>
@@ -232,8 +243,7 @@ tables.</p>
   <span class='kw'>characteristics</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Tot"</span>, <span class='st'>"A"</span>),
   <span class='kw'>varNames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"gender"</span>, <span class='st'>"ecoOld"</span>),
   <span class='kw'>rule</span> <span class='kw'>=</span> <span class='st'>"u"</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 
 <span class='co'># the cell specified by region == "Tot" and gender == "f" and ecoNew == "C"</span>
 <span class='co'># is one of the common cells! -&gt; we mark it as primary suppression</span>
@@ -242,8 +252,7 @@ tables.</p>
   <span class='kw'>characteristics</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Tot"</span>, <span class='st'>"f"</span>, <span class='st'>"C"</span>),
   <span class='kw'>varNames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"region"</span>, <span class='st'>"gender"</span>, <span class='st'>"ecoNew"</span>),
   <span class='kw'>rule</span> <span class='kw'>=</span> <span class='st'>"u"</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 
 <span class='co'># specifying input to define common cells</span>
 <span class='no'>common_cells</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
@@ -252,17 +261,20 @@ tables.</p>
 <span class='no'>common_cells</span>$<span class='no'>v.gender</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
 <span class='no'>common_cells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>"gender"</span> <span class='co'># variable name in "p1"</span>
 <span class='no'>common_cells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>"gender"</span> <span class='co'># variable name in "p2"</span>
+
 <span class='co'># "gender" has equal characteristics on both datasets -&gt; keyword "ALL"</span>
 <span class='no'>common_cells</span>$<span class='no'>v.gender</span><span class='kw'>[[</span><span class='fl'>3</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ALL"</span>
 
 <span class='co'># variables: "ecoOld" and "ecoNew"</span>
 <span class='no'>common_cells</span>$<span class='no'>v.eco</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
-<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ecoOld"</span>   <span class='co'># variable name in "p1"</span>
-<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ecoNew"</span>   <span class='co'># variable name in "p2"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ecoOld"</span> <span class='co'># variable name in "p1"</span>
+<span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='st'>"ecoNew"</span> <span class='co'># variable name in "p2"</span>
 
-<span class='co'># vector of common characteristics: "A" and "B" in variable "ecoOld" in 'p1'</span>
+<span class='co'># vector of common characteristics: </span>
+<span class='co'># "A" and "B" in variable "ecoOld" in "p1"</span>
 <span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>3</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"A"</span>, <span class='st'>"B"</span>)
-<span class='co'># correspond to characteristics "C" and "D" in variable "ecoNew" in "p2"</span>
+
+<span class='co'># correspond to codes "C" and "D" in variable "ecoNew" in "p2"</span>
 <span class='no'>common_cells</span>$<span class='no'>v.eco</span><span class='kw'>[[</span><span class='fl'>4</span>]] <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"C"</span>, <span class='st'>"D"</span>)
 
 <span class='co'># protect the linked data</span>
@@ -271,14 +283,13 @@ tables.</p>
   <span class='kw'>objectB</span> <span class='kw'>=</span> <span class='no'>p2</span>,
   <span class='kw'>commonCells</span> <span class='kw'>=</span> <span class='no'>common_cells</span>,
   <span class='kw'>method</span> <span class='kw'>=</span> <span class='st'>"HITAS"</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># having a look at the results</span>
-<span class='no'>result.tab1</span> <span class='kw'>&lt;-</span> <span class='no'>result</span><span class='kw'>[[</span><span class='fl'>1</span>]]
-<span class='no'>result.tab2</span> <span class='kw'>&lt;-</span> <span class='no'>result</span><span class='kw'>[[</span><span class='fl'>2</span>]]
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>result.tab1</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>result.tab2</span>)
+<span class='no'>result_tab1</span> <span class='kw'>&lt;-</span> <span class='no'>result</span><span class='kw'>[[</span><span class='fl'>1</span>]]
+<span class='no'>result_tab2</span> <span class='kw'>&lt;-</span> <span class='no'>result</span><span class='kw'>[[</span><span class='fl'>2</span>]]
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>result_tab1</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span>(<span class='no'>result_tab2</span>)
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
