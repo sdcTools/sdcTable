@@ -2,44 +2,57 @@
 % Please edit documentation in R/protectLinkedTables.R
 \name{protectLinkedTables}
 \alias{protectLinkedTables}
-\title{protect two \code{\link{sdcProblem-class}} objects that have common cells}
+\title{Protect two tables with common cells}
 \usage{
 protectLinkedTables(objectA, objectB, commonCells, method, ...)
 }
 \arguments{
-\item{objectA}{a \code{\link{sdcProblem-class}} object}
+\item{objectA}{a \linkS4class{sdcProblem} object}
 
-\item{objectB}{a \code{\link{sdcProblem-class}} object}
+\item{objectB}{a \linkS4class{sdcProblem} object}
 
-\item{commonCells}{a list object defining common cells in \code{objectA} and \code{objectB}. For each variable that has one or more common codes in both tables, a list element needs to be specified.
+\item{commonCells}{a list object defining common cells in
+\code{objectA} and \code{objectB}. For each variable that has one or more common
+codes in both tables, a list element needs to be specified.
 \itemize{
-\item List-elements of length 3: Variable has exact same levels and structure in both tables
+\item List-elements of length 3: Variable has exact same levels and structure
+in both input tables
 \itemize{
-\item \code{first element}: character vector of length 1 specifying the variable name in argument \code{objectA}
-\item \code{second element}: character vector of length 1 specifying the variable name in argument \code{objectB}
-\item \code{third element}: character vector of length 1 being with keyword \code{ALL} }
-\item List-elements of length 4: Variable has different codes and levels in tables \code{objectA} and \code{objectB}
+\item \verb{first element}: scalar character vector specifying the variable
+name in argument \code{objectA}
+\item \verb{second element}: scalar character vector specifying the variable
+name in argument \code{objectB}
+\item \verb{third element}: scalar character vector being with keyword \code{"ALL"}
+}
+\item List-elements of length \code{4}: Variable has different codes and levels
+in tables \code{objectA} and \code{objectB}
 \itemize{
-\item \code{first element}: character vector of length 1 specifying the variable name in argument \code{objectA}
-\item \code{second element}: character vector of length 1 specifying the variable name in argument \code{objectB}
-\item \code{third element}: character vector defining codes within \code{objectA}
-\item \code{fourth element}: character vector with length that equals the length of the third list-element. The vector defines codes of the variable in \code{objectB} that match the codes given in the third list-element for \code{objectA}.
+\item \verb{first element}: scalar character vector specifying the variable
+name in argument \code{objectA}
+\item \verb{second element}: scalar character vector specifying the variable
+name in argument \code{objectB}
+\item \verb{third element}: character vector defining codes within \code{objectA}
+\item \verb{fourth element}: character vector with length that equals the length
+of the third list-element. This vector defines codes of the dimensional
+variable in \code{objectB} that match the codes given in the third list-element
+for \code{objectA}.
 }
 }}
 
-\item{method}{a character vector of length 1 specifying the algorithm that should be used to protect the primary sensitive table cells. Allowed values are:
-\itemize{
-\item \code{HITAS}:
-\item \code{SIMPLEHEURISTIC}:
-\item \code{OPT}: }}
+\item{method}{scalar character vector defining the algorithm
+that should be used to protect the primary sensitive table cells. The possible
+values are \code{"HITAS"}, \code{"SIMPLEHEURISTIC"} and \code{"OPT"}; For details please see
+\code{\link[=protectTable]{protectTable()}}.}
 
-\item{...}{additional arguments to control the secondary cell suppression algorithm. For details, see \code{\link{protectTable}}.}
+\item{...}{additional arguments to control the secondary cell suppression
+algorithm. For details, see \code{\link[=protectTable]{protectTable()}}.}
 }
 \value{
-a list of length 2 with each list-element being an \code{\link{safeObj-class}} object
+a list of length \code{2} with each list-element being an
+\linkS4class{safeObj} object
 }
 \description{
-\code{\link{protectLinkedTables}} can be used to protect tables, that have
+\code{\link[=protectLinkedTables]{protectLinkedTables()}} can be used to protect tables that have
 common cells. It is of course required that after the anonymization process
 has finished, all common cells have the same anonymization state in both
 tables.
@@ -78,20 +91,19 @@ d_eco2 <- hier_add(d_eco2, root = "D", nodes = c("Da", "Db", "Dc"))
 dl1 <- list(gender = d_gender, ecoOld = d_eco1)
 dl2 <- list(region = d_region, gender = d_gender, ecoNew = d_eco2)
 
-# creating input objects for further processing. For details have a look at
-# \\code{\\link{makeProblem}}.
+# creating input objects for further processing. 
+# For details, see ?makeProblem.
 p1 <- makeProblem(
   data = microData1, 
   dimList = dl1, 
   dimVarInd = 1:2,
-  numVarInd = 3
-)
+  numVarInd = 3)
+  
 p2 <- makeProblem(
   data = microData2, 
   dimList = dl2, 
   dimVarInd = 1:3,
-  numVarInd = 4
-)
+  numVarInd = 4)
 
 # the cell specified by gender == "Tot" and ecoOld == "A"
 # is one of the common cells! -> we mark it as primary suppression
@@ -100,8 +112,7 @@ p1 <- changeCellStatus(
   characteristics = c("Tot", "A"),
   varNames = c("gender", "ecoOld"), 
   rule = "u", 
-  verbose = FALSE
-)
+  verbose = FALSE)
 
 # the cell specified by region == "Tot" and gender == "f" and ecoNew == "C"
 # is one of the common cells! -> we mark it as primary suppression
@@ -110,8 +121,7 @@ p2 <- changeCellStatus(
   characteristics = c("Tot", "f", "C"),
   varNames = c("region", "gender", "ecoNew"), 
   rule = "u", 
-  verbose = FALSE
-)
+  verbose = FALSE)
 
 # specifying input to define common cells
 common_cells <- list()
@@ -120,17 +130,20 @@ common_cells <- list()
 common_cells$v.gender <- list()
 common_cells$v.gender[[1]] <- "gender" # variable name in "p1"
 common_cells$v.gender[[2]] <- "gender" # variable name in "p2"
+
 # "gender" has equal characteristics on both datasets -> keyword "ALL"
 common_cells$v.gender[[3]] <- "ALL"
 
 # variables: "ecoOld" and "ecoNew"
 common_cells$v.eco <- list()
-common_cells$v.eco[[1]] <- "ecoOld"   # variable name in "p1"
-common_cells$v.eco[[2]] <- "ecoNew"   # variable name in "p2"
+common_cells$v.eco[[1]] <- "ecoOld" # variable name in "p1"
+common_cells$v.eco[[2]] <- "ecoNew" # variable name in "p2"
 
-# vector of common characteristics: "A" and "B" in variable "ecoOld" in 'p1'
+# vector of common characteristics: 
+# "A" and "B" in variable "ecoOld" in "p1"
 common_cells$v.eco[[3]] <- c("A", "B")
-# correspond to characteristics "C" and "D" in variable "ecoNew" in "p2"
+
+# correspond to codes "C" and "D" in variable "ecoNew" in "p2"
 common_cells$v.eco[[4]] <- c("C", "D")
 
 # protect the linked data
@@ -139,19 +152,18 @@ result <- protectLinkedTables(
   objectB = p2, 
   commonCells = common_cells, 
   method = "HITAS", 
-  verbose = TRUE
-)
+  verbose = TRUE)
 
 # having a look at the results
-result.tab1 <- result[[1]]
-result.tab2 <- result[[2]]
-summary(result.tab1)
-summary(result.tab2)
+result_tab1 <- result[[1]]
+result_tab2 <- result[[2]]
+summary(result_tab1)
+summary(result_tab2)
 }
 
 }
 \seealso{
-\code{\link{protectTable}}
+\code{\link[=protectTable]{protectTable()}}
 }
 \author{
 Bernhard Meindl \email{bernhard.meindl@statistik.gv.at}
