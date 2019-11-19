@@ -15,7 +15,7 @@ column \code{strID}. If this argument is \code{NULL}, the correspondig units are
 for all cells in the table.}
 }
 \value{
-a named \code{list where names correspond to the given }ids` and the values
+a named \verb{list where names correspond to the given }ids` and the values
 to the row numbers within the raw input data.
 }
 \description{

@@ -9,8 +9,7 @@
 \usage{
 set.problemInstance(object, type, input)
 
-\S4method{set.problemInstance}{problemInstance,character,list}(object,
-  type, input)
+\S4method{set.problemInstance}{problemInstance,character,list}(object, type, input)
 }
 \arguments{
 \item{object}{an object of class \code{problemInstance}}

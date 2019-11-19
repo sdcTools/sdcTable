@@ -4,8 +4,7 @@
 \alias{writeJJFormat}
 \title{Write a problem in jj-format to a file}
 \usage{
-writeJJFormat(x, tabvar = "freqs", path = "out.jj",
-  overwrite = FALSE)
+writeJJFormat(x, tabvar = "freqs", path = "out.jj", overwrite = FALSE)
 }
 \arguments{
 \item{x}{an input produced by \code{\link[=createJJFormat]{createJJFormat()}}}

@@ -39,14 +39,14 @@ when applying the nk-dominance rule. Parameter \code{n} is set to \code{85} by d
 \item \code{numVarName}: character scalar specifying the name
 of the numerical variable that should be used to identify cells that are
 dominated by dominance rules (\code{p-rule}, \code{pq-rule} or \code{nk-rule}). This setting
-is mandatory in package versions \code{>= 0.29}
+is mandatory in package versions \verb{>= 0.29}
 If \code{type} is either 'nk', 'p' or 'pq', it is mandatory to
 specify either \code{numVarInd} or \code{numVarName}.
 \item \code{numVarInd}: same as \code{numVarName} but a scalar numeric
 specifying the index of the variable is expected. If both \code{numVarName}
 and \code{numVarInd} are specified, \code{numVarName} is used. The index refers to the
 index of the specified numvars in \code{\link[=makeProblem]{makeProblem()}}. This argument is no longer
-respected in versions \code{>= 0.29} where \code{numVarName} must be used.
+respected in versions \verb{>= 0.29} where \code{numVarName} must be used.
 }}
 }
 \value{
@@ -61,7 +61,7 @@ suppress sensitive table cells using the frequency-rule, the nk-dominance
 rule and the p-percent rule.
 }
 \details{
-since versions \code{>= 0.29} it is no longer possible to specify underlying
+since versions \verb{>= 0.29} it is no longer possible to specify underlying
 variables for dominance rules (\code{"p"}, \code{"pq"} or \code{"nk"}) by index; these variables must
 be set by name using argument \code{numVarName}.
 }

@@ -4,10 +4,21 @@
 \alias{createArgusInput}
 \title{Create input files for tauArgus}
 \usage{
-createArgusInput(obj, typ = "microdata", verbose = FALSE,
-  path = getwd(), solver = "FREE", method, primSuppRules = NULL,
-  responsevar = NULL, shadowvar = NULL, costvar = NULL,
-  requestvar = NULL, holdingvar = NULL, ...)
+createArgusInput(
+  obj,
+  typ = "microdata",
+  verbose = FALSE,
+  path = getwd(),
+  solver = "FREE",
+  method,
+  primSuppRules = NULL,
+  responsevar = NULL,
+  shadowvar = NULL,
+  costvar = NULL,
+  requestvar = NULL,
+  holdingvar = NULL,
+  ...
+)
 }
 \arguments{
 \item{obj}{an object of class \linkS4class{sdcProblem} from \code{sdcTable}}

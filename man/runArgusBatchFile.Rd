@@ -4,9 +4,13 @@
 \alias{runArgusBatchFile}
 \title{runArgusBatchFile}
 \usage{
-runArgusBatchFile(obj = NULL, batchF,
-  exe = "C:\\\\Tau\\\\TauArgus.exe", batchDataDir = NULL,
-  verbose = FALSE)
+runArgusBatchFile(
+  obj = NULL,
+  batchF,
+  exe = "C:\\\\Tau\\\\TauArgus.exe",
+  batchDataDir = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{obj}{\code{NULL} or an object of class \code{\link{sdcProblem-class}} that was used to generate the batchfile for argus. If not \code{NULL},

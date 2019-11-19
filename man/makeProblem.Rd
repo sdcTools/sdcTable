@@ -4,8 +4,15 @@
 \alias{makeProblem}
 \title{Create a problem instance}
 \usage{
-makeProblem(data, dimList, dimVarInd = NULL, freqVarInd = NULL,
-  numVarInd = NULL, weightInd = NULL, sampWeightInd = NULL)
+makeProblem(
+  data,
+  dimList,
+  dimVarInd = NULL,
+  freqVarInd = NULL,
+  numVarInd = NULL,
+  weightInd = NULL,
+  sampWeightInd = NULL
+)
 }
 \arguments{
 \item{data}{a data frame featuring at least one column for each desired
@@ -18,21 +25,21 @@ hold information on sampling weights.}
 input \code{data}. If the list is not named, it is required to specify argument
 \code{dimVarInd}. Each list element can be one of:
 \itemize{
-\item \code{tree}: generated with \code{hier_*()} functions from package \code{sdcHierarchies}
+\item \code{tree}: generated with \verb{hier_*()} functions from package \code{sdcHierarchies}
 \item \code{data.frame}: a two column \code{data.frame} containing the full hierarchy of
 a dimensional variable using a top-to-bottom approach. The format of this
 \code{data.frame} is as follows:
 \itemize{
 \item \strong{first column:} a character vector specifying levels with each vector
-element being a string only containing of \code{@}s from length 1 to n.
+element being a string only containing of \verb{@}s from length 1 to n.
 If a vector element consists of \code{i}-chars, the corresponding code
-is of level \code{i}. The code \code{@} (one character) equals the grand
-total (level=1), the code \code{@@} (two characters) is of level 2 (directly
+is of level \code{i}. The code \verb{@} (one character) equals the grand
+total (level=1), the code \verb{@@} (two characters) is of level 2 (directly
 below the overall total).
 \item \strong{second column:} a character vector specifying level codes
 }
 \item \code{path}: absolute or relative path to a \code{.csv} file that
-contains two columns seperated by semicolons (\code{;}) having the same structure
+contains two columns seperated by semicolons (\verb{;}) having the same structure
 as the \code{"@;levelname"}-structure described above
 }}
 

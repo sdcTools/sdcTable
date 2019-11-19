@@ -4,8 +4,7 @@
 \alias{changeCellStatus}
 \title{change anonymization status of a specific cell}
 \usage{
-changeCellStatus(object, characteristics, varNames, rule,
-  verbose = FALSE)
+changeCellStatus(object, characteristics, varNames, rule, verbose = FALSE)
 }
 \arguments{
 \item{object}{an object of class \code{\link{sdcProblem-class}}}

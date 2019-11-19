@@ -4,8 +4,7 @@
 \alias{sdcProb2df}
 \title{Transform a problem instance}
 \usage{
-sdcProb2df(obj, addDups = TRUE, addNumVars = FALSE,
-  dimCodes = "both")
+sdcProb2df(obj, addDups = TRUE, addNumVars = FALSE, dimCodes = "both")
 }
 \arguments{
 \item{obj}{an \linkS4class{sdcProblem} object}
