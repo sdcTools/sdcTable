@@ -2,67 +2,102 @@
 % Please edit documentation in R/protectTable.R
 \name{protectTable}
 \alias{protectTable}
-\title{protecting \code{\link{sdcProblem-class}} objects}
+\title{Protecting \linkS4class{sdcProblem} objects}
 \usage{
 protectTable(object, method, ...)
 }
 \arguments{
-\item{object}{a \code{\link{sdcProblem-class}} object that has created using \code{\link{makeProblem}} and has been modified by \code{\link{primarySuppression}}}
+\item{object}{a \linkS4class{sdcProblem} object that has created using \code{\link[=makeProblem]{makeProblem()}} and has
+been modified by \code{\link[=primarySuppression]{primarySuppression()}}}
 
-\item{method}{a character vector of length 1 specifying the algorithm that should be used to protect the primary sensitive table cells. Allowed values are:
+\item{method}{a character vector of length 1 specifying the algorithm that should be
+used to protect the primary sensitive table cells. Allowed values are:
 \itemize{
-\item \code{OPT}: protect the complete problem at once using a cut and branch algorithm. The optimal algorithm should be used for small problem-instances only.
-\item \code{HITAS}: split the overall problem in smaller problems. These problems are protected using a top-down approach.
-\item \code{HYPERCUBE}: protect the complete problem by protecting sub-tables with a fast heuristic that is based on finding and suppressing geometric structures (n-dimensional cubes) that are required to protect primary sensitive table cells.
-\item \code{SIMPLEHEURISTIC}: heuristic, quick procedure which might be applied to very large problem instances
+\item \code{"OPT"}: protect the complete problem at once using a cut and branch algorithm. The optimal
+algorithm should be used for small problem-instances only.
+\item \code{"HITAS"}: split the overall problem in smaller problems. These problems are
+protected using a top-down approach.
+\item \code{"HYPERCUBE"}: protect the complete problem by protecting sub-tables with a fast
+heuristic that is based on finding and suppressing geometric structures (n-dimensional cubes)
+that are required to protect primary sensitive table cells.
+\item \code{"SIMPLEHEURISTIC"}: heuristic, quick procedure which might be applied to
+large problem instances
 }}
 
-\item{...}{parameters used in the protection algorithm that has been selected. Parameters that can be changed are:
+\item{...}{parameters used in the protection algorithm that has been selected. Parameters that
+can be changed are:
 \itemize{
-\item general parameters include:
+\item \strong{general parameters}:
 \itemize{
-\item \code{verbose}: logical vector of length 1 defining if verbose output should be produced. Parameter \code{verbose} defaults to 'FALSE'
-\item \code{save}: logical vector of length 1 defining if temporary results should be saved in the current working directory (TRUE) or not (FALSE). Parameter \code{save} defaults to 'FALSE' }
-\item parameters used for HITAS|OPT procedures:
+\item \code{verbose}: logical scalar (default is \code{FALSE}) defining if verbose output should be produced
+\item \code{save}: logical scalar defining if temporary results should be saved in the current
+working directory (\code{TRUE}) or not (\code{FALSE}) which is the default value.
+}
+\item parameters used for \strong{"HITAS"} and \strong{"OPT"} algorithms:
 \itemize{
-\item \code{solver}: character vector of length 1 defining the solver to be used. Currently available choices are limited to 'glpk'.
-\item \code{timeLimit}: numeric vector of length 1 (or NULL) defining a time limit in minutes after which the cut and branch algorithm should stop and return a possible non-optimal solution. Parameter \code{safe} has a default value of 'NULL'
-\item \code{maxVars}: a numeric vector of length 1 (or NULL) defining the maximum problem size in terms of decision variables for which an optimization should be tried. If the number of decision variables in the current problem are larger than parameter \code{maxVars}, only a possible non-optimal, heuristic solution is calculated. Parameter \code{safe} has a default value of 'NULL'
-\item \code{fastSolution}: logical vector of length 1 defining if or if not the cut and branch algorithm will be started or if the possibly non-optimal heuristic solution is returned independent of parameter \code{maxVars}. Parameter \code{fastSolution} has a default value of 'FALSE'
-\item \code{fixVariables}: logical vector of length 1 defining whether or not it should be tried to fix some variables to zero or one based on reduced costs early in the cut and branch algorithm. Parameter \code{fixVariables} has a default value of 'TRUE'
-\item \code{approxPerc}: numeric vector of length 1 that defines a percentage for which a integer solution of the cut and branch algorithm is accepted as optimal with respect to the upper bound given by the (relaxed) solution of the master problem. Its default value is set to '10'
-\item \code{useC}: boolean vector of length 1 defining if c++ implementation of the secondary cell suppression problem should be used, defaults to FALSE}
-\item parameters used for HYPERCUBE procedure:
+\item \code{solver}: character vector of length 1 defining the solver to be used. Currently available choices
+are limited to \code{"glpk"}.
+\item \code{timeLimit}: numeric vector of length 1 (or NULL) defining a time limit in minutes after which the
+cut and branch algorithm should stop and return a possible non-optimal solution. Parameter \code{safe} has
+a default value of \code{NULL}
+\item \code{maxVars}: a integerish number (or \code{NULL}) defining the maximum problem size in terms of
+decision variables for which an optimization should be tried. If the number of decision variables
+in the current problem are larger than parameter \code{maxVars}, only a possible non-optimal, heuristic solution
+is calculated. Parameter \code{maxVars} has a default value of \code{NULL} (no restrictions)
+\item \code{fastSolution}: logical scalar defining (default \code{FALSE}) if or if not the cut and branch algorithm will be started or if
+the possibly non-optimal heuristic solution is returned independent of parameter \code{maxVars}.
+\item \code{fixVariables}: logical scalar (default \code{TRUE}) defining whether or not it should be tried to fix some variables
+to \code{0} or \code{1} based on reduced costs early in the cut and branch algorithm.
+\item \code{approxPerc}: integerish scalar that defines a percentage for which a integer solution of the cut and branch
+algorithm is accepted as optimal with respect to the upper bound given by the (relaxed) solution of the
+master problem. Its default value is set to \code{10}
+\item \code{useC}: logical scalar defining if c++ implementation of the secondary cell
+suppression problem should be used, defaults to \code{FALSE}
+}
+\item parameters used for \strong{"HYPERCUBE"} procedure:
 \itemize{
-\item \code{protectionLevel}: numeric vector of length 1 specifying the required protection level for the HYPERCUBE-procedure. Its default value is 80
-\item \code{suppMethod}: character vector of length 1 defining the rule on how to select the 'optimal' cube to protect a single sensitive cells. Possible choices are:
+\item \code{protectionLevel}: numeric vector of length 1 specifying the required protectionlevel for the procedure. Its default value is \code{80}
+\item \code{suppMethod}: character vector of length 1 defining the rule on how to select the
+'optimal' cube to protect a single sensitive cells. Possible choices are:
 \itemize{
 \item \code{minSupps}: minimize the number of additional secondary suppressions (this is also the default setting).
 \item \code{minSum}: minimize the sum of counts of additional suppressed cells
-\item \code{minSumLogs}: minimize the log of the sum of additional suppressed cells}
-\item suppAdditionalQuader: logical vector of length 1 specfifying if additional cubes should be suppressed if any secondary suppressions in the 'optimal' cube are 'singletons'. Parameter \code{suppAdditionalQuader} has a default value of 'FALSE'}
-\item parameter used for protectLinkedTables():
+\item \code{minSumLogs}: minimize the log of the sum of additional suppressed cells
+}
+\item \code{suppAdditionalQuader}: logical vector of length 1 specfifying if additional cubes should be
+suppressed if any secondary suppressions in the 'optimal' cube are 'singletons'. Parameter
+\code{suppAdditionalQuader} has a default value of \code{FALSE}
+}
+\item parameter(s) used for \code{\link[=protectLinkedTables]{protectLinkedTables()}}:
 \itemize{
-\item \code{maxIter}: numeric vector of length 1 specifying the maximal number of interations that should be make while trying to protect common cells of two different tables. The default value of parameter \code{maxIter} is 10}
-\item parameters used for SIMPLEHEURISTIC procedure:
+\item \code{maxIter}: integerish number specifying the maximal number of interations that should be make
+while trying to protect common cells of two different tables. The default value of parameter is \code{10}
+}
+\item parameters used for the \strong{"SIMPLEHEURISTIC"} procedure:
 \itemize{
-\item \code{detectSingletons}: logical, should a singleton-detection procedure be run before protecting the data, defaults to \code{FALSE}.}
+\item \code{detectSingletons}: logical, should a singleton-detection procedure be run before protecting the
+data, defaults to \code{FALSE}.
+\item \code{singletonThreshold}: if not \code{NULL} (the default) an integerish number (> \code{0}). If specified, the singleton detection
+procedure (see Argument \code{"detectSingletons"}) makes sure that in rows where only singleton-cells were identified as
+primary sensitive, additional suppressions are added (if required) so that the total number of suppressed contributors
+is larger or equal than the specified threshold.
+}
 }}
 }
 \value{
-an \code{\link{safeObj-class}} object
+an \linkS4class{safeObj} object
 }
 \description{
-Function \code{\link{protectTable}} is used to protect primary sensitive table cells
+Function \code{\link[=protectTable]{protectTable()}} is used to protect primary sensitive table cells
 (that usually have been identified and set using
-\code{\link{primarySuppression}}). The function protects primary
+\code{\link[=primarySuppression]{primarySuppression()}}). The function protects primary
 sensitive table cells according to the method that has been chosen and the
 parameters that have been set. Additional parameters that are used to control
 the protection algorithm are set using parameter \code{...}.
 }
 \details{
 The implemented methods may have bugs that yield in not-fully protected tables. Especially
-the usage of \code{OPT}, \code{HITAS} and \code{HYPERCUBE} in production is not
+the usage of \code{"OPT"}, \code{"HITAS"} and \code{"HYPERCUBE"} in production is not
 suggested as these methods may eventually be removed completely. In case you encounter any problems,
 please report it or use Tau-Argus (\url{http://research.cbs.nl/casc/tau.htm}).
 }
