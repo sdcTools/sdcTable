@@ -277,7 +277,7 @@ setMethod("g_df", signature="sdcProblem", definition=function(object, addDups=FA
     strID=g_strID(pI),
     freq=g_freq(pI),
     sdcStatus=g_sdcStatus(pI))
-  
+
   if (addNumVars & !is.null(pI@numVars)) {
     dt <- cbind(dt, as.data.table(pI@numVars))
   }
@@ -1057,68 +1057,86 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
   vNames <- g_varname(dimInfo)
 
   if (verbose) {
-    cat("calculating subIndices (this may take a while) ...")
+    message("calculating subIndices (this may take a while) ...", appendLF = FALSE)
   }
 
   dat <- as.data.table(cpp_splitByIndices(g_strID(pI), strInfo))
   setnames(dat, vNames)
-  dat[,id:=1:nrow(dat)]
-  dat[,freq:=g_freq(pI)]
-  dat[,weights:=g_weight(pI)]
-  dat[,sdcStatus:=g_sdcStatus(pI)]
+  dat[, id := 1:nrow(dat)]
+  dat[, freq := g_freq(pI)]
+  dat[, weights := g_weight(pI)]
+  dat[, sdcStatus := g_sdcStatus(pI)]
   dimVars <- match(vNames, names(dat))
   nDims <- length(dimVars)
   freqInd <- match("freq", colnames(dat))
-  if (length(vNames)==1) {
+  if (length(vNames) == 1) {
     combs <- combn(vNames, 1)
   } else {
-    combs <- combn(vNames, length(vNames)-1)
+    combs <- combn(vNames, length(vNames) - 1)
   }
 
   tmpIndices <- rep(NA, length(vNames))
 
   nrGroups <- length(indices)
-  subIndices <- list(); length(subIndices) <- nrGroups
+  subIndices <- list()
+  length(subIndices) <- nrGroups
 
   for (group in 1:nrGroups) {
     nrTabs <- length(indices[[group]])
     subIndices[[group]] <- list()
     length(subIndices[[group]]) <- nrTabs
     for (tab in 1:nrTabs) {
-      subDat <- dat[indices[[group]][[tab]],]
+      subDat <- dat[indices[[group]][[tab]], ]
       # only one dimension!
       if (ncol(combs) == 1) {
         subDat$ind_1_tmp <- 1
         tmpIndices[1] <- ncol(subDat)
       } else {
         for (i in 1:ncol(combs)) {
-          setkeyv(subDat, combs[,i])
-          cn <- paste0("ind_",i,"_tmp")
+          setkeyv(subDat, combs[, i])
+          cn <- paste0("ind_", i, "_tmp")
           expr <- parse(text = paste0(cn, ":=.GRP"))
-          subDat[,eval(expr), by=key(subDat)]
+          subDat[, eval(expr), by = key(subDat)]
           tmpIndices[i] <- ncol(subDat)
         }
       }
       setkeyv(subDat, vNames)
-      subIndices[[group]][[tab]] <- as.list(subDat[,tmpIndices, with=F])
+      subIndices[[group]][[tab]] <- as.list(subDat[, tmpIndices, with = FALSE])
     }
   }
   if (verbose) {
-    cat("[done]\n");
+    message("[done]")
+
   }
 
-  if (detectSingletons==TRUE) {
+  if (detectSingletons | !is.na(input$threshold)) {
     if (verbose) {
-      cat("start singleton detection procedure!\n")
+      message("start singleton/threshold detection procedure")
     }
-    res <- singletonDetectionProcedure(dat=dat, indices=indices, subIndices=subIndices)
+    res <- detect_singletons(
+      dat = dat,
+      indices = indices,
+      sub_indices = subIndices,
+      do_singletons = input$detectSingletons,
+      threshold = input$threshold
+    )
+
     if (verbose) {
-      cat("singleton-detection procedure finished with",res$nrAddSupps,"additional suppressions!\n")
+      message(
+        "singleton/threshold detection procedure finished with ",
+        res$nr_added_supps, " additional suppressions."
+      )
     }
     dat <- res$dat; rm(res)
   }
 
-  res <- greedyMultDimSuppression(dat, indices, subIndices, dimVars, verbose=verbose)
+  res <- greedyMultDimSuppression(
+    dat = dat,
+    indices = indices,
+    subIndices = subIndices,
+    dimVars = dimVars,
+    verbose = verbose
+  )
   if (verbose) {
     cat("finishing output...")
   }
