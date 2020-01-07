@@ -34,7 +34,7 @@ Function \code{\link{getInfo}} is used to query information from
 \code{\link{sdcProblem-class}}- or \code{\link{problemInstance-class}} objects
 }
 \examples{
-# load primary suppressed data (created in the example of \\code{\\link{primarySuppression}})
+# load primary suppressed data (created in the example of \code{\link{primarySuppression}})
 sp <- searchpaths()
 fn <- paste(sp[grep("sdcTable", sp)], "/data/problemWithSupps.RData", sep="")
 problem <- get(load(fn))

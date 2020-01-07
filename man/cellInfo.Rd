@@ -33,7 +33,7 @@ Important: the \code{i}-th element of argument \code{characteristics} is uses as
 }
 \examples{
 # load protected data (as created in the example
-# of \\code{\\link{protectTable}})
+# of \code{\link{protectTable}})
 sp <- searchpaths()
 fn <- paste(sp[grep("sdcTable", sp)], "/data/protectedData.RData", sep="")
 protectedData <- get(load(fn))

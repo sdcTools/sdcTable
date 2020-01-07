@@ -68,7 +68,7 @@ please report it or use Tau-Argus (\url{http://research.cbs.nl/casc/tau.htm}).
 }
 \examples{
 # load problem (as it was created after performing primary suppression
-# in the example of \\code{\\link{primarySuppression}})
+# in the example of \code{\link{primarySuppression}})
 sp <- searchpaths()
 fn <- paste(sp[grep("sdcTable", sp)], "/data/problemWithSupps.RData", sep="")
 problem <- get(load(fn))

@@ -31,9 +31,9 @@ a dimensional variable using a top-to-bottom approach. The format of this
 \code{data.frame} is as follows:
 \itemize{
 \item \strong{first column:} a character vector specifying levels with each vector
-element being a string only containing of \verb{@}s from length 1 to n.
+element being a string only containing of \code{@}s from length 1 to n.
 If a vector element consists of \code{i}-chars, the corresponding code
-is of level \code{i}. The code \verb{@} (one character) equals the grand
+is of level \code{i}. The code \code{@} (one character) equals the grand
 total (level=1), the code \verb{@@} (two characters) is of level 2 (directly
 below the overall total).
 \item \strong{second column:} a character vector specifying level codes

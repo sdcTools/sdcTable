@@ -21,6 +21,6 @@ specified in argument \code{exe}.
 }
 \examples{
 \dontrun{
-argusVersion(exe="C:\\Tau\\TauArgus.exe", verbose=TRUE)
+argusVersion(exe="C:\\\\Tau\\\\TauArgus.exe", verbose=TRUE)
 }
 }

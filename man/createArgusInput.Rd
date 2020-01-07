@@ -108,7 +108,7 @@ dimVarInd <- 1:2
 numVarInd <- 3:5
 sampWeightInd <- 6
 
-# creating an object of class \\code{\\link{sdcProblem-class}}
+# creating an object of class \code{\link{sdcProblem-class}}
 obj <- makeProblem(
   data = microData1,
   dimList = dimList,
@@ -116,7 +116,7 @@ obj <- makeProblem(
   numVarInd = numVarInd,
   sampWeightInd = sampWeightInd)
 
-# creating an object of class \\code{\\link{sdcProblem-class}} containing "duplicated" codes
+# creating an object of class \code{\link{sdcProblem-class}} containing "duplicated" codes
 obj_dupl <- makeProblem(
   data = microData1,
   dimList = dimList_dupl,
