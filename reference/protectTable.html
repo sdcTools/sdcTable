@@ -203,10 +203,9 @@ while trying to protect common cells of two different tables. The default value 
 <li><p>parameters used for the <strong>"SIMPLEHEURISTIC"</strong> procedure:</p><ul>
 <li><p><code>detectSingletons</code>: logical, should a singleton-detection procedure be run before protecting the
 data, defaults to <code>FALSE</code>.</p></li>
-<li><p><code>singletonThreshold</code>: if not <code>NULL</code> (the default) an integerish number (&gt; <code>0</code>). If specified, the singleton detection
-procedure (see Argument <code>"detectSingletons"</code>) makes sure that in rows where only singleton-cells were identified as
-primary sensitive, additional suppressions are added (if required) so that the total number of suppressed contributors
-is larger or equal than the specified threshold.</p></li>
+<li><p><code>threshold</code>: if not <code>NULL</code> (the default) an integerish number (&gt; <code>0</code>). If specified, a procedure similar
+to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
+contains primary sensitive cells the suppressed number of contributors is <code>&gt;=</code> the specified threshold.</p></li>
 </ul></li>
 </ul></td>
     </tr>
