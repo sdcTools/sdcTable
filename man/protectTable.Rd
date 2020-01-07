@@ -77,10 +77,9 @@ while trying to protect common cells of two different tables. The default value 
 \itemize{
 \item \code{detectSingletons}: logical, should a singleton-detection procedure be run before protecting the
 data, defaults to \code{FALSE}.
-\item \code{singletonThreshold}: if not \code{NULL} (the default) an integerish number (> \code{0}). If specified, the singleton detection
-procedure (see Argument \code{"detectSingletons"}) makes sure that in rows where only singleton-cells were identified as
-primary sensitive, additional suppressions are added (if required) so that the total number of suppressed contributors
-is larger or equal than the specified threshold.
+\item \code{threshold}: if not \code{NULL} (the default) an integerish number (> \code{0}). If specified, a procedure similar
+to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
+contains primary sensitive cells the suppressed number of contributors is \code{>=} the specified threshold.
 }
 }}
 }
