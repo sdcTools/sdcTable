@@ -2,6 +2,8 @@
 - remove debugging outut
 - fixing typos in vignettes
 - bugfix in `protectLinkedTables()`
+- remove dependency on package `lpSolveAPI`
+- update singleton-detecton procedure by allowing to input a threshold value that must be respected for all simple table rows
 - [todo] check dominance rules (unweighted variables are used)
 
 # sdcTable 0.30
