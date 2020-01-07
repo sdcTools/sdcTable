@@ -3,7 +3,6 @@
 #' @import Rcpp
 #' @import Rglpk
 #' @import stringr
-#' @import lpSolveAPI
 #' @import data.table
 #' @importFrom slam simple_triplet_matrix
 #' @importFrom stats na.omit

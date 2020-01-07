@@ -165,13 +165,12 @@ setReplaceMethod(f="s_add_complete_constraint", signature=c("linProb", "list"), 
   return(object)
 })
 
-setMethod(f="c_solve_problem", signature=c("linProb", "list"), definition=function(object, input) {
+setMethod(f = "c_solve_problem", signature = c("linProb", "list"), definition = function(object, input) {
   solver <- input[[1]]
-
-  if ( !solver %in% c("glpk", "symphony", "lpSolve") ) {
-    stop("'solver' needs to be eiter 'glpk', 'lpSolve' or 'symphony!\n'")
+  if (!solver %in% c("glpk")) {
+    stop("`solver` needs to be `glpk` for now", call. = FALSE)
   }
-  if ( solver == "glpk" ) {
+  if (solver == "glpk") {
     sol <- my.Rglpk_solve_LP(
       g_objective(object),
       g_constraints(object),
@@ -179,109 +178,63 @@ setMethod(f="c_solve_problem", signature=c("linProb", "list"), definition=functi
       g_rhs(object),
       g_types(object),
       max = FALSE,
-      bounds=g_bounds(object),
-      verbose = FALSE)
-  }
-  if ( solver == "lpSolve" ) {
-    stop("solving with 'lpSolve' not yet available!\n")
-  }
-  if ( solver == "symphony" ) {
-    #sol <- Rsymphony_solve_LP(
-    # g_objective(object),
-    # g_constraints(object),
-    # g_direction(object),
-    # g_rhs(object),
-    # bounds=g_bounds(object), #bounds
-    # g_types(object),
-    # max = FALSE)
-    stop("solving with 'symphony' not yet available!\n")
-  }
-  if ( solver == "cplex" ) {
-    #directionOrig <- g_direction(object),
-    #sense <- rep(NA, length(directionOrig))
-    #sense[directionOrig=="=="] <- "E"
-    #sense[directionOrig=="<="] <- "L"
-    #sense[directionOrig==">="] <- "G"
-    #sol <- Rcplex(
-    # g_objective(object),
-    # g_constraints(object),
-    # g_rhs(object),
-    # Qmat = NULL,
-    # lb = 0,
-    # ub = 1,
-    # control = list(),
-    # objsense = "min",
-    # sense = sense,
-    # vtype = g_types(object),
-    # n = 1)
-    stop("solving with 'cplex' not yet available!\n")
+      bounds = g_bounds(object),
+      verbose = FALSE
+    )
   }
   return(sol)
 })
 
-setMethod(f="c_fix_variables", signature=c("linProb", "list"), definition=function(object, input) {
+setMethod(f = "c_fix_variables", signature = c("linProb", "list"), definition = function(object, input) {
   lb <- input[[1]]
   ub <- input[[2]]
-  primSupps <- input[[3]]
+  prim_supps <- input[[3]]
 
-  if ( length(lb) != 1 | length(ub) != 1 ) {
-    stop("c_fix_variables:: length of arguments 'lb' and 'ub' must equal 1!\n")
+  if (length(lb) != 1 | length(ub) != 1) {
+    stop("c_fix_variables:: length of arguments 'lb' and 'ub' must equal 1!", call. = FALSE)
   }
-  if ( !ub > lb ) {
-    stop("c_fix_variables:: arguments 'ub' must be >= argument 'lb'!\n")
+  if (!ub > lb) {
+    stop("c_fix_variables:: arguments 'ub' must be >= argument 'lb'!", call. = FALSE)
   }
 
-  con <- g_constraints(object)
-  rhs <- g_rhs(object)
-  dir <- g_direction(object)
-  obj <- g_objective(object)
-  bounds <- g_bounds(object)
-  nrVars <- g_nr_cols(con)
+  mat <- g_constraints(object)
+  nr_vars <- g_nr_cols(mat)
+  res_glpk <- my.Rglpk_solve_LP(
+    obj = g_objective(object),
+    mat = mat,
+    dir = g_direction(object),
+    rhs = g_rhs(object),
+    types = g_types(object),
+    bounds = g_bounds(object),
+    max = FALSE)
 
-  my.lp <- make.lp(0, nrVars)
-
-  set.objfn(my.lp, obj)
-  set.bounds(my.lp, upper = bounds$upper$val)
-  set.bounds(my.lp, lower = bounds$lower$val)
-
-  for ( i in 1:g_nr_rows(con) ) {
-    r <- g_row(con, input=list(i))
-    cols <- g_col_ind(r)
-    vals <- g_values(r)
-    dd <- ifelse(dir[i]=="==", "=", dir[i])
-    add.constraint(my.lp, vals, dd, rhs[i], indices=cols)
+  dual <- res_glpk$dual
+  if (length(dual) != nr_vars) {
+    stop("c_fix_variables:: length of arguments does not match!", call. = FALSE)
   }
-  solve(my.lp)
-  get.objective(my.lp)
-
-  dual <- get.dual.solution(my.lp)
-  dual <- dual[(2+length(get.rhs(my.lp))):length(dual)]
-  if ( length(dual) != nrVars ) {
-    stop("c_fix_variables:: length of arguments does not match!\n")
-  }
-  freqs <- obj
-  sol <- get.variables(my.lp)
+  freqs <- g_objective(object)
+  sol <- res_glpk$solution
   sol[is.zero(sol)] <- 0
   sol[is.one(sol)] <- 1
 
-  ### calculate reduced costs from dual solution
-  reducedCosts <- freqs
-  dualInd <- which(dual!=0)
-  if ( length(dualInd) > 0 ) {
-    reducedCosts[dualInd] <- sapply(dualInd, function(x) {
+  # calculate reduced costs from dual solution
+  reduced_costs <- freqs
+  dual_ind <- which(dual != 0)
+  if (length(dual_ind) > 0) {
+    reduced_costs[dual_ind] <- sapply(dual_ind, function(x) {
       min(freqs[x], dual[x])
     })
   }
 
   bas <- which(sol != 0)
-  reducedCosts[bas] <- 0
-  ### end calculation of reduced costs
+  reduced_costs[bas] <- 0
+  # end calculation of reduced costs
 
-  ### which variables could be set to zero?
-  indSetToZero <- which(lb + reducedCosts >= ub)
+  # which variables could be set to zero?
+  ind_zero <- which(lb + reduced_costs >= ub)
 
   # do not fix primary suppressions to zero!
-  indSetToZero <- indSetToZero[-which(indSetToZero %in% primSupps)]
-  return(indSetToZero)
+  ind_zero <- ind_zero[-which(ind_zero %in% prim_supps)]
+  return(ind_zero)
 })
 
