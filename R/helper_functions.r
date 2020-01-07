@@ -84,36 +84,54 @@ getBranchingVariable <- function(sol, alreadyBranched, primSupps) {
 my.Rglpk_solve_LP <- function(obj, mat, dir, rhs, types=NULL, max=FALSE,
   bounds=NULL, verbose=FALSE, presolve=TRUE) {
   if (!identical(max, TRUE) && !identical(max, FALSE)) {
-    stop("'Argument 'max' must be either TRUE or FALSE!\n")
+    stop("'Argument 'max' must be either TRUE or FALSE!", call. = FALSE)
   }
   if (!identical(verbose, TRUE) && !identical(verbose, FALSE)) {
-    stop("'Argument 'verbose' must be either TRUE or FALSE.\n")
+    stop("'Argument 'verbose' must be either TRUE or FALSE.", call. = FALSE)
   }
-  if (!class(mat)=="simpleTriplet") {
-    stop("argument 'mat' must be of class 'simpleTriplet'\n")
+  if (!class(mat) == "simpleTriplet") {
+    stop("argument 'mat' must be of class 'simpleTriplet'", call. = FALSE)
   }
 
   if (!all(dir %in% c("<", "<=", ">", ">=", "=="))) {
-    stop('directions must be one of "<", "<=", ">", ">= or "==".\n')
+    stop('directions must be one of "<", "<=", ">", ">= or "==".', call. = FALSE)
   }
 
   if (is.null(types)) {
     types <- rep("C", length(obj))
   }
   if (any(is.na(match(types, c("I", "B", "C"), nomatch = NA)))) {
-    stop("'types' must be either 'B', 'C' or 'I'.\n")
+    stop("'types' must be either 'B', 'C' or 'I'.", call. = FALSE)
   }
-  integers <- types == "I"
-  binaries <- types == "B"
-  is_integer <- any(binaries | integers)
 
   slammat <- simple_triplet_matrix(
-    i=mat@i, j=mat@j, v=mat@v, nrow=mat@nrRows, ncol=mat@nrCols)
-  x <- Rglpk_solve_LP(obj=obj, mat=slammat, dir=dir, rhs=rhs,
-    bounds=bounds, types=types, max=max,
-    control=list(verbose=verbose, presolve=presolve, tm_limit=0))
-  status <- x$status
-  list(optimum=sum(x$solution * obj), solution=x$solution, status=status)
+    i = mat@i,
+    j = mat@j,
+    v = mat@v,
+    nrow = mat@nrRows,
+    ncol = mat@nrCols
+  )
+
+  x <- Rglpk_solve_LP(
+    obj = obj,
+    mat = slammat,
+    dir = dir,
+    rhs = rhs,
+    bounds = bounds,
+    types = types,
+    max = max,
+    control = list(
+      verbose = verbose,
+      presolve = presolve,
+      tm_limit = 0
+    )
+  )
+  list(
+    optimum = sum(x$solution * obj),
+    solution = x$solution,
+    status = x$status,
+    dual = x$solution_dual
+  )
 }
 
 
