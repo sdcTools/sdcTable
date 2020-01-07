@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>protecting <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects — protectTable • sdcTable</title>
+<title>Protecting <a href='sdcProblem-class.html'>sdcProblem</a> objects — protectTable • sdcTable</title>
 
 
 <!-- jquery -->
@@ -35,10 +35,10 @@
 
 
 
-<meta property="og:title" content="protecting <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects — protectTable" />
-<meta property="og:description" content="Function protectTable is used to protect primary sensitive table cells
+<meta property="og:title" content="Protecting <a href='sdcProblem-class.html'>sdcProblem</a> objects — protectTable" />
+<meta property="og:description" content="Function protectTable() is used to protect primary sensitive table cells
 (that usually have been identified and set using
-primarySuppression). The function protects primary
+primarySuppression()). The function protects primary
 sensitive table cells according to the method that has been chosen and the
 parameters that have been set. Additional parameters that are used to control
 the protection algorithm are set using parameter ...." />
@@ -116,15 +116,15 @@ the protection algorithm are set using parameter ...." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>protecting <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> objects</h1>
+    <h1>Protecting <a href='sdcProblem-class.html'>sdcProblem</a> objects</h1>
     <small class="dont-index">Source: <a href='https://github.com/sdcTools/sdcTable/blob/master/R/protectTable.R'><code>R/protectTable.R</code></a></small>
     <div class="hidden name"><code>protectTable.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function <code>protectTable</code> is used to protect primary sensitive table cells
+    <p>Function <code>protectTable()</code> is used to protect primary sensitive table cells
 (that usually have been identified and set using
-<code><a href='primarySuppression.html'>primarySuppression</a></code>). The function protects primary
+<code><a href='primarySuppression.html'>primarySuppression()</a></code>). The function protects primary
 sensitive table cells according to the method that has been chosen and the
 parameters that have been set. Additional parameters that are used to control
 the protection algorithm are set using parameter <code>...</code>.</p>
@@ -137,47 +137,76 @@ the protection algorithm are set using parameter <code>...</code>.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>a <code><a href='sdcProblem-class.html'>sdcProblem-class</a></code> object that has created using <code><a href='makeProblem.html'>makeProblem</a></code> and has been modified by <code><a href='primarySuppression.html'>primarySuppression</a></code></p></td>
+      <td><p>a <a href='sdcProblem-class.html'>sdcProblem</a> object that has created using <code><a href='makeProblem.html'>makeProblem()</a></code> and has
+been modified by <code><a href='primarySuppression.html'>primarySuppression()</a></code></p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>a character vector of length 1 specifying the algorithm that should be used to protect the primary sensitive table cells. Allowed values are:</p><ul>
-<li><p><code>OPT</code>: protect the complete problem at once using a cut and branch algorithm. The optimal algorithm should be used for small problem-instances only.</p></li>
-<li><p><code>HITAS</code>: split the overall problem in smaller problems. These problems are protected using a top-down approach.</p></li>
-<li><p><code>HYPERCUBE</code>: protect the complete problem by protecting sub-tables with a fast heuristic that is based on finding and suppressing geometric structures (n-dimensional cubes) that are required to protect primary sensitive table cells.</p></li>
-<li><p><code>SIMPLEHEURISTIC</code>: heuristic, quick procedure which might be applied to very large problem instances</p></li>
+      <td><p>a character vector of length 1 specifying the algorithm that should be
+used to protect the primary sensitive table cells. Allowed values are:</p><ul>
+<li><p><code>"OPT"</code>: protect the complete problem at once using a cut and branch algorithm. The optimal
+algorithm should be used for small problem-instances only.</p></li>
+<li><p><code>"HITAS"</code>: split the overall problem in smaller problems. These problems are
+protected using a top-down approach.</p></li>
+<li><p><code>"HYPERCUBE"</code>: protect the complete problem by protecting sub-tables with a fast
+heuristic that is based on finding and suppressing geometric structures (n-dimensional cubes)
+that are required to protect primary sensitive table cells.</p></li>
+<li><p><code>"SIMPLEHEURISTIC"</code>: heuristic, quick procedure which might be applied to
+large problem instances</p></li>
 </ul></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>parameters used in the protection algorithm that has been selected. Parameters that can be changed are:</p><ul>
-<li><p>general parameters include:</p><ul>
-<li><p><code>verbose</code>: logical vector of length 1 defining if verbose output should be produced. Parameter <code>verbose</code> defaults to 'FALSE'</p></li>
-<li><p><code>save</code>: logical vector of length 1 defining if temporary results should be saved in the current working directory (TRUE) or not (FALSE). Parameter <code>save</code> defaults to 'FALSE'</p></li>
+      <td><p>parameters used in the protection algorithm that has been selected. Parameters that
+can be changed are:</p><ul>
+<li><p><strong>general parameters</strong>:</p><ul>
+<li><p><code>verbose</code>: logical scalar (default is <code>FALSE</code>) defining if verbose output should be produced</p></li>
+<li><p><code>save</code>: logical scalar defining if temporary results should be saved in the current
+working directory (<code>TRUE</code>) or not (<code>FALSE</code>) which is the default value.</p></li>
 </ul></li>
-<li><p>parameters used for HITAS|OPT procedures:</p><ul>
-<li><p><code>solver</code>: character vector of length 1 defining the solver to be used. Currently available choices are limited to 'glpk'.</p></li>
-<li><p><code>timeLimit</code>: numeric vector of length 1 (or NULL) defining a time limit in minutes after which the cut and branch algorithm should stop and return a possible non-optimal solution. Parameter <code>safe</code> has a default value of 'NULL'</p></li>
-<li><p><code>maxVars</code>: a numeric vector of length 1 (or NULL) defining the maximum problem size in terms of decision variables for which an optimization should be tried. If the number of decision variables in the current problem are larger than parameter <code>maxVars</code>, only a possible non-optimal, heuristic solution is calculated. Parameter <code>safe</code> has a default value of 'NULL'</p></li>
-<li><p><code>fastSolution</code>: logical vector of length 1 defining if or if not the cut and branch algorithm will be started or if the possibly non-optimal heuristic solution is returned independent of parameter <code>maxVars</code>. Parameter <code>fastSolution</code> has a default value of 'FALSE'</p></li>
-<li><p><code>fixVariables</code>: logical vector of length 1 defining whether or not it should be tried to fix some variables to zero or one based on reduced costs early in the cut and branch algorithm. Parameter <code>fixVariables</code> has a default value of 'TRUE'</p></li>
-<li><p><code>approxPerc</code>: numeric vector of length 1 that defines a percentage for which a integer solution of the cut and branch algorithm is accepted as optimal with respect to the upper bound given by the (relaxed) solution of the master problem. Its default value is set to '10'</p></li>
-<li><p><code>useC</code>: boolean vector of length 1 defining if c++ implementation of the secondary cell suppression problem should be used, defaults to FALSE</p></li>
+<li><p>parameters used for <strong>"HITAS"</strong> and <strong>"OPT"</strong> algorithms:</p><ul>
+<li><p><code>solver</code>: character vector of length 1 defining the solver to be used. Currently available choices
+are limited to <code>"glpk"</code>.</p></li>
+<li><p><code>timeLimit</code>: numeric vector of length 1 (or NULL) defining a time limit in minutes after which the
+cut and branch algorithm should stop and return a possible non-optimal solution. Parameter <code>safe</code> has
+a default value of <code>NULL</code></p></li>
+<li><p><code>maxVars</code>: a integerish number (or <code>NULL</code>) defining the maximum problem size in terms of
+decision variables for which an optimization should be tried. If the number of decision variables
+in the current problem are larger than parameter <code>maxVars</code>, only a possible non-optimal, heuristic solution
+is calculated. Parameter <code>maxVars</code> has a default value of <code>NULL</code> (no restrictions)</p></li>
+<li><p><code>fastSolution</code>: logical scalar defining (default <code>FALSE</code>) if or if not the cut and branch algorithm will be started or if
+the possibly non-optimal heuristic solution is returned independent of parameter <code>maxVars</code>.</p></li>
+<li><p><code>fixVariables</code>: logical scalar (default <code>TRUE</code>) defining whether or not it should be tried to fix some variables
+to <code>0</code> or <code>1</code> based on reduced costs early in the cut and branch algorithm.</p></li>
+<li><p><code>approxPerc</code>: integerish scalar that defines a percentage for which a integer solution of the cut and branch
+algorithm is accepted as optimal with respect to the upper bound given by the (relaxed) solution of the
+master problem. Its default value is set to <code>10</code></p></li>
+<li><p><code>useC</code>: logical scalar defining if c++ implementation of the secondary cell
+suppression problem should be used, defaults to <code>FALSE</code></p></li>
 </ul></li>
-<li><p>parameters used for HYPERCUBE procedure:</p><ul>
-<li><p><code>protectionLevel</code>: numeric vector of length 1 specifying the required protection level for the HYPERCUBE-procedure. Its default value is 80</p></li>
-<li><p><code>suppMethod</code>: character vector of length 1 defining the rule on how to select the 'optimal' cube to protect a single sensitive cells. Possible choices are:</p><ul>
+<li><p>parameters used for <strong>"HYPERCUBE"</strong> procedure:</p><ul>
+<li><p><code>protectionLevel</code>: numeric vector of length 1 specifying the required protectionlevel for the procedure. Its default value is <code>80</code></p></li>
+<li><p><code>suppMethod</code>: character vector of length 1 defining the rule on how to select the
+'optimal' cube to protect a single sensitive cells. Possible choices are:</p><ul>
 <li><p><code>minSupps</code>: minimize the number of additional secondary suppressions (this is also the default setting).</p></li>
 <li><p><code>minSum</code>: minimize the sum of counts of additional suppressed cells</p></li>
 <li><p><code>minSumLogs</code>: minimize the log of the sum of additional suppressed cells</p></li>
 </ul></li>
-<li><p>suppAdditionalQuader: logical vector of length 1 specfifying if additional cubes should be suppressed if any secondary suppressions in the 'optimal' cube are 'singletons'. Parameter <code>suppAdditionalQuader</code> has a default value of 'FALSE'</p></li>
+<li><p><code>suppAdditionalQuader</code>: logical vector of length 1 specfifying if additional cubes should be
+suppressed if any secondary suppressions in the 'optimal' cube are 'singletons'. Parameter
+<code>suppAdditionalQuader</code> has a default value of <code>FALSE</code></p></li>
 </ul></li>
-<li><p>parameter used for protectLinkedTables():</p><ul>
-<li><p><code>maxIter</code>: numeric vector of length 1 specifying the maximal number of interations that should be make while trying to protect common cells of two different tables. The default value of parameter <code>maxIter</code> is 10</p></li>
+<li><p>parameter(s) used for <code><a href='protectLinkedTables.html'>protectLinkedTables()</a></code>:</p><ul>
+<li><p><code>maxIter</code>: integerish number specifying the maximal number of interations that should be make
+while trying to protect common cells of two different tables. The default value of parameter is <code>10</code></p></li>
 </ul></li>
-<li><p>parameters used for SIMPLEHEURISTIC procedure:</p><ul>
-<li><p><code>detectSingletons</code>: logical, should a singleton-detection procedure be run before protecting the data, defaults to <code>FALSE</code>.</p></li>
+<li><p>parameters used for the <strong>"SIMPLEHEURISTIC"</strong> procedure:</p><ul>
+<li><p><code>detectSingletons</code>: logical, should a singleton-detection procedure be run before protecting the
+data, defaults to <code>FALSE</code>.</p></li>
+<li><p><code>singletonThreshold</code>: if not <code>NULL</code> (the default) an integerish number (&gt; <code>0</code>). If specified, the singleton detection
+procedure (see Argument <code>"detectSingletons"</code>) makes sure that in rows where only singleton-cells were identified as
+primary sensitive, additional suppressions are added (if required) so that the total number of suppressed contributors
+is larger or equal than the specified threshold.</p></li>
 </ul></li>
 </ul></td>
     </tr>
@@ -185,11 +214,11 @@ the protection algorithm are set using parameter <code>...</code>.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>an <code><a href='safeObj-class.html'>safeObj-class</a></code> object</p>
+    <p>an <a href='safeObj-class.html'>safeObj</a> object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The implemented methods may have bugs that yield in not-fully protected tables. Especially
-the usage of <code>OPT</code>, <code>HITAS</code> and <code>HYPERCUBE</code> in production is not
+the usage of <code>"OPT"</code>, <code>"HITAS"</code> and <code>"HYPERCUBE"</code> in production is not
 suggested as these methods may eventually be removed completely. In case you encounter any problems,
 please report it or use Tau-Argus (<a href='http://research.cbs.nl/casc/tau.htm'>http://research.cbs.nl/casc/tau.htm</a>).</p>
 
