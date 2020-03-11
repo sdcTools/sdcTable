@@ -13,9 +13,10 @@ apt_packages:
 matrix:
   include:
   - r: release
-    r_github_packages:
-    - r-lib/covr
-    - r-lib/pkgdown
+    r_packages:
+    - devtools
+    - pkgdown
+    - covr
     after_success:
     - R CMD INSTALL $PKG_TARBALL
     - Rscript -e 'devtools::check()'
