@@ -91,36 +91,36 @@ d_eco2 <- hier_add(d_eco2, root = "D", nodes = c("Da", "Db", "Dc"))
 dl1 <- list(gender = d_gender, ecoOld = d_eco1)
 dl2 <- list(region = d_region, gender = d_gender, ecoNew = d_eco2)
 
-# creating input objects for further processing. 
+# creating input objects for further processing.
 # For details, see ?makeProblem.
 p1 <- makeProblem(
-  data = microData1, 
-  dimList = dl1, 
+  data = microData1,
+  dimList = dl1,
   dimVarInd = 1:2,
   numVarInd = 3)
-  
+
 p2 <- makeProblem(
-  data = microData2, 
-  dimList = dl2, 
+  data = microData2,
+  dimList = dl2,
   dimVarInd = 1:3,
   numVarInd = 4)
 
 # the cell specified by gender == "Tot" and ecoOld == "A"
 # is one of the common cells! -> we mark it as primary suppression
 p1 <- changeCellStatus(
-  object = p1, 
+  object = p1,
   characteristics = c("Tot", "A"),
-  varNames = c("gender", "ecoOld"), 
-  rule = "u", 
+  varNames = c("gender", "ecoOld"),
+  rule = "u",
   verbose = FALSE)
 
 # the cell specified by region == "Tot" and gender == "f" and ecoNew == "C"
 # is one of the common cells! -> we mark it as primary suppression
 p2 <- changeCellStatus(
-  object = p2, 
+  object = p2,
   characteristics = c("Tot", "f", "C"),
-  varNames = c("region", "gender", "ecoNew"), 
-  rule = "u", 
+  varNames = c("region", "gender", "ecoNew"),
+  rule = "u",
   verbose = FALSE)
 
 # specifying input to define common cells
@@ -139,7 +139,7 @@ common_cells$v.eco <- list()
 common_cells$v.eco[[1]] <- "ecoOld" # variable name in "p1"
 common_cells$v.eco[[2]] <- "ecoNew" # variable name in "p2"
 
-# vector of common characteristics: 
+# vector of common characteristics:
 # "A" and "B" in variable "ecoOld" in "p1"
 common_cells$v.eco[[3]] <- c("A", "B")
 
@@ -148,10 +148,10 @@ common_cells$v.eco[[4]] <- c("C", "D")
 
 # protect the linked data
 result <- protectLinkedTables(
-  objectA = p1, 
-  objectB = p2, 
-  commonCells = common_cells, 
-  method = "HITAS", 
+  objectA = p1,
+  objectB = p2,
+  commonCells = common_cells,
+  method = "HITAS",
   verbose = TRUE)
 
 # having a look at the results

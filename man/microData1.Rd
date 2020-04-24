@@ -4,7 +4,9 @@
 \name{microData1}
 \alias{microData1}
 \title{synthetic microdata}
-\format{A dataframe with 100 observations on 5 variables (\code{region},\code{gender},\code{ecoOld},\code{ecoNew} and \code{numVal})}
+\format{
+A dataframe with 100 observations on 5 variables (\code{region},\code{gender},\code{ecoOld},\code{ecoNew} and \code{numVal})
+}
 \description{
 example microdata used for example in \code{\link{protectLinkedTables}}.
 }
