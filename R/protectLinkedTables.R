@@ -7,35 +7,35 @@
 #'
 #' @param objectA a [sdcProblem-class] object
 #' @param objectB a [sdcProblem-class] object
-#' @param commonCells a list object defining common cells in 
-#' `objectA` and `objectB`. For each variable that has one or more common 
+#' @param commonCells a list object defining common cells in
+#' `objectA` and `objectB`. For each variable that has one or more common
 #' codes in both tables, a list element needs to be specified.
-#' - List-elements of length 3: Variable has exact same levels and structure 
+#' - List-elements of length 3: Variable has exact same levels and structure
 #' in both input tables
-#'    * `first element`: scalar character vector specifying the variable 
+#'    * `first element`: scalar character vector specifying the variable
 #'    name in argument `objectA`
-#'    * `second element`: scalar character vector specifying the variable 
+#'    * `second element`: scalar character vector specifying the variable
 #'    name in argument `objectB`
 #'    * `third element`: scalar character vector being with keyword `"ALL"`
-#' - List-elements of length `4`: Variable has different codes and levels 
+#' - List-elements of length `4`: Variable has different codes and levels
 #' in tables `objectA` and `objectB`
-#'    * `first element`: scalar character vector specifying the variable 
+#'    * `first element`: scalar character vector specifying the variable
 #'    name in argument `objectA`
-#'    * `second element`: scalar character vector specifying the variable 
+#'    * `second element`: scalar character vector specifying the variable
 #'    name in argument `objectB`
 #'    * `third element`: character vector defining codes within `objectA`
-#'    * `fourth element`: character vector with length that equals the length 
-#'    of the third list-element. This vector defines codes of the dimensional 
-#'    variable in `objectB` that match the codes given in the third list-element 
+#'    * `fourth element`: character vector with length that equals the length
+#'    of the third list-element. This vector defines codes of the dimensional
+#'    variable in `objectB` that match the codes given in the third list-element
 #'    for `objectA`.
-#' @param method scalar character vector defining the algorithm 
+#' @param method scalar character vector defining the algorithm
 #' that should be used to protect the primary sensitive table cells. The possible
 #' values are `"HITAS"`, `"SIMPLEHEURISTIC"` and `"OPT"`; For details please see
 #' [protectTable()].
-#' @param ... additional arguments to control the secondary cell suppression 
+#' @param ... additional arguments to control the secondary cell suppression
 #' algorithm. For details, see [protectTable()].
 #'
-#' @return a list of length `2` with each list-element being an 
+#' @return a list of length `2` with each list-element being an
 #' [safeObj-class] object
 #' @md
 #' @examples
@@ -62,46 +62,46 @@
 #' d_eco1 <- hier_create(root = "Tot", nodes = c("A", "B"))
 #' d_eco1 <- hier_add(d_eco1, root = "A", nodes = c("Aa", "Ab"))
 #' d_eco1 <- hier_add(d_eco1, root = "B", nodes = c("Ba", "Bb"))
-#' 
+#'
 #' # variable 'ecoNew': exists only in microDat2
 #' d_eco2 <- hier_create(root = "Tot", nodes = c("C", "D"))
 #' d_eco2 <- hier_add(d_eco2, root = "C", nodes = c("Ca", "Cb", "Cc"))
 #' d_eco2 <- hier_add(d_eco2, root = "D", nodes = c("Da", "Db", "Dc"))
-#' 
+#'
 #' # creating objects holding information on dimensions
 #' dl1 <- list(gender = d_gender, ecoOld = d_eco1)
 #' dl2 <- list(region = d_region, gender = d_gender, ecoNew = d_eco2)
 #'
-#' # creating input objects for further processing. 
+#' # creating input objects for further processing.
 #' # For details, see ?makeProblem.
 #' p1 <- makeProblem(
-#'   data = microData1, 
-#'   dimList = dl1, 
+#'   data = microData1,
+#'   dimList = dl1,
 #'   dimVarInd = 1:2,
 #'   numVarInd = 3)
-#'   
+#'
 #' p2 <- makeProblem(
-#'   data = microData2, 
-#'   dimList = dl2, 
+#'   data = microData2,
+#'   dimList = dl2,
 #'   dimVarInd = 1:3,
 #'   numVarInd = 4)
 #'
 #' # the cell specified by gender == "Tot" and ecoOld == "A"
 #' # is one of the common cells! -> we mark it as primary suppression
 #' p1 <- changeCellStatus(
-#'   object = p1, 
+#'   object = p1,
 #'   characteristics = c("Tot", "A"),
-#'   varNames = c("gender", "ecoOld"), 
-#'   rule = "u", 
+#'   varNames = c("gender", "ecoOld"),
+#'   rule = "u",
 #'   verbose = FALSE)
 #'
 #' # the cell specified by region == "Tot" and gender == "f" and ecoNew == "C"
 #' # is one of the common cells! -> we mark it as primary suppression
 #' p2 <- changeCellStatus(
-#'   object = p2, 
+#'   object = p2,
 #'   characteristics = c("Tot", "f", "C"),
-#'   varNames = c("region", "gender", "ecoNew"), 
-#'   rule = "u", 
+#'   varNames = c("region", "gender", "ecoNew"),
+#'   rule = "u",
 #'   verbose = FALSE)
 #'
 #' # specifying input to define common cells
@@ -111,7 +111,7 @@
 #' common_cells$v.gender <- list()
 #' common_cells$v.gender[[1]] <- "gender" # variable name in "p1"
 #' common_cells$v.gender[[2]] <- "gender" # variable name in "p2"
-#' 
+#'
 #' # "gender" has equal characteristics on both datasets -> keyword "ALL"
 #' common_cells$v.gender[[3]] <- "ALL"
 #'
@@ -120,19 +120,19 @@
 #' common_cells$v.eco[[1]] <- "ecoOld" # variable name in "p1"
 #' common_cells$v.eco[[2]] <- "ecoNew" # variable name in "p2"
 #'
-#' # vector of common characteristics: 
+#' # vector of common characteristics:
 #' # "A" and "B" in variable "ecoOld" in "p1"
 #' common_cells$v.eco[[3]] <- c("A", "B")
-#' 
+#'
 #' # correspond to codes "C" and "D" in variable "ecoNew" in "p2"
 #' common_cells$v.eco[[4]] <- c("C", "D")
 #'
 #' # protect the linked data
 #' result <- protectLinkedTables(
-#'   objectA = p1, 
-#'   objectB = p2, 
-#'   commonCells = common_cells, 
-#'   method = "HITAS", 
+#'   objectA = p1,
+#'   objectB = p2,
+#'   commonCells = common_cells,
+#'   method = "HITAS",
 #'   verbose = TRUE)
 #'
 #' # having a look at the results
@@ -214,136 +214,337 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method, ...) {
     return(indOK)
   }
 
-  ### arguments ###
+  # returns for both sdcProblems listed in `probs` and a list of common cell indices a list:
+  # each list has two slots holding information about all subtables in which common cells occur
+  # along with its hashes; unique tables (according to sha1) hashes are returned in the second
+  # list element
+  .subtabs_with_commoncells <- function(probs, common_cell_indices) {
+    # computes for a sdcProblem instance (`prob`) and vector of common cell indices
+    # (`common_cells`) a list with the following slots:
+    # - `res`: a list for each cell index containing a list with computed sha1-hashes
+    # of the relevant table(s)
+    # - `subtabs`: for each (unique) hashed table; the subtable with the indices in variable
+    # `index`
+    .subtabs_with_commoncells <- function(prob, common_cells) {
+      .subtabs_with_single_cell <- function(df, partition, cell_id) {
+        out <- list()
+        for (i in seq_len(length(partition))) {
+          ll <- partition[[i]]
+          for (j in seq_len(length(ll))) {
+            indices <- ll[[j]]
+            if (any(cell_id %in% indices)) {
+              tmp <- list(df = df[indices, , drop = FALSE])
+              tmp$df$indices <- indices
+              tmp$digest <- digest::sha1(tmp$df)
+              tmp <- list(tmp)
+              names(tmp) <- df$strID[cell_id]
+              out <- append(out, tmp)
+            }
+          }
+        }
+        if (length(out) > 0) {
+          return(out)
+        }
+        return(invisible(NULL))
+      }
+
+      hashes <- c()
+      subtabs <- list()
+
+      df <- sdcProb2df(prob, addDups = FALSE, dimCodes = "original")
+      partition <- slot(prob, "partition")$indices
+
+      res <- vector("list", length(common_cells))
+      names(res) <- common_cells
+      for (cell_id in as.character(common_cells)) {
+        out <- .subtabs_with_single_cell(
+          df = df,
+          partition = partition,
+          cell_id = cell_id
+        )
+
+        nr_subtabs <- length(out)
+        if (nr_subtabs > 0) {
+          res[[cell_id]] <- vector("list", length(seq_len(length(out))))
+          cn <- paste0("subtab_", 1:nr_subtabs)
+          names(res[[cell_id]]) <- cn
+
+          for (i in 1:nr_subtabs) {
+            hash <- out[[i]]$digest
+            res[[cell_id]][[cn[i]]] <- list(
+              hash  = hash
+            )
+
+            if (!hash %in% hashes) {
+              hashes <- c(hashes, hash)
+              subtabs[[hash]] <- out[[i]]$df
+            }
+          }
+        }
+      }
+      list(res = res, subtabs = subtabs)
+    }
+
+    stopifnot(is.list(probs))
+    stopifnot(length(probs) == 2)
+    stopifnot(all(sapply(probs, class) == "sdcProblem"))
+    stopifnot(is.list(common_cell_indices))
+    stopifnot(length(common_cell_indices) == 2)
+    stopifnot(length(common_cell_indices[[1]]) == length(common_cell_indices[[2]]))
+
+    res_a <- .subtabs_with_commoncells(
+      prob = probs[[1]],
+      common_cells = common_cell_indices[[1]]
+    )
+    res_b <- .subtabs_with_commoncells(
+      prob = probs[[2]],
+      common_cells = common_cell_indices[[2]]
+    )
+    ll <- list(tab_a = res_a, tab_b = res_b, common_cell_indices = common_cell_indices)
+    class(ll) <- "st_commoncells"
+    ll
+  }
+
+  # todo: loops through all subtables with common cells checking for single suppressed cells
+  # when removing all common cells; this is required to protect against differencing
+  # this function returns a list `data.table` with additional suppressions or `NULL`
+  .check_subtabs_with_commoncells <- function(x) {
+    .get_tab_cell_id <- function(x, cell_id) {
+      cell_id <- as.character(cell_id)
+      res <- x$res[[cell_id]]
+      if (is.null(res)) {
+        return(NULL)
+      }
+      hashes <- unique(sapply(res, function(x) x$hash))
+      x$subtabs[hashes]
+    }
+
+    # adding supps (lowest frequency)
+    .find_supp <- function(tab) {
+      res <- NULL
+      if (nrow(tab) <= 1) {
+        return(res)
+      }
+      if (sum(tab$sdcStatus %in% c("u", "x")) == 1) {
+        tab <- tab[sdcStatus %in% c("s", "z")]
+        rg <- range(tab$freq)
+        if (rg[1] == 0 & rg[2] > 0) {
+          tab <- tab[freq > 0]
+        }
+        setorderv(tab, "freq")
+
+        # add a suppression
+        res <- data.table(
+          tab = tab$tab[1],
+          index = tab$indices[1]
+        )
+      }
+      res
+    }
+
+    stopifnot(inherits(x, "st_commoncells"))
+    checked_ids <- c()
+    supps <- data.table(tab = numeric(), index = numeric())
+
+    common_cells <- x$common_cell_indices
+    nr_common_cells <- length(common_cells[[1]])
+    for (i in seq_len(nr_common_cells)) {
+      res_a <- .get_tab_cell_id(x$tab_a, cell_id = common_cells[[1]][i])
+      res_b <- .get_tab_cell_id(x$tab_b, cell_id = common_cells[[2]][i])
+
+      gr <- expand.grid(names(res_a), names(res_b))
+      gr$id <- apply(gr, 1, paste, collapse = "_")
+
+      # we need to check all combinations
+      for (z in 1:nrow(gr)) {
+        id <- gr$id[z]
+        if (!id %in% checked_ids) {
+          checked_ids <- c(checked_ids, id)
+          tab_a <- res_a[[gr$Var1[z]]]
+          tab_a$tab <- 1
+          tab_b <- res_b[[gr$Var2[z]]]
+          tab_b$tab <- 2
+
+          # remove common cells that occur in both tables AND that are not suppressed
+          idx <- sapply(1:nr_common_cells, function(x) {
+            common_cells[[1]][x] %in% tab_a$indices & common_cells[[2]][x] %in% tab_b$indices
+          })
+
+          tab <- freq <- sdcStatus <- indices <- NULL
+          tab_a <- tab_a[!indices %in% common_cells[[1]][idx]]
+          tab_b <- tab_b[!indices %in% common_cells[[2]][idx]]
+
+          supps <- rbind(supps, .find_supp(tab = tab_a))
+          supps <- rbind(supps, .find_supp(tab = tab_b))
+        }
+      }
+    }
+    supps
+  }
+
   if (!method %in% c("HITAS", "OPT", "SIMPLEHEURISTIC")) {
     stop("valid methods are 'HITAS', 'OPT' or 'SIMPLEHEURISTIC'!", call. = FALSE)
   }
-
-  paraList <- genParaObj(selection = "control.secondary", method = method, ...)
+  index <- tab <- NULL
+  params <- genParaObj(selection = "control.secondary", method = method, ...)
 
   ### first run
   if (method == "SIMPLEHEURISTIC") {
-    outA <- c_quick_suppression(objectA, input = paraList)$object
-    outB <- c_quick_suppression(objectB, input = paraList)$object
+    outA <- c_quick_suppression(objectA, input = params)$object
+    outB <- c_quick_suppression(objectB, input = params)$object
   } else {
-    if (paraList$useC) {
+    if (params$useC) {
       if (method == "OPT") {
-        outA <- c_opt_cpp(object = objectA, input = paraList)
-        outB <- c_opt_cpp(object = objectB, input = paraList)
+        outA <- c_opt_cpp(object = objectA, input = params)
+        outB <- c_opt_cpp(object = objectB, input = params)
       }
       if (method == "HITAS") {
-        outA <- c_hitas_cpp(object = objectA, input = paraList)
-        outB <- c_hitas_cpp(object = objectB, input = paraList)
+        outA <- c_hitas_cpp(object = objectA, input = params)
+        outB <- c_hitas_cpp(object = objectB, input = params)
       }
     } else {
-      outA <- c_anon_worker(object = objectA, input = paraList)
-      outB <- c_anon_worker(object = objectB, input = paraList)
+      outA <- c_anon_worker(object = objectA, input = params)
+      outB <- c_anon_worker(object = objectB, input = params)
     }
   }
 
   pI.A <- g_problemInstance(outA)
   pI.B <- g_problemInstance(outB)
-  
+
   # calc original primary suppressions
   origPrimSupp1Index <- g_primSupps(pI.A)
   origPrimSupp2Index <- g_primSupps(pI.B)
 
   # no primary suppressions
   if (length(origPrimSupp1Index) + length(origPrimSupp2Index) == 0) {
-    if (paraList$verbose) {
+    if (params$verbose) {
       message("===> no primary suppressions. all common cells have the same anonymity-status! [finished]")
     }
-    outA <- c_finalize(object = outA, input = paraList)
-    outB <- c_finalize(object = outB, input = paraList)
+    outA <- c_finalize(object = outA, input = params)
+    outB <- c_finalize(object = outB, input = params)
     return(list(outObj1 = outA, outObj2 = outB))
   }
 
   # calculate commonCells:
-  commonCellIndices <- .indices_common_cells(outA, outB, commonCells)
+  commonCellIndices <- .indices_common_cells(
+    input1 = outA,
+    input2 = outB,
+    commonCells = commonCells
+  )
 
   # suppression patterns after the first run
   suppPatternA <- g_suppPattern(pI.A)
   suppPatternB <- g_suppPattern(pI.B)
 
-  indOK <- .check_common_cells(suppPatternA, suppPatternB, commonCellIndices)
+  # checking problems with differencing due to identical cells
+  res_subtabs <- .subtabs_with_commoncells(
+    probs = list(outA, outB),
+    common_cell_indices = commonCellIndices
+  )
+  additional_supps <- .check_subtabs_with_commoncells(x = res_subtabs)
+  if (nrow(additional_supps) > 0) {
+    chk1 <- FALSE
+    ii1 <- additional_supps[tab == 1, index]
+    if (length(ii1) > 0) {
+      suppPatternA[ii1] <- 1
+    }
+    ii2 <- additional_supps[tab == 2, index]
+    if (length(ii2) > 0) {
+      suppPatternB[ii2] <- 1
+    }
+  } else {
+    chk1 <- TRUE
+  }
+
+  chk2 <- .check_common_cells(suppPatternA, suppPatternB, commonCellIndices)
+  finished <- chk1 & chk2
   counter <- 1
-  if (!indOK) {
-    if (paraList$verbose) {
+
+  while (!finished) {
+    if (counter == 1 & params$verbose) {
       message("we have to start the iterative procedure!")
     }
-    runInd <- TRUE
-    while (runInd) {
-      x <- cbind(suppPatternA[commonCellIndices[[1]]], suppPatternB[commonCellIndices[[2]]])
-      index <- list()
-      i1 <- which(x[, 1] == 0 & x[, 2] == 1)
-      i2 <- which(x[, 1] == 1 & x[, 2] == 0)
-      index[[1]] <- commonCellIndices[[1]][i1]
-      index[[2]] <- commonCellIndices[[2]][i2]
+    supp_pattern <- data.frame(
+      p1 = suppPatternA[commonCellIndices[[1]]],
+      p2 = suppPatternB[commonCellIndices[[2]]]
+    )
 
-      for (j in 1:2) {
-        if (length(index[[j]]) > 0) {
-          if (j == 1) {
-            pI.A <- g_problemInstance(outA)
-            s_sdcStatus(pI.A) <- list(
-              index = index[[j]],
-              vals = rep("u", length(index[[j]])))
-            
-            # we need to set "z" to "s" for the time being
-            zs <- which(g_sdcStatus(pI.A) == "z")
-            if (length(zs) > 0) {
-              s_sdcStatus(pI.A) <- list(
-                index = zs,
-                vals = rep("s", length(zs)))
-            }
-            s_problemInstance(outA) <- pI.A
-            s_indicesDealtWith(outA) <- NULL
-            s_startJ(outA) <- 1
-            s_startI(outA) <- 1
-            outA <- c_quick_suppression(outA, input = paraList)$object
-          } else {
-            pI.B <- g_problemInstance(outB)
-            s_sdcStatus(pI.B) <- list(
-              index = index[[j]],
-              vals = rep("u", length(index[[j]])))
-
-            # we need to set "z" to "s" for the time being
-            zs <- which(g_sdcStatus(pI.B) == "z")
-            if (length(zs) > 0) {
-              s_sdcStatus(pI.B) <- list(
-                index = zs,
-                vals = rep("s", length(zs)))
-            }                        
-            
-            s_problemInstance(outB) <- pI.B
-            s_indicesDealtWith(outB) <- NULL
-            s_startJ(outB) <- 1
-            s_startI(outB) <- 1
-            outB <- c_quick_suppression(outB, input = paraList)$object
-          }
-        }
-      }
-
-      suppPatternA <- g_suppPattern(g_problemInstance(outA))
-      suppPatternB <- g_suppPattern(g_problemInstance(outB))
-
-      cbind(suppPatternA[commonCellIndices[[1]]], suppPatternB[commonCellIndices[[2]]])
-      indOK <- .check_common_cells(suppPatternA, suppPatternB, commonCellIndices)
-      if (indOK)
-        runInd <- FALSE
-      if (counter > paraList$maxIter) {
-        runInd <- FALSE
-        warning("iterative procedure did not converge! --> returning NULL")
-        return(NULL)
-      }
-      counter <- counter + 1
+    if (counter == 1) {
+      i1 <- which(supp_pattern$p1 == 1)
+      i2 <- which(supp_pattern$p2 == 1)
+    } else {
+      i1 <- which(supp_pattern$p1 == 0 & supp_pattern$p2 == 1)
+      i2 <- which(supp_pattern$p1 == 1 & supp_pattern$p2 == 0)
     }
+    index <- list()
+    index[[1]] <- commonCellIndices[[1]][i1]
+    index[[2]] <- commonCellIndices[[2]][i2]
+
+    .update_and_resolve_prob <- function(prob, pattern, params) {
+      pi <- g_problemInstance(prob)
+      s_sdcStatus(pi) <- list(
+        index = pattern,
+        vals = rep("u", length(pattern))
+      )
+
+      zs <- which(g_sdcStatus(pi) == "z")
+      if (length(zs) > 0) {
+        s_sdcStatus(pi) <- list(
+          index = zs,
+          vals = rep("s", length(zs)))
+      }
+      s_problemInstance(prob) <- pi
+      s_indicesDealtWith(prob) <- NULL
+      s_startJ(prob) <- 1
+      s_startI(prob) <- 1
+      c_quick_suppression(prob, input = params)$object
+    }
+
+    # update and resolve problems
+    outA <- .update_and_resolve_prob(prob = outA, pattern = index[[1]], params = params)
+    outB <- .update_and_resolve_prob(prob = outB, pattern = index[[2]], params = params)
+
+    suppPatternA <- g_suppPattern(g_problemInstance(outA))
+    suppPatternB <- g_suppPattern(g_problemInstance(outB))
+
+    # checking problems with differencing due to identical cells
+    res_subtabs <- .subtabs_with_commoncells(
+      probs = list(outA, outB),
+      common_cell_indices = commonCellIndices
+    )
+    additional_supps <- .check_subtabs_with_commoncells(x = res_subtabs)
+    if (nrow(additional_supps) > 0) {
+      chk1 <- FALSE
+      ii1 <- additional_supps[tab == 1, index]
+      if (length(ii1) > 0) {
+        suppPatternA[ii1] <- 1
+      }
+      ii2 <- additional_supps[tab == 2, index]
+      if (length(ii2) > 0) {
+        suppPatternB[ii2] <- 1
+      }
+    } else {
+      chk1 <- TRUE
+    }
+
+    chk2 <- .check_common_cells(suppPatternA, suppPatternB, commonCellIndices)
+    if (chk1 & chk2) {
+      finished <- TRUE
+    }
+    if (counter > params$maxIter) {
+      finished <- TRUE
+      warning("iterative procedure did not converge! --> returning NULL")
+      return(NULL)
+    }
+    counter <- counter + 1
   }
-  if (paraList$verbose) {
+
+  if (params$verbose) {
     message(
-      "===> all common cells have the same anonymity-state in both tables after ", 
+      "===> all common cells have the same anonymity-state in both tables after ",
       counter, " iterations! [finished]")
   }
-  outA <- c_finalize(object = outA, input = paraList)
-  outB <- c_finalize(object = outB, input = paraList)
+  outA <- c_finalize(object = outA, input = params)
+  outB <- c_finalize(object = outB, input = params)
   return(list(outObj1 = outA, outObj2 = outB))
 }

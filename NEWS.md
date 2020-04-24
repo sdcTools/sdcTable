@@ -1,3 +1,6 @@
+# sdcTable 0.32
+- bugfix in `protectLinkedTables()`; thx Øyvind Langsrud for spotting and reporting
+
 # sdcTable 0.31
 - remove debugging outut
 - fixing typos in vignettes
