@@ -76,7 +76,7 @@
       <h1 data-toc-skip>sdcTable</h1>
                         <h4 class="author">Bernhard Meindl</h4>
             
-            <h4 class="date">2020-04-29</h4>
+            <h4 class="date">2020-06-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/sdcTools/userSupport/blob/master/vignettes/sdcTable.rmd"><code>vignettes/sdcTable.rmd</code></a></small>
       <div class="hidden name"><code>sdcTable.rmd</code></div>
@@ -224,16 +224,16 @@
 </h4>
 <p>The hierarchy we want to describe is as follows. The overall code <code>Tot</code> is calculated from the codes (<code>A</code>, <code>B</code>, <code>C</code> and <code>D</code>). Additionally, code <code>B</code> (which is the second (sub)total-code for variable <code>V1</code> as described <a href="#ex1:aggDat">here</a>) can be calculated from the level-codes <code>Ba</code>, <code>Bb</code> and <code>Bc</code>.</p>
 <p>Following rule 1, we have to create a data frame or matrix consisting of two columns, the first specifying levels, the second column the corresponding level codes. Since we have to follow a top-down approach, the first level code must always correspond to the grand total which is always considered as the code with a level equaling 1. Thus, we create the matrix with a single row defining the overall total as follows:</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span><span class="kw">=</span><span class="fl">0</span>, <span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>)
-<span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'@'</span>,<span class="st">'Tot'</span>))
+<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)
+<span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"@"</span>, <span class="st">"Tot"</span>))
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>)</pre></body></html></div>
 <pre><code>##      [,1] [,2] 
 ## [1,] "@"  "Tot"</code></pre>
 <p>The level code for the overall total is <code>@</code> because according to rule 4 it is the only allowed character in the first column and it consists of exactly 1 character. Also, since the overall total is defined as level 1, the number of characters of the string <code>@</code> and the level of the overall total code <code>Tot</code> matches.</p>
 <p>The next step is to add additional codes. As mentioned before, codes <code>A</code>, <code>B</code>, <code>C</code> and <code>D</code> contribute the the overall total. Therefore we know that these codes are considered as level 2 codes and must be (according to the top-down approach) listed below the overall total code. Adding these codes to object <code>dimV1</code> is shown below:</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span><span class="kw">=</span><span class="fl">4</span>, <span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>)
-<span class="no">mat</span>[,<span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">'@@'</span>,<span class="fl">4</span>)
-<span class="no">mat</span>[,<span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">LETTERS</span>[<span class="fl">1</span>:<span class="fl">4</span>]
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)
+<span class="no">mat</span>[, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"@@"</span>, <span class="fl">4</span>)
+<span class="no">mat</span>[, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">LETTERS</span>[<span class="fl">1</span>:<span class="fl">4</span>]
 <span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="no">mat</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>)</pre></body></html></div>
 <pre><code>##      [,1] [,2] 
@@ -243,9 +243,9 @@
 ## [4,] "@@" "C"  
 ## [5,] "@@" "D"</code></pre>
 <p>We know that code <code>B</code> is a subtotal that can be calculated from codes <code>Ba</code>, <code>Bb</code> and <code>Bc</code>. Since <code>B</code> is a code of level 2, the codes contributing to it must be of a lower level, in this case of level 3. We show below how to add the codes to object <code>dimV1</code>:</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span><span class="kw">=</span><span class="fl">3</span>, <span class="kw">ncol</span><span class="kw">=</span><span class="fl">2</span>)
-<span class="no">mat</span>[,<span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">'@@@'</span>,<span class="fl">3</span>)
-<span class="no">mat</span>[,<span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'Ba'</span>,<span class="st">'Bb'</span>,<span class="st">'Bc'</span>)
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)
+<span class="no">mat</span>[, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"@@@"</span>, <span class="fl">3</span>)
+<span class="no">mat</span>[, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Ba"</span>, <span class="st">"Bb"</span>, <span class="st">"Bc"</span>)
 
 <span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="no">mat</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>)</pre></body></html></div>
@@ -260,7 +260,7 @@
 ## [8,] "@@@" "Bc"</code></pre>
 <p>Now object <code>dimV1</code> contains all possible codes along with their levels. However, it not valid because the top-down approach is violated. This means that codes that contribute to a (sub)total must be listed directly below it. If we would not change the order of object <code>dimV1</code>, <strong>sdcTable</strong> would assume that code <code>D</code> can be calculated by summation over codes <code>Ba</code>, <code>Bb</code> and <code>Bc</code>. For this reason it is necessary to move this <em>“block”</em> up so that it is directly below code <code>B</code>. The required code and the resulting correct object describing the structure of variable <code>V1</code> is printed below:</p>
 <div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="no">dimV1</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">3</span>,<span class="fl">6</span>:<span class="fl">8</span>, <span class="fl">4</span>:<span class="fl">5</span>),]
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>, <span class="kw">row.names</span><span class="kw">=</span><span class="fl">FALSE</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>, <span class="kw">row.names</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
 <pre><code>##      [,1]  [,2] 
 ## [1,] "@"   "Tot"
 ## [2,] "@@"  "A"  
@@ -322,16 +322,15 @@
 <p>We now show how to create objects of class <code>sdcProblem</code> which can further be used to identify, suppress and protect sensitive table cells.</p>
 <p>It was discussed <a href="#ex1:microDat">here</a> and <a href="#ex1:aggDat">here</a> how micro data and pre-aggregated data can be used as data-input objects. We will now explain how to create instances of class <code>sdcProblem</code> from both <code>microData</code> and <code>completeData</code> and describe the required and optional parameters of function <code><a href="../reference/makeProblem.html">makeProblem()</a></code>.</p>
 <p>We start building a suitable object of class <code>sdcProblem</code> starting with the data on individual level available from object <code>microData</code>.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">dimInfo</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V1</span><span class="kw">=</span><span class="no">dimV1</span>, <span class="kw">V2</span><span class="kw">=</span><span class="no">dimV2</span>, <span class="kw">V3</span><span class="kw">=</span><span class="no">dimV3</span>)
-
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">dimList</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V1</span> <span class="kw">=</span> <span class="no">dimV1</span>, <span class="kw">V2</span> <span class="kw">=</span> <span class="no">dimV2</span>, <span class="kw">V3</span> <span class="kw">=</span> <span class="no">dimV3</span>)
 <span class="no">prob.microDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/makeProblem.html">makeProblem</a></span>(
-    <span class="kw">data</span><span class="kw">=</span><span class="no">microData</span>,
-    <span class="kw">dimList</span><span class="kw">=</span><span class="no">dimList</span>,
-    <span class="kw">dimVarInd</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">3</span>,
-    <span class="kw">freqVarInd</span><span class="kw">=</span><span class="kw">NULL</span>,
-    <span class="kw">numVarInd</span><span class="kw">=</span><span class="fl">4</span>:<span class="fl">5</span>,
-    <span class="kw">weightInd</span><span class="kw">=</span><span class="kw">NULL</span>,
-    <span class="kw">sampWeightInd</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
+    <span class="kw">data</span> <span class="kw">=</span> <span class="no">microData</span>,
+    <span class="kw">dimList</span> <span class="kw">=</span> <span class="no">dimList</span>,
+    <span class="kw">dimVarInd</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>,
+    <span class="kw">freqVarInd</span> <span class="kw">=</span> <span class="kw">NULL</span>,
+    <span class="kw">numVarInd</span> <span class="kw">=</span> <span class="fl">4</span>:<span class="fl">5</span>,
+    <span class="kw">weightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>,
+    <span class="kw">sampWeightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>)</pre></body></html></div>
 <p>First we have to combine the objects describing the hierarchical variables <code>V1</code>, <code>V2</code> and <code>V3</code> into a list-object named <code>dimList</code>. Each list element is one of the objects created in section <a href="#ex1:hier">“Defining hierarchies”</a>. The names of the list-elements must correspond to the variable name that the corresponding list-element refers to. In this case, the first list-element - <code>dimV1</code> - should describe variable <code>V1</code> in the input data set <code>microData</code> when calling <code><a href="../reference/makeProblem.html">makeProblem()</a></code> while the second list element - <code>dimV2</code> - defines the hierarchy of variable <code>V2</code> and <code>dimV3</code> - the third list element - describes the structure of variable <code>V3</code>.</p>
 <p>The remaining parameters are quite self-explanatory and shorty described below:</p>
 <ul>
@@ -353,23 +352,23 @@
 </ul>
 <p>Building an object of class <code>sdcProblem</code> using the complete, pre-aggregated data <code>completeData</code> as discussed <a href="#ex1:aggDat">above</a> is very similar as it is shown below:</p>
 <div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="co">### problem from complete data ###</span>
-<span class="no">dimInfo</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V1</span><span class="kw">=</span><span class="no">dimV1</span>, <span class="kw">V2</span><span class="kw">=</span><span class="no">dimV2</span>, <span class="kw">V3</span><span class="kw">=</span><span class="no">dimV3</span>)
+<span class="no">dimList</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V1</span> <span class="kw">=</span> <span class="no">dimV1</span>, <span class="kw">V2</span> <span class="kw">=</span> <span class="no">dimV2</span>, <span class="kw">V3</span> <span class="kw">=</span> <span class="no">dimV3</span>)
 <span class="no">prob.completeDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/makeProblem.html">makeProblem</a></span>(
-    <span class="kw">data</span><span class="kw">=</span><span class="no">completeData</span>,
-    <span class="kw">dimList</span><span class="kw">=</span><span class="no">dimList</span>,
-    <span class="kw">dimVarInd</span><span class="kw">=</span><span class="fl">1</span>:<span class="fl">3</span>,
-    <span class="kw">freqVarInd</span><span class="kw">=</span><span class="fl">4</span>,
-    <span class="kw">numVarInd</span><span class="kw">=</span><span class="fl">5</span>:<span class="fl">6</span>,
-    <span class="kw">weightInd</span><span class="kw">=</span><span class="kw">NULL</span>,
-    <span class="kw">sampWeightInd</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></body></html></div>
+    <span class="kw">data</span> <span class="kw">=</span> <span class="no">completeData</span>,
+    <span class="kw">dimList</span> <span class="kw">=</span> <span class="no">dimList</span>,
+    <span class="kw">dimVarInd</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>,
+    <span class="kw">freqVarInd</span> <span class="kw">=</span> <span class="fl">4</span>,
+    <span class="kw">numVarInd</span> <span class="kw">=</span> <span class="fl">5</span>:<span class="fl">6</span>,
+    <span class="kw">weightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>,
+    <span class="kw">sampWeightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>)</pre></body></html></div>
 <p>The only difference is that in this case we define parameter ‘freqVarInd’ that specifies a column within the input data set {completeData} containing information on cell counts. Also the indices of argument <code>numVarInd</code> are different to the first example.</p>
 <p>In any case, both procedures return an object of class <code>sdcProblem</code> as it can easily be checked:</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="no">prob.microDat</span>), <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="no">prob.completeDat</span>))<span class="kw">==</span><span class="st">'sdcProblem'</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="no">prob.microDat</span>), <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="no">prob.completeDat</span>)) <span class="kw">==</span> <span class="st">"sdcProblem"</span>)</pre></body></html></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>We now can check if the cell counts of both objects are equal. Function <code><a href="../reference/getInfo.html">getInfo()</a></code> can be used to extract information from objects of class <code>sdcProblem</code>. Specifying argument <code>type</code> as <code>freq</code>, <code><a href="../reference/getInfo.html">getInfo()</a></code> returns cell counts which are indeed equal independently if micro-data or pre-aggregated data have been used as input to create the complete tabular structure.</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">counts1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">'freq'</span>)
-<span class="no">counts2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.microDat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">'freq'</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="no">counts1</span><span class="kw">==</span><span class="no">counts2</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">counts1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"freq"</span>)
+<span class="no">counts2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.microDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"freq"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="no">counts1</span> <span class="kw">==</span> <span class="no">counts2</span>)</pre></body></html></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>Once the problem has been set up and an instance of class {sdcProblem} is available, it is possible to identify and suppress sensitive table cells as we demonstrate in the next section using object <code>prob.completeDat</code>.</p>
 </div>
@@ -390,10 +389,10 @@
 <code>"z"</code>: cell must not be suppressed</li>
 </ul>
 <p>The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of <code>s</code> to <code>u</code>. The easiest way is to use function <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> directly:</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">prob.completeDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/primarySuppression.html">primarySuppression</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">'freq'</span>, <span class="kw">maxN</span><span class="kw">=</span><span class="fl">10</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">prob.completeDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/primarySuppression.html">primarySuppression</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"freq"</span>, <span class="kw">maxN</span> <span class="kw">=</span> <span class="fl">10</span>)</pre></body></html></div>
 <p>Argument <code>type</code> specifies the primary suppression rule we want to apply. In this case we want to use the frequency threshold rule that allows to suppress all table cells having cell counts less or equal than the threshold specified using argument <code>maxN</code>. <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> also allows to apply the nk-dominance rule or the p-percent rule directly, in case micro data have been used as input data. For all possible parameters and their explanation the interested reader may consult the manual or the help-page of <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>.</p>
 <p>After performing the suppression, we can have a look at the distribution of the anonymization states:</p>
-<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">"sdcStatus"</span>)))</pre></body></html></div>
+<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"sdcStatus"</span>)))</pre></body></html></div>
 <pre><code>## 
 ##   s   u 
 ## 153  15</code></pre>
@@ -430,14 +429,14 @@
 <strong>“SIMPLEHEURISTIC”</strong>: solving the problem using a fast heuristic approach that only protects against exact recalculation of values</li>
 </ul>
 <p>We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function <code><a href="../reference/protectTable.html">protectTable()</a></code>.</p>
-<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="no">resHITAS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"HITAS"</span>)
-<span class="no">resOPT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"OPT"</span>)
-<span class="no">resHYPER</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"HYPERCUBE"</span>)
-<span class="no">resSIMPLE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span><span class="kw">=</span><span class="st">"SIMPLEHEURISTIC"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="no">resHITAS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"HITAS"</span>)
+<span class="no">resOPT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"OPT"</span>)
+<span class="no">resHYPER</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"HYPERCUBE"</span>)
+<span class="no">resSIMPLE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"SIMPLEHEURISTIC"</span>)</pre></body></html></div>
 <p>Having a look at the Output objects we can observe that the number of secondary suppressions required to protect the 15 primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.</p>
 <p>Using the <em>“OPT”</em>-algorithm, a total of <code>23</code> cells have been marked as secondary suppressions. When using <em>“HITAS”</em>-algorithm, it was required to additionally suppress <code>25</code> cells. A total of <code>29</code> cells was selected and marked as secondary suppressions when the <em>“HYPERCUBE”</em> algorithm was used while <code>31</code> additional suppressions were required for the fast heuristic simple procedure <em>“SIMPLEHEURISTIC”</em>.</p>
 <p>One now easily get information from the resulting output objects that are instances of class <code>safeObj</code> by using function <code><a href="../reference/getInfo.html">getInfo()</a></code> or applying the <code>summary</code>-method. For the former we show how to extract the final data set which can be achieved as follows:</p>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="no">finalData</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">resOPT</span>, <span class="kw">type</span><span class="kw">=</span><span class="st">'finalData'</span>)
+<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="no">finalData</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">resOPT</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"finalData"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">finalData</span>))</pre></body></html></div>
 <pre><code>##   V1 V2 V3 Freq numVal1 numVal2 sdcStatus
 ## 1  A  m  a   12 3919.84 4090.31         s
