@@ -28,7 +28,6 @@ domRule <- function(object, params, type) {
   nk_rule <- function(params) {
     stopifnot(is_scalar_double(params$cell_tot))
     stopifnot(is_scalar_integerish(params$n))
-
     # if TRUE, cell needs to be suppressed
     sum(params$top_contr) > (params$k / 100 * params$cell_tot)
   }
@@ -51,6 +50,7 @@ domRule <- function(object, params, type) {
     if (length(vals) == 0) {
       return(NULL)
     }
+
     # replicate by weights: what to do with non-integerish weights?
     # randomly round upwards and downwards?
     if (!is_integerish(w)) {
@@ -58,7 +58,9 @@ domRule <- function(object, params, type) {
       w[dir == -1] <- floor(w[dir == -1])
       w[dir == 1] <- ceiling(w[dir == 1])
     }
-    vals <- rep(vals, times = w)
+    # division is required here because in makeProblem()
+    # all numVars-variables are aggregated on cell-level
+    vals <- rep(vals / w, times = w)
 
     top_contr <- rep(0, n)
     v <- rev(tail(sort(vals), n))
