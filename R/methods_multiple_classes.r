@@ -245,7 +245,7 @@ setMethod("c_make_att_prob", signature=c("list"), definition=function(input) {
   return(list(aProb=aProb, newCutsMaster=newCutsMaster))
 })
 
-setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
+setMethod(f = "c_calc_full_prob", signature = c("list"), definition = function(input) {
   .SD <- ID <- id <- NULL
   x <- input$objectA
   y <- input$objectB
@@ -269,11 +269,14 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
     cDefault <- g_default_codes(dimObj[[i]])
     cOriginal <- g_original_codes(dimObj[[i]])
     cOriginalDups <- g_dups(dimObj[[i]])
-    cOriginalDupsUp <- g_dups_up(dimObj[[i]])
     if (all(unique(codes[[i]]) %in% c(cOriginal, cOriginalDups))) {
-      codes[[i]] <- c_match_default_codes(object=dimObj[[i]], input=rawData[[ind.dimvars[i]]])
-      if (sum(is.na(codes[[i]]))>0) {
-        stop(paste0("NA values in default codes have been generated for variable ",
+      codes[[i]] <- c_match_default_codes(
+        object = dimObj[[i]],
+        input = rawData[[ind.dimvars[i]]]
+      )
+      if (sum(is.na(codes[[i]])) > 0) {
+        stop(
+          paste0("NA values in default codes have been generated for variable ",
           shQuote(names(dimObj)[i]),".\nPlease check the definition of this hierarchy!\n"))
       }
     } else if (all(unique(codes[[i]]) %in% cDefault)) {
@@ -296,19 +299,21 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
 
   ## fill the table
   nrIndexvars <- length(ind.dimvars)
-  fullDims <- lapply(dimObj, g_dims)
 
-  allCodes <- expand(lapply(dimObj, g_default_codes), vector=FALSE)
-  fullTabObj <- data.table(ID=1:length(allCodes[[1]]))
+  allCodes <- expand(lapply(dimObj, g_default_codes), vector = FALSE)
+  fullTabObj <- data.table(ID = 1:length(allCodes[[1]]))
   for (i in 1:length(allCodes)) {
-    fullTabObj[,colnames(rawData)[ind.dimvars][i]:=allCodes[[i]]]
+    fullTabObj[, colnames(rawData)[ind.dimvars][i] := allCodes[[i]]]
   }
   setkeyv(fullTabObj, colnames(rawData)[ind.dimvars])
-  fullTabObj[,ID:=NULL]
+  fullTabObj[, ID := NULL]
 
   ## revert rawData codes to default codes
   for (j in seq_along(ind.dimvars)) {
-    v <- c_match_default_codes(object=dimObj[[j]], input=rawData[,get(names(dimObj)[j])])
+    v <- c_match_default_codes(
+      object = dimObj[[j]],
+      input = rawData[, get(names(dimObj)[j])]
+    )
     set(rawData, NULL, names(dimObj)[j], v)
   }
   setkeyv(rawData, colnames(rawData)[ind.dimvars])
@@ -322,7 +327,6 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
     set(rawData, ind.na[[k]], j, 0)
     k <- k + 1
   }
-  rm(k)
 
   ## merge minDat to fullDat
   fullTabObj <- merge(fullTabObj, rawData, all.x = TRUE)
@@ -344,7 +348,7 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
   fullTabObj[, strID := NULL]
 
   if (length(missing.codes) > 0) {
-    index <- which(strID%in%missing.codes)
+    index <- which(strID %in% missing.codes)
     for (i in 1:length(cols)) {
       set(fullTabObj, index, cols[i], 0)
     }
@@ -356,11 +360,11 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
   # which indexvars have any hierarchy (not just the total?)
   # these indiecs specify the dim-variables we loop over
   useInds <- which(sapply(y@dimInfo, function(x) {
-    length(x@codesOriginal)>1
+    length(x@codesOriginal) > 1
   }))
 
-  fullTabObj[,id:=.I]
-  cols <- (nrIndexvars+1):(ncol(fullTabObj)-1)
+  fullTabObj[, id := .I]
+  cols <- (nrIndexvars + 1):(ncol(fullTabObj) - 1)
   col.names <- names(fullTabObj)[cols]
   while (not.finished) {
     for (i in useInds) {
@@ -381,10 +385,10 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
           out <- out[, lapply(.SD, sum), .SDcols = col.names, by = key(out)]
         }
         cmd <- paste0("row.ind <- fullTabObj[",dim.vars[i],"==cur.levs[1],id]")
-        eval(parse(text=cmd))
+        eval(parse(text = cmd))
         for (z in col.names) {
           cmd <- paste0("fullTabObj[id %in% row.ind,",z,":=out[[z]]]")
-          eval(parse(text=cmd))
+          eval(parse(text = cmd))
         }
       }
     }
@@ -435,6 +439,7 @@ setMethod("c_calc_full_prob", signature=c("list"), definition=function(input) {
       set(rawData, ind.na[[i]], cols[i], NA)
     }
   }
+
   s_raw_data(x) <- list(datO)
 
   # w are the actual weights as used in the
