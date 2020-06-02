@@ -1,5 +1,12 @@
 # sdcTable 0.32
 - bugfix in `protectLinkedTables()`; thx Øyvind Langsrud for spotting and reporting
+- bugfix in `c_gen_mat_m` with problems that have a single dimension
+- bugfix when computing dominance-rules on weighted data
+- new exported function `createRegSDCInput()`
+- improved vignette; thx to @Krisselack for reporting
+- [todo] feature: allow setting sdcStatus input data.frame/list of strIDs
+- [todo] more checks/performance improvements in `protectLinkedTables()`
+
 
 # sdcTable 0.31
 - remove debugging outut
