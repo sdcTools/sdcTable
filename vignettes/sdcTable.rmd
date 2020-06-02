@@ -59,7 +59,7 @@ dimList <- inputData$dimList
 resOPT <- workDat$resOPT
 
 completeData <- getInfo(workDat$resOPT, 'finalData')
-completeData <- completeData[,-ncol(completeData)]
+completeData <- completeData[, -ncol(completeData)]
 ```
 
 We now walk through the steps that are required to protect tabular data using **sdcTable**. In the first example we are going to protect table cells given a three-dimensional tabular structure with some sub-totals. 
@@ -71,7 +71,7 @@ Throughout it is also shown how to set and extract information from the objects 
 ### Starting from microdata {#ex1:microDat}
 In this example we suppose we have collected data from ``r nrow(microData)`` individuals. A subset of the available data is shown below: 
 ```{r, echo=FALSE}
-print(head(microData), row.names=FALSE)
+print(head(microData), row.names = FALSE)
 ```
 
 We note that the information we have obtained for any individual corresponds to exactly one row in the input data.frame. That is supposed to be available in **R**. 
@@ -110,9 +110,9 @@ print(tail(completeData))
 ```
 
 ```{r, echo=FALSE}
-levComp.V1 <- as.character(dimList$V1[,2])
-levComp.V2 <- as.character(dimList$V2[,2])
-levComp.V3 <- as.character(dimList$V3[,2])
+levComp.V1 <- as.character(dimList$V1[, 2])
+levComp.V2 <- as.character(dimList$V2[, 2])
+levComp.V3 <- as.character(dimList$V3[, 2])
 ```
 
 Even though we only show a small subset of the data it is immediately clear that in object `completeData` (sub)totals are listed. These combinations can be calculated from the microdata by summation over several codes in one or more dimensional variables. As in section [Starting from microdata](#ex1:microDat) it is of interest which codes were specified for each dimensional variable. This information is given below:
@@ -131,7 +131,7 @@ print(levComp.V3)
 ```
 
 ```{r, echo=FALSE}
-x <- completeData[nrow(completeData),]
+x <- completeData[nrow(completeData), ]
 ```
 
 We also note that in `completeData` a variable `Freq` is available which gives information on the corresponding cell counts. This means that for example a total of ``r x$Freq`` individuals contribute to the table cell where variable `V1` equals ``r x$V1``, variable `V2` is ``r x$V2`` and variable `V3` is equal to ``r x$V3``. 
@@ -186,8 +186,8 @@ The hierarchy we want to describe is as follows. The overall code ``r subTots.V3
 Following rule 1, we have to create a data frame or matrix  consisting of two columns, the first specifying levels, the second column the corresponding level codes. Since we have to follow a top-down approach, the first level code must always correspond to the grand total which is always considered as the code with a level equaling 1. Thus, we create the matrix with a single row defining the overall total as follows:
 
 ```{r}
-dimV1 <- matrix(nrow=0, ncol=2)
-dimV1 <- rbind(dimV1, c('@','Tot'))
+dimV1 <- matrix(nrow = 0, ncol = 2)
+dimV1 <- rbind(dimV1, c("@", "Tot"))
 print(dimV1)
 ```
 
@@ -196,9 +196,9 @@ The level code for the overall total is `@` because according to rule 4 it is th
 The next step is to add additional codes. As mentioned before, codes `A`, `B`, `C` and `D` contribute the the overall total. Therefore we know that these codes are considered as level 2 codes and must be (according to the top-down approach) listed below the overall total code. Adding these codes to object `dimV1` is shown below:
 
 ```{r}
-mat <- matrix(nrow=4, ncol=2)
-mat[,1] <- rep('@@',4)
-mat[,2] <- LETTERS[1:4]
+mat <- matrix(nrow = 4, ncol = 2)
+mat[, 1] <- rep("@@", 4)
+mat[, 2] <- LETTERS[1:4]
 dimV1 <- rbind(dimV1, mat)
 print(dimV1)
 ```
@@ -206,9 +206,9 @@ print(dimV1)
 We know that code `B` is a subtotal that can be calculated from codes `Ba`, `Bb` and `Bc`. Since `B` is a code of level 2, the codes contributing to it must be of a lower level, in this case of level 3. We show below how to add the codes to object `dimV1`:
 
 ```{r}
-mat <- matrix(nrow=3, ncol=2)
-mat[,1] <- rep('@@@',3)
-mat[,2] <- c('Ba','Bb','Bc')
+mat <- matrix(nrow = 3, ncol = 2)
+mat[, 1] <- rep("@@@", 3)
+mat[, 2] <- c("Ba", "Bb", "Bc")
 
 dimV1 <- rbind(dimV1, mat)
 print(dimV1)
@@ -218,7 +218,7 @@ Now object `dimV1` contains all possible codes along with their levels. However,
 
 ```{r}
 dimV1 <- dimV1[c(1:3,6:8, 4:5),]
-print(dimV1, row.names=FALSE)
+print(dimV1, row.names = FALSE)
 ```
 
 Using this information, **sdcTable** internally calculates all kinds of information on dimensional variables. So for example it is able to deal with codes that can be (temporarily) removed from the structure because it can be considered as a *"duplicate"*. This is however not the case for this basic dimensional variable that has a total of 8 codes of which 6 are required to calculate information for the 2 (sub)totals.
@@ -266,16 +266,15 @@ It was discussed [here](#ex1:microDat) and [here](#ex1:aggDat) how micro data an
 We start building a suitable object of class `sdcProblem` starting with the data on individual level available from object `microData`.
 
 ```{r}
-dimInfo <- list(V1=dimV1, V2=dimV2, V3=dimV3)
-
+dimList <- list(V1 = dimV1, V2 = dimV2, V3 = dimV3)
 prob.microDat <- makeProblem(
-	data=microData,
-	dimList=dimList,
-	dimVarInd=1:3,
-	freqVarInd=NULL,
-	numVarInd=4:5,
-	weightInd=NULL,
-	sampWeightInd=NULL)
+	data = microData,
+	dimList = dimList,
+	dimVarInd = 1:3,
+	freqVarInd = NULL,
+	numVarInd = 4:5,
+	weightInd = NULL,
+	sampWeightInd = NULL)
 ```
 
 First we have to combine the objects describing the hierarchical variables `V1`, `V2` and `V3` into a list-object named `dimList`. Each list element is one of the objects created in section ["Defining hierarchies"](#ex1:hier). The names of the list-elements must correspond to the variable name that the corresponding list-element refers to. In this case, the first list-element - `dimV1` - should describe variable `V1` in the input data set `microData` when calling `makeProblem()` while the second list element - `dimV2` - defines the hierarchy of variable `V2` and `dimV3` - the third list element - describes the structure of variable `V3`.
@@ -294,15 +293,15 @@ Building an object of class `sdcProblem` using the complete, pre-aggregated data
 
 ```{r}
 ### problem from complete data ###
-dimInfo <- list(V1=dimV1, V2=dimV2, V3=dimV3)
+dimList <- list(V1 = dimV1, V2 = dimV2, V3 = dimV3)
 prob.completeDat <- makeProblem(
-	data=completeData,
-	dimList=dimList,
-	dimVarInd=1:3,
-	freqVarInd=4,
-	numVarInd=5:6,
-	weightInd=NULL,
-	sampWeightInd=NULL)
+	data = completeData,
+	dimList = dimList,
+	dimVarInd = 1:3,
+	freqVarInd = 4,
+	numVarInd = 5:6,
+	weightInd = NULL,
+	sampWeightInd = NULL)
 ```
 
 The only difference is that in this case we define parameter 'freqVarInd' that specifies a column within the input data set {\tt completeData} containing information on cell counts. Also the indices of argument `numVarInd` are different to the first example.
@@ -310,15 +309,15 @@ The only difference is that in this case we define parameter 'freqVarInd' that s
 In any case, both procedures return an object of class `sdcProblem` as it can easily be checked:
 
 ```{r}
-all(c(class(prob.microDat), class(prob.completeDat))=='sdcProblem')
+all(c(class(prob.microDat), class(prob.completeDat)) == "sdcProblem")
 ```
 
 We now can check if the cell counts of both objects are equal. Function `getInfo()` can be used to extract information from objects of class `sdcProblem`. Specifying argument `type` as `freq`, `getInfo()` returns cell counts which are indeed equal independently if micro-data or pre-aggregated data have been used as input to create the complete tabular structure.
 
 ```{r}
-counts1 <- getInfo(prob.completeDat, type='freq')
-counts2 <- getInfo(prob.microDat, type='freq')
-all(counts1==counts2)
+counts1 <- getInfo(prob.completeDat, type = "freq")
+counts2 <- getInfo(prob.microDat, type = "freq")
+all(counts1 == counts2)
 ```
 
 Once the problem has been set up and an instance of class {\tt sdcProblem} is available, it is possible to identify and suppress sensitive table cells as we demonstrate in the next section using object `prob.completeDat`.
@@ -341,7 +340,7 @@ anonymization state. The possible codes are listed below:
 The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of `s` to `u`. The easiest way is to use function `primarySuppression()` directly:
 
 ```{r}
-prob.completeDat <- primarySuppression(prob.completeDat, type='freq', maxN=10)
+prob.completeDat <- primarySuppression(prob.completeDat, type = "freq", maxN = 10)
 ```
 
 Argument `type` specifies the primary suppression rule we want to apply. In this case we want to use the frequency threshold rule that allows to suppress all table cells having cell counts less or equal than the threshold specified using argument `maxN`. `primarySuppression()` also allows to apply the nk-dominance rule or the p-percent rule directly, in case micro data have been used as input data. For all possible parameters and their explanation the interested reader may  consult the manual or the help-page of `primarySuppression()`.
@@ -349,12 +348,12 @@ Argument `type` specifies the primary suppression rule we want to apply. In this
 After performing the suppression, we can have a look at the distribution of the anonymization states:
 
 ```{r}
-print(table(getInfo(prob.completeDat, type="sdcStatus")))
+print(table(getInfo(prob.completeDat, type = "sdcStatus")))
 summary(prob.completeDat)
 ```
 
 ```{r, echo=FALSE}
-nrPrimSupps <- length(which(getInfo(prob.completeDat, type='sdcStatus')=='u'))
+nrPrimSupps <- length(which(getInfo(prob.completeDat, type = "sdcStatus") == "u"))
 ```
 
 One can see that the ``r nrPrimSupps`` cells having counts less or equal than 10 have been identified and marked as primary suppressed. However, we should note that it is very easy to implement custom suppression rules by manually changing the anonymization state of cells using functions `setInfo()` or `changeCellStatus()`. Information on how to use these functions is of course provided in the manual and the corresponding help-pages.
@@ -374,10 +373,10 @@ objects of class `sdcProblem`. The algorithms that may be selected are:
 We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function `protectTable()`.
 
 ```{r, eval=FALSE}
-resHITAS <- protectTable(prob.completeDat, method="HITAS")
-resOPT <- protectTable(prob.completeDat, method="OPT")
-resHYPER <- protectTable(prob.completeDat, method="HYPERCUBE")
-resSIMPLE <- protectTable(prob.completeDat, method="SIMPLEHEURISTIC")
+resHITAS <- protectTable(prob.completeDat, method = "HITAS")
+resOPT <- protectTable(prob.completeDat, method = "OPT")
+resHYPER <- protectTable(prob.completeDat, method = "HYPERCUBE")
+resSIMPLE <- protectTable(prob.completeDat, method = "SIMPLEHEURISTIC")
 ```
 
 Having a look at the Output objects we can observe that the number of secondary suppressions required to protect the `r nrPrimSupps` primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.
@@ -392,7 +391,7 @@ used while ``r getInfo(workDat$resSIMPLE, 'nrSecondSupps')`` additional suppress
 One now easily get information from the resulting output objects that are instances of class `safeObj` by using function `getInfo()` or applying the `summary`-method. For the former we show how to extract the final data set which can be achieved as follows:
 
 ```{r}
-finalData <- getInfo(resOPT, type='finalData')
+finalData <- getInfo(resOPT, type = "finalData")
 print(head(finalData))
 ```
 
