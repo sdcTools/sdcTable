@@ -49,9 +49,14 @@
 #' # compute contributing ids for each cell
 #' contributing_indices(prob)
 #'
-contributing_indices <- function(prob, ids = NULL) {
-  pi <- slot(prob, "problemInstance")
-  poss_ids <- slot(pi, "strID")
+
+# alte hierarchie in dimobj -> neue hierarchie umwandeln
+# gibt eine liste mit einem element pro dimension und
+# fuer alle codes die entsprechenden beitragenden einheiten
+contributing_indices = function(prob, ids = NULL) {
+  . <- NULL
+  dt <- sdcProb2df(prob, addDups = FALSE, dimCodes = "original")
+  poss_ids <- dt$strID
 
   if (is.null(ids)) {
     ids <- poss_ids
@@ -68,11 +73,64 @@ contributing_indices <- function(prob, ids = NULL) {
     }
   }
 
-  contr_indices <- lapply(1:length(ids), function(x) {
-    c_contributing_indices(
-      object = prob,
-      input = list(ids[x]))
+  dimvars <- slot(prob, "dimInfo")@vNames
+  nr_dims <- length(dimvars)
+
+  dt <- dt[, c("strID", "freq", dimvars), with = FALSE]
+  data.table::setnames(dt, old = "strID", new = "id")
+
+  # we compute all unique codes once
+  unique_codes <- lapply(dt[, dimvars, with = FALSE], function(x) {
+    sort(unique(x))
   })
-  names(contr_indices) <- ids
-  contr_indices
+
+  # get contributing codes
+  contr_codes <- .get_all_contributing_codes(prob)
+
+  # positions in strID
+  str_info <- prob@dimInfo@strInfo
+  names(str_info) <- dimvars
+
+  # merge inner cell-info to data
+  dt_inner <- data.table(id = g_str_id(prob@dimInfo), is_inner = TRUE)
+  dt_inner$idx <- 1:nrow(dt_inner)
+  dt_inner <- dt[dt_inner, on = "id"]
+
+  dt_inner$tmp <- apply(dt_inner[, dimvars, with = FALSE], 1, paste0, collapse = "")
+  setkeyv(dt_inner, "tmp")
+
+  # subsetting dt to those ids, we want to compute the contributing indices from
+  dt <- dt[.(ids), on = "id"]
+
+  # prepare output
+  res <- vector("list", length(ids))
+  names(res) <- ids
+
+  message("computing contributing indices | rawdata <--> table; this might take a while")
+  for (i in seq_len(nrow(dt))) {
+    strID <- dt$id[i]
+    if (dt$freq[i] == 0) {
+      res[[strID]] <- integer()
+    } else {
+      index_vec <- which(dt_inner$id == strID)
+      if (length(index_vec) > 0) {
+        res[[strID]] <- dt_inner$idx[index_vec]
+      } else {
+        lev_info <- vector("list", length = nr_dims)
+        names(lev_info) <- dimvars
+        for (dv in dimvars) {
+          code <- dt[[dv]][i]
+          info <- contr_codes[[dv]][[code]]
+          if (!info$is_root) {
+            lev_info[[dv]] <- info$contr_codes
+          } else {
+            lev_info[[dv]] <- unique_codes[[dv]]
+          }
+        }
+        cell_indices <- pasteStrVec(unlist(expand.grid(lev_info)), nr_dims)
+        res[[strID]] <- which(dt_inner$tmp %in% cell_indices)
+      }
+    }
+  }
+  return(res)
 }

@@ -115,9 +115,10 @@ domRule <- function(object, params, type) {
 
   # calculate contributing indices
   nr_cells <- g_nrVars(pI)
-  indices <- lapply(1:nr_cells, function(x) {
-    c_contributing_indices(object, input = list(strIDs[x]))
-  })
+  indices <- contributing_indices(
+    prob = object,
+    ids = strIDs
+  )
 
   # values and totals of contributing units
   inp <- lapply(1:nr_cells, function(x) {
@@ -168,3 +169,38 @@ domRule <- function(object, params, type) {
   return(object)
 }
 
+# returns all contributing codes for each dimensions
+# of a sdcProblem-object; dimensions are converted
+# sdcHierarchies-trees and hier_info() is then used.
+.get_all_contributing_codes <- function(x) {
+  .sdchier_from_sdc <- function(d) {
+    df <- data.frame(
+      levels = slot(d, "levels"),
+      codes = slot(d, "codesOriginal"),
+      stringsAsFactors = FALSE
+    )
+    df$levels <- sapply(1:nrow(df), function(x) {
+      paste0(rep("@", df$levels[x]), collapse = "")
+    })
+    hier_import(df, from = "df")
+  }
+
+  stopifnot(inherits(x, "sdcProblem"))
+  dims_hier <- lapply(x@dimInfo@dimInfo, function(x) {
+    .sdchier_from_sdc(x)
+  })
+
+  dims_info <- lapply(dims_hier, function(x) {
+    hier_info(x)
+  })
+
+  all_contr_codes <- lapply(dims_info, function(x) {
+    lapply(x, function(y) {
+      list(
+        is_root = y$is_rootnode,
+        contr_codes = y$contributing_codes
+      )
+    })
+  })
+  all_contr_codes
+}

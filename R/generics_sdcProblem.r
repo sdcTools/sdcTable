@@ -269,9 +269,6 @@ setGeneric("c_ghmiter_select_quader", function(object, input) {
 setGeneric("c_ghmiter_supp_additional", function(object, input) {
   standardGeneric("c_ghmiter_supp_additional")
 })
-setGeneric("c_contributing_indices", function(object, input) {
-  standardGeneric("c_contributing_indices")
-})
 setGeneric("c_reduce_problem", function(object, input) {
   standardGeneric("c_reduce_problem")
 })

@@ -38,33 +38,41 @@ setMethod(f="get.sdcProblem", signature=c("sdcProblem", "character"),
 
 #' @aliases set.sdcProblem,sdcProblem,character,list-method
 #' @rdname set.sdcProblem-method
-setMethod(f="set.sdcProblem", signature=c("sdcProblem", "character", "list"),
-  definition=function(object, type, input) {
-    if ( !type %in% c("problemInstance", "partition", "rule.freq", "startI", "startJ", "indicesDealtWith", "elapsedTime") ) {
-      stop("set.sdcProblem:: check argument 'type'!\n")
-    }
-    if ( type == "problemInstance" ) {
-      s_problemInstance(object) <- input[[1]]
-    }
-    if ( type == "partition" ) {
-      s_partition(object) <- input[[1]]
-    }
-    if ( type == "startI" ) {
-      s_startI(object) <- input[[1]]
-    }
-    if ( type == "startJ" ) {
-      s_startJ(object) <- input[[1]]
-    }
-    if ( type == "indicesDealtWith" ) {
-      s_indicesDealtWith(object) <- input[[1]]
-    }
-    if ( type == "elapsedTime" ) {
-      s_elapsedTime(object) <- input[[1]]
-    }
-    validObject(object)
-    return(object)
+setMethod(f = "set.sdcProblem",
+          signature = c("sdcProblem", "character", "list"),
+          definition = function(object, type, input) {
+  if (!type %in% c(
+    "problemInstance",
+    "partition",
+    "rule.freq",
+    "startI",
+    "startJ",
+    "indicesDealtWith",
+    "elapsedTime"
+  )) {
+    stop("set.sdcProblem:: check argument 'type'!\n")
   }
-)
+  if (type == "problemInstance") {
+    s_problemInstance(object) <- input[[1]]
+  }
+  if (type == "partition") {
+    s_partition(object) <- input[[1]]
+  }
+  if (type == "startI") {
+    s_startI(object) <- input[[1]]
+  }
+  if (type == "startJ") {
+    s_startJ(object) <- input[[1]]
+  }
+  if (type == "indicesDealtWith") {
+    s_indicesDealtWith(object) <- input[[1]]
+  }
+  if (type == "elapsedTime") {
+    s_elapsedTime(object) <- input[[1]]
+  }
+  validObject(object)
+  return(object)
+})
 
 #' @aliases calc.sdcProblem,sdcProblem,character,list-method
 #' @rdname calc.sdcProblem-method
@@ -74,57 +82,54 @@ setMethod(f="calc.sdcProblem", signature=c("sdcProblem", "character", "list"),
       "cutAndBranch", "anonWorker", "ghmiter", "preprocess", "cellID",
       "finalize", "ghmiter.diagObj", "ghmiter.calcInformation",
       "ghmiter.suppressQuader", "ghmiter.selectQuader",
-      "ghmiter.suppressAdditionalQuader", "contributingIndices",
+      "ghmiter.suppressAdditionalQuader",
       "reduceProblem", "genStructuralCuts") ) {
       stop("calc.sdcProblem:: check argument 'type'!\n")
     }
     # frequency-rule
-    if ( type == "rule.freq" ) {
+    if (type == "rule.freq") {
       return(c_rule_freq(object, input))
     }
-    if ( type == "heuristicSolution" ) {
+    if (type == "heuristicSolution") {
       return(c_heuristic_solution(object, input))
     }
-    if ( type == "cutAndBranch" ) {
+    if (type == "cutAndBranch") {
       return(c_cut_and_branch(object, input))
     }
-    if ( type == "anonWorker" ) {
+    if (type == "anonWorker") {
       return(c_anon_worker(object, input))
     }
-    if ( type == "ghmiter" ) {
+    if (type == "ghmiter") {
       return(c_ghmiter(object, input))
     }
-    if ( type == "preprocess" ) {
+    if (type == "preprocess") {
       return(c_preprocess(object, input))
     }
-    if ( type == "cellID" ) {
+    if (type == "cellID") {
       return(c_cellID(object, input))
     }
-    if ( type == "finalize" ) {
+    if (type == "finalize") {
       return(c_finalize(object, input))
     }
-    if ( type == "ghmiter.diagObj" ) {
+    if (type == "ghmiter.diagObj") {
       return(c_ghmiter_diag_obj(object, input))
     }
-    if ( type == "ghmiter.calcInformation" ) {
+    if (type == "ghmiter.calcInformation") {
       return(c_ghmiter_calc_info(object, input))
     }
-    if ( type == "ghmiter.suppressQuader" ) {
+    if (type == "ghmiter.suppressQuader") {
       return(c_ghmiter_suppress_quader(object, input))
     }
-    if ( type == "ghmiter.selectQuader" ) {
+    if (type == "ghmiter.selectQuader") {
       return(c_ghmiter_select_quader(object, input))
     }
-    if ( type == "ghmiter.suppressAdditionalQuader" ) {
+    if (type == "ghmiter.suppressAdditionalQuader") {
       return(c_ghmiter_supp_additional(object, input))
     }
-    if ( type == "contributingIndices" ) {
-      return(c_contributing_indices(object, input))
-    }
-    if ( type == "reduceProblem" ) {
+    if (type == "reduceProblem") {
       return(c_reduce_problem(object, input))
     }
-    if ( type == "genStructuralCuts" ) {
+    if (type == "genStructuralCuts") {
       return(c_gen_structcuts(object, input))
     }
   }
@@ -2273,70 +2278,6 @@ setMethod("c_ghmiter_supp_additional", signature=c("sdcProblem", "list"), defini
     object <- c_ghmiter_suppress_quader(object, input=suppObjNew)
   }
   return(object)
-})
-
-setMethod("c_contributing_indices", signature=c("sdcProblem", "list"), definition=function(object, input) {
-  strID <- input[[1]]
-  dataObj <- g_dataObj(object)
-  dimInfoObj <- g_dimInfo(object)
-  dimInfo <- g_dim_info(dimInfoObj)
-  pI <- g_problemInstance(object)
-
-  if (!strID %in% g_strID(pI)) {
-    stop("c_contributing_indices:: strID not found in the current problem!\n")
-  }
-  dims <- lapply(dimInfo, function(x) {
-    g_dims(x)
-  })
-  indexVec <- which(g_str_id(dimInfoObj)==strID)
-
-  if (length(indexVec)>0) {
-    return(indexVec)
-  }
-
-  # some (sub)totals need to be considered
-  levInfo <- list()
-  for (z in 1:length(dimInfo)) {
-    subLevel <- substr(strID, g_str_info(dimInfoObj)[[z]][1], g_str_info(dimInfoObj)[[z]][2])
-    if (sum(as.numeric(subLevel)) == 0) {
-      # overall total of this sublevel consists of all unique codes
-      levInfo[[z]] <- sort(unique(unlist(dims[[z]])))
-    } else {
-      orderInd <- unlist(lapply(dims[[z]], function(x) { match(subLevel, x)}))
-      if (min(orderInd, na.rm=TRUE) == 1) {
-        # we need to check, if es muss geprueft werden, ob einer der indices auch noch als "subtotal" vorkommt
-        # --> nested hierarchies
-        posscodes <- dims[[z]][[which(orderInd==1)]][-1]
-        finished <- FALSE
-        while(!finished) {
-          newcodes <- posscodes
-          changed <- FALSE
-          for (i in 1:length(posscodes)) {
-            o <- unlist(lapply(dims[[z]], function(x) { match(posscodes[i], x)}))
-            ii <- which(o==1)
-            if (length(ii)==1) {
-              newcodes <- setdiff(newcodes, posscodes[i])
-              newcodes <- c(newcodes, dims[[z]][[ii]][-1])
-              changed <- TRUE
-            }
-          }
-          if (changed) {
-            posscodes <- newcodes
-          } else {
-            finished <- TRUE
-            levInfo[[z]] <- newcodes
-          }
-        }
-        levInfo[[z]] <- posscodes
-      } else {
-        # subLevel is not a "subtotal" too
-        levInfo[[z]] <- subLevel
-      }
-    }
-  }
-  cellIndex <- pasteStrVec(unlist(expand.grid(levInfo)), length(levInfo))
-  indexVec <- which(g_str_id(dimInfoObj) %in% cellIndex)
-  return(indexVec)
 })
 
 setMethod("c_reduce_problem", signature=c("sdcProblem", "list"), definition=function(object, input) {
