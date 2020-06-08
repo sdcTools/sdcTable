@@ -87,8 +87,8 @@ domRule <- function(object, params, type) {
     n <- 2
   } else {
     n <- params$n
-    if (n < 2) {
-      stop("Parameter `n` must be >= 2 for nk-dominance rule.", call. = FALSE)
+    if (n < 1) {
+      stop("Parameter `n` must be >= 1 for nk-dominance rule.", call. = FALSE)
     }
   }
 
