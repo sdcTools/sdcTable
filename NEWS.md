@@ -1,12 +1,14 @@
-# sdcTable 0.32
+# sdcTable next
 - bugfix in `protectLinkedTables()`; thx Øyvind Langsrud for spotting and reporting
 - bugfix in `c_gen_mat_m` with problems that have a single dimension
 - bugfix when computing dominance-rules on weighted data
 - new exported function `createRegSDCInput()`
 - improved vignette; thx to @Krisselack for reporting
+- speedup and simplify computation of contributing units (from raw-data) to a table cell in `contributing_indices()` and removed internal helper-function `c_contributing_indices()`
+- allow nk-dominance rules with n=1
 - [todo] feature: allow setting sdcStatus input data.frame/list of strIDs
 - [todo] more checks/performance improvements in `protectLinkedTables()`
-
+- [todo] improve performance singleton detection procedure
 
 # sdcTable 0.31
 - remove debugging outut
@@ -14,7 +16,7 @@
 - bugfix in `protectLinkedTables()`
 - remove dependency on package `lpSolveAPI`
 - update singleton-detecton procedure by allowing to input a threshold value that must be respected for all simple table rows
-- [todo] check dominance rules (unweighted variables are used)
+- check dominance rules (unweighted variables are used)
 
 # sdcTable 0.30
 - various fixes and improvements in `createJJFormat()`
