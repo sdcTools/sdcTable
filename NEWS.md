@@ -5,10 +5,9 @@
 - new exported function `createRegSDCInput()`
 - improved vignette; thx to @Krisselack for reporting
 - speedup and simplify computation of contributing units (from raw-data) to a table cell in `contributing_indices()` and removed internal helper-function `c_contributing_indices()`
-- allow nk-dominance rules with n=1
-- [todo] feature: allow setting sdcStatus input data.frame/list of strIDs
+- allow nk-dominance rules with n=1, thx @MaximeBeaute for reporting
+- performance improvements in singleton detection procedure
 - [todo] more checks/performance improvements in `protectLinkedTables()`
-- [todo] improve performance singleton detection procedure
 
 # sdcTable 0.31
 - remove debugging outut
