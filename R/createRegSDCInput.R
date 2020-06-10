@@ -47,11 +47,11 @@
 #'   z = inp_regsdc$z_supp,
 #'   y = inp_regsdc$y)[, 1]
 #'
-#' check if inner cells are all protected
+#' # check if inner cells are all protected
 #' df <- data.frame(
 #'   freqs_orig = inp_regsdc$z[inp_regsdc$info$is_innercell == TRUE, ],
 #'   freqs_supp = inp_regsdc$z_supp[inp_regsdc$info$is_innercell == TRUE, ],
-#'   regsdc = sdc
+#'   regsdc = res_regsdc
 #' )
 #'
 # cells where regsdc estimates identical cell value as `freqs`
@@ -62,6 +62,7 @@
 # --> the primary-suppression pattern in this case in unsafe!
 #' }
 createRegSDCInput <- function(x, chk = FALSE) {
+  strID <- id <- NULL
   stopifnot(inherits(x, "sdcProblem"))
   stopifnot(rlang::is_scalar_logical(chk))
 
@@ -69,76 +70,94 @@ createRegSDCInput <- function(x, chk = FALSE) {
   pi <- get.sdcProblem(x, type = "problemInstance")
   nr_cells <- get.problemInstance(pi, "nrVars")
 
-  # number of linear dependencies
-  # all deps as sparse matrix
-  st <- c_gen_mat_m(
-    input = list(
-      objectA = pi,
-      objectB = get.sdcProblem(x, type = "dimInfo")
-    )
-  )
+  df <- sdcProb2df(x, addDups = FALSE, dimCodes = "original")
+  df$inner_cell <- TRUE
 
-  # 1: identify cells that are sub-total and inner-cells
-  ids_subtots <- sort(unique(st@j[st@v == -1]))
-  ids_innercells <- setdiff(1:nr_cells, ids_subtots)
+  # all_contributing codes
+  contr_codes <- .get_all_contributing_codes(x)
+  names(contr_codes)
 
-  # 2: create matrix with correct format
-  # we create the diagonal matrix and remove rows later
-  mat <- slam::simple_triplet_diag_matrix(v = 1, nrow = nr_cells)
-  rownames(mat) <- colnames(mat) <- paste0("cell_", 1:nr_cells)
-  mat <- mat[rownames(mat) %in% paste0("cell_", ids_innercells), ]
-
-  # 3: add linear deps for subtotals
-  # st: the simple triplet containing all relations
-  # id: the id for which the linear-deps should be returned
-  .get_rel <- function(st, id) {
-    ii <- slot(st, "j") == id & slot(st, "v") == -1
-    row <- slot(st, "i")[ii]
-    slot(st, "j")[slot(st, "i") == row & slot(st, "v") != -1]
+  # minimal_codes
+  tot_codes <- lapply(x@dimInfo@dimInfo, function(y) {
+    y@codesOriginal[!y@codesMinimal]
+  })
+  for (i in 1:length(tot_codes)) {
+    df$inner_cell[df[[names(tot_codes)[i]]] %in% tot_codes[[i]]] <- FALSE
   }
 
-  xx <- lapply(ids_subtots, function(x) {
-    if (x == 1) {
-      deps <- ids_innercells
-    } else {
-      deps <- .get_rel(st = st, id = x)
-    }
-    rr <- paste0("cell_", deps)
-    #mat[rownames(mat) %in% rr, x] <<- 1
-    mat[which(rownames(mat) %in% rr), x] <<- 1
-  }); rm(xx)
+  totals <- df$strID[df$inner_cell == FALSE]
+  inner_cells <- df$strID[df$inner_cell == TRUE]
 
-  freqs <- slot(pi, "Freq")
+  # matrix:
+  # cols --> all cells
+  # rows = inner cells
+  mat <- slam::simple_triplet_diag_matrix(v = 1, nrow = nr_cells)
+  rownames(mat) <- colnames(mat) <- df$strID
+  mat <- mat[rownames(mat) %in% inner_cells, ]
+
+  # 1: we compute for all subtotal-codes the contributing inner codes
+  cn_dims <- names(contr_codes)
+  nr_dims <- length(contr_codes)
+  pool <- vector("list", nr_dims)
+  names(pool) <- cn_dims
+
+  innerdf <- df[df$inner_cell == TRUE, ]
+  innerdf$id <- 1:nrow(innerdf)
+
+  for (d in cn_dims) {
+    nr_tots <- length(tot_codes[[d]])
+    ll <- vector("list", length = nr_tots)
+    names(ll) <- tot_codes[[d]]
+
+    for (j in tot_codes[[d]]) {
+      ll[[j]] <- which(innerdf[[d]] %in% contr_codes[[d]][[j]]$contr_codes)
+    }
+    pool[[d]] <- ll
+  }
+
+  # 2: we compute for all subtotals the linear dependencies based
+  # strictly on inner cells
+  for (code in totals) {
+    j <- match(code, colnames(mat))
+    ids <- 1:nrow(mat)
+    dd <- df[strID == code, cn_dims, with = FALSE]
+    for (k in cn_dims) {
+      v <- dd[[k]]
+      if (v %in% names(pool[[k]])) {
+        ids <- intersect(ids, pool[[k]][[dd[[k]]]])
+      } else {
+        ids <- intersect(ids, which(innerdf[[k]] == v))
+      }
+    }
+    idx <- innerdf[id %in% unique(ids), id]
+    mat[idx, j] <- 1
+  }
+
+  freqs <- df$freq
 
   if (chk) {
     stopifnot(all(apply(mat, 2, function(x) {
-      sum(x * freqs[ids_innercells])
+      sum(x * innerdf$freq)
     }) == freqs))
   }
 
-  # 4: use strids to identify cells
-  strids <- slot(pi, "strID")
-
-  colnames(mat) <- strids
-  rownames(mat) <- strids[ids_innercells]
-
+  # 3: use strids to identify cells
   z <- matrix(data = freqs, ncol = 1)
   colnames(z) <- "freq"
-  rownames(z) <- strids
+  rownames(z) <- df$strID
 
   y <- z_supp <- z
   y <- y[rownames(y) %in% rownames(mat), , drop = F]
 
   # with NA in suppressed cells
-  z_supp[slot(pi, "sdcStatus") %in% c("u", "x"), 1] <- NA
+  z_supp[df$sdcStatus %in% c("u", "x"), 1] <- NA
 
   # info: what are inner/marginal cells
   info <- data.frame(
-    cell_id = strids,
+    cell_id = df$strID,
     is_innercell = FALSE,
     stringsAsFactors = FALSE
   )
   info$is_innercell[info$cell_id %in% rownames(mat)] <- TRUE
   list(x = mat, y = y, z = z, z_supp = z_supp, info = info)
 }
-

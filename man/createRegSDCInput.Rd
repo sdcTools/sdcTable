@@ -60,11 +60,11 @@ res_regsdc <- RegSDC::SuppressDec(
   z = inp_regsdc$z_supp,
   y = inp_regsdc$y)[, 1]
 
-check if inner cells are all protected
+# check if inner cells are all protected
 df <- data.frame(
   freqs_orig = inp_regsdc$z[inp_regsdc$info$is_innercell == TRUE, ],
   freqs_supp = inp_regsdc$z_supp[inp_regsdc$info$is_innercell == TRUE, ],
-  regsdc = sdc
+  regsdc = res_regsdc
 )
 
 subset(df, df$regsdc == df$freqs_orig & is.na(freqs_supp))
