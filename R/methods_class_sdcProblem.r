@@ -1108,8 +1108,6 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
       setkeyv(subDat, vNames)
       subIndices[[group]][[tab]] <- as.list(subDat[, tmpIndices, with = FALSE])
     }
-    # we only need unique indices; this will speed up singleton-detection!
-    subIndices[[group]] <- unique(subIndices[[group]])
   }
   if (verbose) {
     message("[done]")
