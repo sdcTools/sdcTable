@@ -548,7 +548,7 @@ detect_singletons <- function(dat, indices, sub_indices, do_singletons, threshol
   }
 
   is_singleton <- is_primsupp <- is_suppressed <- NULL
-  dat$is_singleton := FALSE
+  dat$is_singleton <- FALSE
   dat[sdcStatus == "u" & freq == 1, is_singleton := TRUE]
   dat[, is_suppressed := sdcStatus %in% c("u", "x")]
   dat[, is_primsupp := sdcStatus == "u"]
@@ -579,6 +579,7 @@ detect_singletons <- function(dat, indices, sub_indices, do_singletons, threshol
                 nr_added_supps <- nr_added_supps + 1
                 supp_ids <- c(supp_ids, supp_id)
                 dat$sdcStatus[supp_id] <- "u"
+                dat$is_suppressed[supp_id] <- TRUE
               }
               # 3. If a frequency rule is used, it could happen that two cells on a row/column are
               # primary unsafe, but the sum of the two cells could still be unsafe. In that case
@@ -594,24 +595,30 @@ detect_singletons <- function(dat, indices, sub_indices, do_singletons, threshol
                   nr_added_supps <- nr_added_supps + 1
                   supp_ids <- c(supp_ids, supp_id)
                   dat$sdcStatus[supp_id] <- "u"
+                  dat$is_suppressed[supp_id] <- TRUE
                 }
               }
             }
 
             # respect threshold for rows with suppressions
-            if (!is.na(threshold) & nr_supps > 0) {
-              finished <- !any(dat[ii][["sdcStatus"]] %in% c("u", "x")) # only if we have suppressions
+            if (!is.na(threshold)) {
+              ss <- dat[ii]
+              nr_supps <- sum(ss$is_suppressed)
+              obs_supp <- sum(ss$freq[ss$is_suppressed])
+              # only if we have suppressions
+              finished <- nr_supps == 0 | obs_supp >= threshold
               # suppress as many cells as required
               while (!finished) {
                 ss <- dat[ii]
                 ind_supps <- ss$sdcStatus %in% c("u", "x")
                 # already fully suppressed?
-                fully_supped <- sum(ss$freq[!ss$sdcStatus %in% c("u", "x")]) == 0
-                if (!fully_supped & sum(ss$freq[ind_supps]) < threshold) {
+                fully_supped <- sum(ss$freq[!ss$is_suppressed]) == 0
+                if (!fully_supped & sum(ss$freq[ss$is_suppressed]) < threshold) {
                   supp_id <- .supp_val(dt = ss)
                   nr_added_supps <- nr_added_supps + 1
                   supp_ids <- c(supp_ids, supp_id)
                   dat$sdcStatus[supp_id] <- "u"
+                  dat$is_suppressed[supp_id] <- TRUE
                 } else {
                   finished <- TRUE
                 }
