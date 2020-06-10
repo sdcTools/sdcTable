@@ -2,34 +2,41 @@
 % Please edit documentation in R/changeCellStatus.R
 \name{changeCellStatus}
 \alias{changeCellStatus}
-\title{change anonymization status of a specific cell}
+\title{Change anonymization status of a specific cell}
 \usage{
 changeCellStatus(object, characteristics, varNames, rule, verbose = FALSE)
 }
 \arguments{
-\item{object}{an object of class \code{\link{sdcProblem-class}}}
+\item{object}{an object of class \linkS4class{sdcProblem}}
 
-\item{characteristics}{a character vector specifying characteristics of the table cell that should be identified for each dimensional variable defining the table}
+\item{characteristics}{a character vector specifying characteristics
+of the table cell that should be identified for each dimensional variable
+defining the table}
 
-\item{varNames}{a character vector specifying variable names of dimensional variables defining the tables}
+\item{varNames}{a character vector specifying variable names of dimensional
+variables defining the tables}
 
-\item{rule}{character vector of length 1 specifying a valid anonymization code ('u', 'z', 'x', 's') to which the the cell under consideration should be set.}
+\item{rule}{character vector of length 1 specifying a valid
+anonymization code ('u', 'z', 'x', 's') to which the the cell
+under consideration should be set.}
 
-\item{verbose}{logical vector of length 1 defining verbosity, defaults to 'FALSE'}
+\item{verbose}{scalar logical value defining verbosity, defaults to \code{FALSE}}
 }
 \value{
-a \code{\link{sdcProblem-class}} object
+a \linkS4class{sdcProblem} object
 }
 \description{
-Function \code{\link{changeCellStatus}} allows to change|modify the anonymization state
-of single table cells for objects ofs class \code{\link{sdcProblem-class}}.
+Function \code{\link[=changeCellStatus]{changeCellStatus()}} allows to change|modify the anonymization state
+of single table cells for objects of class \linkS4class{sdcProblem}.
 }
 \note{
-Important: the \code{i}-th element of argument \code{characteristics} is uses as the desired characteristic for the dimensional variable specified at the \code{i}-th position of argument \code{varNames}!
+Important: the \code{i}-th element of argument \code{characteristics} is
+used as the desired characteristic for the dimensional variable specified
+at the \code{i}-th position of argument \code{varNames}!
 }
 \examples{
 # load primary suppressed data (as created in the example
-# of \code{\link{primarySuppression}})
+# of ?primarySuppression)
 sp <- searchpaths()
 fn <- paste(sp[grep("sdcTable", sp)], "/data/problemWithSupps.RData", sep="")
 problem <- get(load(fn))
