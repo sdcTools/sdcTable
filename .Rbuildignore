@@ -6,4 +6,6 @@
 ^\.Rproj\.user$
 tmp_stuff
 debugzeugs
-README.Rmd
+^NEWS\.md$
+^README\.md$
+^README\.Rmd$
