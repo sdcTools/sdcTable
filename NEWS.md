@@ -1,16 +1,18 @@
-# sdcTable next
-- bugfix in `protectLinkedTables()`; thx Øyvind Langsrud for spotting and reporting
-- bugfix in `c_gen_mat_m` with problems that have a single dimension
+# sdcTable 0.32
+- `protectTable()` (method=`"SIMPLEHEURISTIC"`) and `protectLinkedTables()` are based on (full) constraint matrix written in c++
+- `"SIMPLEHEURISTIC"` uses c++ implementation of singleton-detection if required
+- bugfix: fixing issue #136 (thx Øyvind Langsrud for spotting and reporting) that would allow a differencing attack on linked tables
+- change: `protectLinkedTables()` only allows the `SIMPLEHEURISTIC` algorithm
+- bugfix in internal function `c_gen_mat_m` with problems that have a single dimension
 - bugfix when computing dominance-rules on weighted data
 - new exported function `createRegSDCInput()`
 - improved vignette; thx to @Krisselack for reporting
 - speedup and simplify computation of contributing units (from raw-data) to a table cell in `contributing_indices()` and removed internal helper-function `c_contributing_indices()`
-- allow nk-dominance rules with n=1, thx @MaximeBeaute for reporting
-- performance improvements in singleton detection procedure
-- [todo] more checks/performance improvements in `protectLinkedTables()`
+- allow nk-dominance rules with n=1 (thx @MaximeBeaute for reporting)
+- better document sdc-code `z` in `primarySuppression()`
 
 # sdcTable 0.31
-- remove debugging outut
+- remove debugging output
 - fixing typos in vignettes
 - bugfix in `protectLinkedTables()`
 - remove dependency on package `lpSolveAPI`
