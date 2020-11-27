@@ -310,7 +310,6 @@ IntegerVector supp_single_constraint(IntegerVector full_ids, CharacterVector str
     }
 
     // default case: a single supp and n
-    //Rcout << "--> default case (nr_suppps -eq 1)" << std::endl;
     List measures = List::create(
       Named("nr_supps") = nr_supps,
       Named("nr_s") = nr_s,
@@ -435,18 +434,18 @@ List suppConstraints(DataFrame dat, List m, List params) {
 
   // convert simple-triplet-input matrix to indices and values
   if (verbose == true) {
-    Rcout << "converting simple-triplet matrix to indices" << std::endl;
+    Rcout << "converting simple-triplet matrix to indices (this could take a while ...)" << std::endl;
   }
-
   List tmpres = simple_triplet_to_indices(m, is_common_cell, find_overlaps);
-
-  if (verbose == true) {
-    Rcout << "conversion done" << std::endl;
-  }
 
   m = tmpres["constraint_mat"];
   List additional_constraints = tmpres["additional_constraints"];
   int nr_additional_constraints = additional_constraints.size();
+
+  if (verbose == true) {
+    Rcout << nr_additional_constraints << " additional constraints have been created" << std::endl;
+  }
+
   if (do_singletons == true or threshold > 0) {
     if (verbose == true) {
       Rcout << "procedure checks for singletons" << std::endl;
@@ -507,27 +506,26 @@ List suppConstraints(DataFrame dat, List m, List params) {
     // we make sure that in such cases; either none or both common cells
     // are suppressed
     if (nr_additional_constraints > 0) {
-      if (verbose == true) {
-        Rcout << nr_additional_constraints << " additional constraints have been created" << std::endl;
-      }
-
       IntegerVector tmpind;
+      int to_supp;
       for (int i = 0; i < nr_additional_constraints; i++) {
-        if (verbose == true) {
-          Rcout << "constraint " << i + 1 << " | " << nr_additional_constraints << std::endl;
-        }
-
-
         List tmpindlist = additional_constraints[i];
         tmpind = tmpindlist["idx"];
         cur_sdc = sdc_status[tmpind];
         cur_freqs = freqs[tmpind];
         List add_suppinfo = info(cur_sdc, cur_freqs, tmpind);
+
         bool is_fully_supped = add_suppinfo["fully_supped"];
         int nr_tmp_supps = add_suppinfo["nr_supps"];
         if ((is_fully_supped == false) and (nr_tmp_supps == 1)) {
           // suppress the other remaining cell to make sure, both cells are suppressed
-          int to_supp = add_suppinfo["ind_poss_s"];
+          IntegerVector tmp_poss_s = add_suppinfo["ind_poss_s"];
+          if (tmp_poss_s.size() > 0) {
+            to_supp = add_suppinfo["ind_poss_s"];
+          } else {
+            // also if a cell is known to be 0 it could be used to compute other cell-values
+            to_supp = add_suppinfo["ind_poss_s_or_z"];
+          }
           sdc_status[to_supp] = "x";
           supps_added = true;
           nr_additional_supps = nr_additional_supps + 1;
@@ -536,15 +534,7 @@ List suppConstraints(DataFrame dat, List m, List params) {
     }
 
     // we now check all the "regular" constraints
-    if (verbose == true) {
-      Rcout << "checking the regular constraints" << std::endl;
-    }
-
     for (int i = 0; i < nr_constraints; i++) {
-      if (verbose == true) {
-        Rcout << "constraint " << i + 1 << " | " << nr_constraints << std::endl;
-      }
-
       tmplist = m[i];
       indices = tmplist["idx"];
 
