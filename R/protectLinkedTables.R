@@ -29,8 +29,8 @@
 #'    variable in `objectB` that match the codes given in the third list-element
 #'    for `objectA`.
 #' @param method scalar character vector defining the algorithm
-#' that should be used to protect the primary sensitive table cells. The possible
-#' values are `"HITAS"`, `"SIMPLEHEURISTIC"` and `"OPT"`; For details please see
+#' that should be used to protect the primary sensitive table cells. In versions `>= 0.32`
+#' only the `SIMPLEHEURISTIC` procedure is supported; For details please see
 #' [protectTable()].
 #' @param ... additional arguments to control the secondary cell suppression
 #' algorithm. For details, see [protectTable()].
@@ -132,7 +132,6 @@
 #'   objectA = p1,
 #'   objectB = p2,
 #'   commonCells = common_cells,
-#'   method = "HITAS",
 #'   verbose = TRUE)
 #'
 #' # having a look at the results
@@ -141,410 +140,250 @@
 #' summary(result_tab1)
 #' summary(result_tab2)
 #' }
-#'
 #' @rdname protectLinkedTables
 #' @export protectLinkedTables
 #' @seealso [protectTable()]
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
-protectLinkedTables <- function(objectA, objectB, commonCells, method, ...) {
-  .indices_common_cells <- function(input1, input2, commonCells) {
-    id1 <- id2 <- NULL
-    dat1 <- g_df(input1); dat1$id1 <- 1:nrow(dat1)
-    dat2 <- g_df(input2); dat2$id2 <- 1:nrow(dat2)
-    dat1$strID <- dat1$sdcStatus <- NULL
-    dat2$strID <- dat2$sdcStatus <- NULL
-    dI1 <- g_dimInfo(input1)
-    dI2 <- g_dimInfo(input2)
+protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEHEURISTIC", ...) {
+  . <- sdcStatus <- freq <- striD <- strID_x <- strID_y <- NULL
 
-    # restrict to totals in non-overlapping variables in dataset1
-    totvars <- setdiff(dI1@vNames, sapply(commonCells, function(x) x[[1]]))
-    if (length(totvars) > 0) {
-      for (i in 1:length(totvars)) {
-        cmd <- paste0("dat1 <- dat1[", totvars[i], "=='", dI1@dimInfo[[totvars[i]]]@codesDefault[1], "']")
-        eval(parse(text = cmd))
-      }
-    }
-    # restrict to totals in non-overlapping variables in dataset2
-    totvars <- setdiff(dI2@vNames, sapply(commonCells, function(x) x[[2]]))
-    if (length(totvars) > 0) {
-      for (i in 1:length(totvars)) {
-        cmd <- paste0("dat2 <- dat2[", totvars[i], "=='", dI2@dimInfo[[totvars[i]]]@codesDefault[1], "']")
-        eval(parse(text = cmd))
-      }
-    }
-
-    for (i in 1:length(commonCells)) {
-      if (length(commonCells[[i]]) == 4) {
-        cmd1 <- paste0("dat1 <- dat1[,tmpxxx_V", i, ":=", commonCells[[i]][[1]], "_o]")
-        cmd2 <- paste0("dat2 <- dat2[,tmpxxx_V", i, ":=", commonCells[[i]][[2]], "_o]")
-        eval(parse(text = cmd1))
-        eval(parse(text = cmd2))
-
-        # recode different codes to those of dataset1
-        codes <- commonCells[[i]][[4]]
-        codesX <- commonCells[[i]][[3]]
-        for  (z in 1:length(codes)) {
-          if (codes[z] != codesX[z]) {
-            cmd <- paste0("dat2 <- dat2[tmpxxx_V", i, "=='", codes[z], "',tmpxxx_V", i, ":='", codesX[z], "']")
-            eval(parse(text = cmd))
-          }
-        }
-      } else {
-        # nothing to do, codes are the same!
-        cmd1 <- paste0("dat1[,tmpxxx_V", i, ":=", commonCells[[i]][[1]], "_o]")
-        cmd2 <- paste0("dat2[,tmpxxx_V", i, ":=", commonCells[[i]][[2]], "_o]")
-        eval(parse(text = cmd1))
-        eval(parse(text = cmd2))
-      }
-    }
-
-    kV1 <- names(dat1)[grep("tmpxxx", names(dat1))]; setkeyv(dat1, kV1)
-    kV2 <- names(dat2)[grep("tmpxxx", names(dat2))]; setkeyv(dat2, kV2)
-    mm <- merge(dat1, dat2); setkey(mm, id1)
-    if (any(mm$freq.x != mm$freq.y)) {
-      stop("Error: common cells must have same values!\n")
-    }
-    return(list(commonInd1 = mm$id1, commonInd2 = mm$id2))
-  }
-
-  .check_common_cells <- function(suppPattern1, suppPattern2, commonCellIndices) {
-    indOK <- TRUE
-    if (any(suppPattern1[commonCellIndices[[1]]] != suppPattern2[commonCellIndices[[2]]]))
-      indOK <- FALSE
-    return(indOK)
-  }
-
-  # returns for both sdcProblems listed in `probs` and a list of common cell indices a list:
-  # each list has two slots holding information about all subtables in which common cells occur
-  # along with its hashes; unique tables (according to sha1) hashes are returned in the second
-  # list element
-  .subtabs_with_commoncells <- function(probs, common_cell_indices) {
-    # computes for a sdcProblem instance (`prob`) and vector of common cell indices
-    # (`common_cells`) a list with the following slots:
-    # - `res`: a list for each cell index containing a list with computed sha1-hashes
-    # of the relevant table(s)
-    # - `subtabs`: for each (unique) hashed table; the subtable with the indices in variable
-    # `index`
-    .subtabs_with_commoncells <- function(prob, common_cells) {
-      .subtabs_with_single_cell <- function(df, partition, cell_id) {
-        out <- list()
-        for (i in seq_len(length(partition))) {
-          ll <- partition[[i]]
-          for (j in seq_len(length(ll))) {
-            indices <- ll[[j]]
-            if (any(cell_id %in% indices)) {
-              tmp <- list(df = df[indices, , drop = FALSE])
-              tmp$df$indices <- indices
-              tmp$digest <- digest::sha1(tmp$df)
-              tmp <- list(tmp)
-              names(tmp) <- df$strID[cell_id]
-              out <- append(out, tmp)
-            }
-          }
-        }
-        if (length(out) > 0) {
-          return(out)
-        }
-        return(invisible(NULL))
-      }
-
-      hashes <- c()
-      subtabs <- list()
-
-      df <- sdcProb2df(prob, addDups = FALSE, dimCodes = "original")
-      partition <- slot(prob, "partition")$indices
-
-      res <- vector("list", length(common_cells))
-      names(res) <- common_cells
-      for (cell_id in as.character(common_cells)) {
-        out <- .subtabs_with_single_cell(
-          df = df,
-          partition = partition,
-          cell_id = cell_id
-        )
-
-        nr_subtabs <- length(out)
-        if (nr_subtabs > 0) {
-          res[[cell_id]] <- vector("list", length(seq_len(length(out))))
-          cn <- paste0("subtab_", 1:nr_subtabs)
-          names(res[[cell_id]]) <- cn
-
-          for (i in 1:nr_subtabs) {
-            hash <- out[[i]]$digest
-            res[[cell_id]][[cn[i]]] <- list(
-              hash  = hash
-            )
-
-            if (!hash %in% hashes) {
-              hashes <- c(hashes, hash)
-              subtabs[[hash]] <- out[[i]]$df
-            }
-          }
-        }
-      }
-      list(res = res, subtabs = subtabs)
-    }
-
-    stopifnot(is.list(probs))
-    stopifnot(length(probs) == 2)
-    stopifnot(all(sapply(probs, class) == "sdcProblem"))
-    stopifnot(is.list(common_cell_indices))
-    stopifnot(length(common_cell_indices) == 2)
-    stopifnot(length(common_cell_indices[[1]]) == length(common_cell_indices[[2]]))
-
-    res_a <- .subtabs_with_commoncells(
-      prob = probs[[1]],
-      common_cells = common_cell_indices[[1]]
-    )
-    res_b <- .subtabs_with_commoncells(
-      prob = probs[[2]],
-      common_cells = common_cell_indices[[2]]
-    )
-    ll <- list(tab_a = res_a, tab_b = res_b, common_cell_indices = common_cell_indices)
-    class(ll) <- "st_commoncells"
-    ll
-  }
-
-  # todo: loops through all subtables with common cells checking for single suppressed cells
-  # when removing all common cells; this is required to protect against differencing
-  # this function returns a list `data.table` with additional suppressions or `NULL`
-  .check_subtabs_with_commoncells <- function(x) {
-    .get_tab_cell_id <- function(x, cell_id) {
-      cell_id <- as.character(cell_id)
-      res <- x$res[[cell_id]]
-      if (is.null(res)) {
-        return(NULL)
-      }
-      hashes <- unique(sapply(res, function(x) x$hash))
-      x$subtabs[hashes]
-    }
-
-    # adding supps (lowest frequency)
-    .find_supp <- function(tab) {
-      res <- NULL
-      if (nrow(tab) <= 1) {
-        return(res)
-      }
-      if (sum(tab$sdcStatus %in% c("u", "x")) == 1) {
-        tab <- tab[sdcStatus %in% c("s", "z")]
-        rg <- range(tab$freq)
-        if (rg[1] == 0 & rg[2] > 0) {
-          tab <- tab[freq > 0]
-        }
-        setorderv(tab, "freq")
-
-        # add a suppression
-        res <- data.table(
-          tab = tab$tab[1],
-          index = tab$indices[1]
-        )
-      }
-      res
-    }
-
-    stopifnot(inherits(x, "st_commoncells"))
-    checked_ids <- c()
-    supps <- data.table(tab = numeric(), index = numeric())
-
-    common_cells <- x$common_cell_indices
-    nr_common_cells <- length(common_cells[[1]])
-    for (i in seq_len(nr_common_cells)) {
-      res_a <- .get_tab_cell_id(x$tab_a, cell_id = common_cells[[1]][i])
-      res_b <- .get_tab_cell_id(x$tab_b, cell_id = common_cells[[2]][i])
-
-      gr <- expand.grid(names(res_a), names(res_b))
-      gr$id <- apply(gr, 1, paste, collapse = "_")
-
-      # we need to check all combinations
-      for (z in 1:nrow(gr)) {
-        id <- gr$id[z]
-        if (!id %in% checked_ids) {
-          checked_ids <- c(checked_ids, id)
-          tab_a <- res_a[[gr$Var1[z]]]
-          tab_a$tab <- 1
-          tab_b <- res_b[[gr$Var2[z]]]
-          tab_b$tab <- 2
-
-          # remove common cells that occur in both tables AND that are not suppressed
-          idx <- sapply(1:nr_common_cells, function(x) {
-            common_cells[[1]][x] %in% tab_a$indices & common_cells[[2]][x] %in% tab_b$indices
-          })
-
-          tab <- freq <- sdcStatus <- indices <- NULL
-          tab_a <- tab_a[!indices %in% common_cells[[1]][idx]]
-          tab_b <- tab_b[!indices %in% common_cells[[2]][idx]]
-
-          supps <- rbind(supps, .find_supp(tab = tab_a))
-          supps <- rbind(supps, .find_supp(tab = tab_b))
-        }
-      }
-    }
-    supps
-  }
-
-  if (!method %in% c("HITAS", "OPT", "SIMPLEHEURISTIC")) {
-    stop("valid methods are 'HITAS', 'OPT' or 'SIMPLEHEURISTIC'!", call. = FALSE)
-  }
-  index <- tab <- NULL
+  x <- objectA
+  y <- objectB
+  common_cells <- commonCells
+  stopifnot(inherits(x, "sdcProblem"))
+  stopifnot(inherits(y, "sdcProblem"))
+  method <- "SIMPLEHEURISTIC" # overwritten since 0.32 only SIMPLEHEURISTIC is supported
   params <- genParaObj(selection = "control.secondary", method = method, ...)
 
-  ### first run
-  if (method == "SIMPLEHEURISTIC") {
-    outA <- c_quick_suppression(objectA, input = params)$object
-    outB <- c_quick_suppression(objectB, input = params)$object
-  } else {
-    if (params$useC) {
-      if (method == "OPT") {
-        outA <- c_opt_cpp(object = objectA, input = params)
-        outB <- c_opt_cpp(object = objectB, input = params)
-      }
-      if (method == "HITAS") {
-        outA <- c_hitas_cpp(object = objectA, input = params)
-        outB <- c_hitas_cpp(object = objectB, input = params)
-      }
-    } else {
-      outA <- c_anon_worker(object = objectA, input = params)
-      outB <- c_anon_worker(object = objectB, input = params)
-    }
+  df_x <- sdcProb2df(x, addDups = FALSE, dimCodes = "original")
+  df_x[[.tmpweightname()]] <- g_weight(slot(x, "problemInstance"))
+  df_y <- sdcProb2df(y, addDups = FALSE, dimCodes = "original")
+  df_y[[.tmpweightname()]] <- g_weight(slot(y, "problemInstance"))
+
+  .nr_supps <- function(x) {
+    sum(g_sdcStatus(slot(x, "problemInstance")) %in% c("u", "x"))
   }
 
-  pI.A <- g_problemInstance(outA)
-  pI.B <- g_problemInstance(outB)
-
-  # calc original primary suppressions
-  origPrimSupp1Index <- g_primSupps(pI.A)
-  origPrimSupp2Index <- g_primSupps(pI.B)
-
-  # no primary suppressions
-  if (length(origPrimSupp1Index) + length(origPrimSupp2Index) == 0) {
-    if (params$verbose) {
-      message("===> no primary suppressions. all common cells have the same anonymity-status! [finished]")
-    }
-    outA <- c_finalize(object = outA, input = params)
-    outB <- c_finalize(object = outB, input = params)
-    return(list(outObj1 = outA, outObj2 = outB))
-  }
-
-  # calculate commonCells:
-  commonCellIndices <- .indices_common_cells(
-    input1 = outA,
-    input2 = outB,
-    commonCells = commonCells
-  )
-
-  # suppression patterns after the first run
-  suppPatternA <- g_suppPattern(pI.A)
-  suppPatternB <- g_suppPattern(pI.B)
-
-  # checking problems with differencing due to identical cells
-  res_subtabs <- .subtabs_with_commoncells(
-    probs = list(outA, outB),
-    common_cell_indices = commonCellIndices
-  )
-  additional_supps <- .check_subtabs_with_commoncells(x = res_subtabs)
-  if (nrow(additional_supps) > 0) {
-    chk1 <- FALSE
-    ii1 <- additional_supps[tab == 1, index]
-    if (length(ii1) > 0) {
-      suppPatternA[ii1] <- 1
-    }
-    ii2 <- additional_supps[tab == 2, index]
-    if (length(ii2) > 0) {
-      suppPatternB[ii2] <- 1
-    }
-  } else {
-    chk1 <- TRUE
-  }
-
-  chk2 <- .check_common_cells(suppPatternA, suppPatternB, commonCellIndices)
-  finished <- chk1 & chk2
-  counter <- 1
-
-  while (!finished) {
-    if (counter == 1 & params$verbose) {
-      message("we have to start the iterative procedure!")
-    }
-    supp_pattern <- data.frame(
-      p1 = suppPatternA[commonCellIndices[[1]]],
-      p2 = suppPatternB[commonCellIndices[[2]]]
+  if (.nr_supps(x) + .nr_supps(y) == 0) {
+    return(list(
+      outObj1 = c_finalize(x, input = params),
+      outObj2 = c_finalize(y, input = params),
+      full_m = NULL,
+      full_df = NULL)
     )
+  }
 
-    if (counter == 1) {
-      i1 <- which(supp_pattern$p1 == 1)
-      i2 <- which(supp_pattern$p2 == 1)
-    } else {
-      i1 <- which(supp_pattern$p1 == 0 & supp_pattern$p2 == 1)
-      i2 <- which(supp_pattern$p1 == 1 & supp_pattern$p2 == 0)
+  .indices_common_cells <- function(df_x, df_y, common_cells) {
+    strID <- NULL
+    # restrict to totals in non-overlapping variables in dataset2
+    .overall_total <- function(x, vname) {
+      x@dimInfo@dimInfo[[vname]]@codesOriginal[1]
     }
-    index <- list()
-    index[[1]] <- commonCellIndices[[1]][i1]
-    index[[2]] <- commonCellIndices[[2]][i2]
 
-    .update_and_resolve_prob <- function(prob, pattern, params) {
-      pi <- g_problemInstance(prob)
-      s_sdcStatus(pi) <- list(
-        index = pattern,
-        vals = rep("u", length(pattern))
-      )
+    .tmpvname <- function(x) {
+      paste0(x, ".tmpvname.xxxxxx")
+    }
 
-      zs <- which(g_sdcStatus(pi) == "z")
-      if (length(zs) > 0) {
-        s_sdcStatus(pi) <- list(
-          index = zs,
-          vals = rep("s", length(zs)))
+    df_x$id_x <- seq_len(nrow(df_x))
+    df_y$id_y <- seq_len(nrow(df_y))
+
+    all_vnames_x <- dv_x <- x@dimInfo@vNames
+    all_vnames_y <- dv_y <- y@dimInfo@vNames
+
+    for (i in seq_len(length(common_cells))) {
+      cc <- common_cells[[i]]
+      if (!length(cc) %in% 3:4) {
+        stop("invalid input detected", call. = FALSE)
       }
-      s_problemInstance(prob) <- pi
-      s_indicesDealtWith(prob) <- NULL
-      s_startJ(prob) <- 1
-      s_startI(prob) <- 1
-      c_quick_suppression(prob, input = params)$object
+
+      # we compute variables, we have already dealt with
+      cn_x <- cc[[1]]
+      cn_y <- cc[[2]]
+      #cn_x_o <- .tmpvname(cn_x)
+      #cn_y_o <- .tmpvname(cn_y)
+
+      df_x[[.tmpvname(cn_x)]] <- df_x[[cn_x]]
+      df_y[[.tmpvname(cn_y)]] <- df_y[[cn_y]]
+
+      dv_x <- setdiff(dv_x, cn_x)
+      dv_y <- setdiff(dv_y, cn_y)
+      if  (length(cc) == 4) {
+        df_x <- subset(df_x, df_x[[cn_x]] %in% cc[[3]])
+        df_y <- subset(df_y, df_y[[cn_y]] %in% cc[[4]])
+
+        # replace codes in second dataset with those from the first one
+        df_y[[cn_y]] <- cc[[3]][match(df_y[[cn_y]], cc[[4]])]
+      }
     }
 
-    # update and resolve problems
-    outA <- .update_and_resolve_prob(prob = outA, pattern = index[[1]], params = params)
-    outB <- .update_and_resolve_prob(prob = outB, pattern = index[[2]], params = params)
+    for (i in seq_len(length(dv_x))) {
+      vname <- dv_x[i]
+      df_x <- subset(df_x, df_x[[vname]] == .overall_total(x = x, vname = vname))
+    }
+    for (i in seq_len(length(dv_y))) {
+      vname <- dv_y[i]
+      df_y <- subset(df_y, df_y[[vname]] == .overall_total(x = y, vname = vname))
+    }
 
-    suppPatternA <- g_suppPattern(g_problemInstance(outA))
-    suppPatternB <- g_suppPattern(g_problemInstance(outB))
+    # merge and make sure order matches
+    data.table::setorder(df_x, strID)
+    data.table::setorder(df_y, strID)
 
-    # checking problems with differencing due to identical cells
-    res_subtabs <- .subtabs_with_commoncells(
-      probs = list(outA, outB),
-      common_cell_indices = commonCellIndices
+    matchvars_x <- sapply(common_cells, function(x) x[[1]])
+    matchvars_y <- sapply(common_cells, function(x) x[[2]])
+
+    tmp_x <- df_x[, c("strID", "freq", "id_x", matchvars_x), with = FALSE]
+    data.table::setnames(tmp_x, old = c("strID", "freq"), new = c("strID_x", "freq_x"))
+    tmp_y <- df_y[, c("strID", "freq", "id_y", matchvars_y), with = FALSE]
+    data.table::setnames(tmp_y, old = c("strID", "freq"), new = c("strID_y", "freq_y"))
+
+    mm <- merge(tmp_x, tmp_y, by.x = matchvars_x, by.y = matchvars_y, all = TRUE)
+    data.table::setkey(mm, strID_x)
+    stopifnot(all(mm$freq_x == mm$freq_y))
+
+    df_common <- data.frame(
+      strid_x = mm$strID_x,
+      strid_y = mm$strID_y,
+      id_x = mm$id_x,
+      id_y = mm$id_y
     )
-    additional_supps <- .check_subtabs_with_commoncells(x = res_subtabs)
-    if (nrow(additional_supps) > 0) {
-      chk1 <- FALSE
-      ii1 <- additional_supps[tab == 1, index]
-      if (length(ii1) > 0) {
-        suppPatternA[ii1] <- 1
-      }
-      ii2 <- additional_supps[tab == 2, index]
-      if (length(ii2) > 0) {
-        suppPatternB[ii2] <- 1
-      }
-    } else {
-      chk1 <- TRUE
+    rownames(df_common) <- NULL
+    df_common
+  }
+  message("common cell indices are computed ... ", appendLF = FALSE)
+  df_common <- .indices_common_cells(
+    df_x = df_x,
+    df_y = df_y,
+    common_cells = common_cells
+  )
+  message("[done]")
+
+  # create a full "common" constraint-matrix
+  .full_common_matrix <- function(x, y, df_common) {
+    # returns a simple-triplet-matrices (from slam-pkg)
+    mx <- .gen_contraint_matrix(x)
+    info_x <- attributes(mx)$infodf
+
+    my <- .gen_contraint_matrix(y)
+    info_y <- attributes(my)$infodf
+
+    colnames(mx) <- paste0("px_", info_x$str_id)
+    colnames(my) <- paste0("py_", info_y$str_id)
+
+    colnames(mx)[df_common$id_x] <- paste0("c_", df_common$strid_x, "_", df_common$strid_y)
+    colnames(my)[df_common$id_y] <- paste0("c_", df_common$strid_x, "_", df_common$strid_y)
+
+    # fill matrices with missing variables (only 0)
+    v1_miss <- setdiff(colnames(my), colnames(mx))
+    if (length(v1_miss) > 0) {
+      tmpmat <- slam::simple_triplet_zero_matrix(nrow = nrow(mx), ncol = length(v1_miss))
+      colnames(tmpmat) <- v1_miss
+      mx <- cbind(mx, tmpmat)
+    }
+    v2_miss <- setdiff(colnames(mx), colnames(my))
+    if (length(v2_miss) > 0) {
+      tmpmat <- slam::simple_triplet_zero_matrix(nrow = nrow(my), ncol = length(v2_miss))
+      colnames(tmpmat) <- v2_miss
+      my <- cbind(my, tmpmat)
     }
 
-    chk2 <- .check_common_cells(suppPatternA, suppPatternB, commonCellIndices)
-    if (chk1 & chk2) {
-      finished <- TRUE
-    }
-    if (counter > params$maxIter) {
-      finished <- TRUE
-      warning("iterative procedure did not converge! --> returning NULL")
-      return(NULL)
-    }
-    counter <- counter + 1
+    # we need to make sure, variable-order is the same in both matrices so that rbind()-works
+    my <- my[, match(colnames(mx), colnames(my))]
+    full_m <- rbind(mx, my)
+    full_m
   }
 
-  if (params$verbose) {
-    message(
-      "===> all common cells have the same anonymity-state in both tables after ",
-      counter, " iterations! [finished]")
+  message("the full constraint-matrix is computed", appendLF = FALSE)
+  full_m <- .full_common_matrix(x = x, y = y, df_common = df_common)
+  message(" (", ncol(full_m), " variables and ", nrow(full_m), " constraints) [done]")
+
+  # cn: names of full_m (combined variable names)
+  .create_full_df <- function(df_x, df_y, df_common, cn) {
+    df_x <- df_x[, c("strID", "freq", "sdcStatus", .tmpweightname())]
+    df_y <- df_y[, c("strID", "freq", "sdcStatus", .tmpweightname())]
+
+    df_x$strID <- paste0("px_", df_x$strID)
+    df_y$strID <- paste0("py_", df_y$strID)
+
+    df_x$strID[df_common$id_x] <- paste0("c_", df_common$strid_x, "_", df_common$strid_y)
+    df_y$strID[df_common$id_y] <- paste0("c_", df_common$strid_x, "_", df_common$strid_y)
+
+    df_y <- df_y[!grepl("c_", df_y$strID)]
+
+    df_full <- rbind(df_x, df_y)
+    stopifnot(nrow(df_full) == length(cn)) # we need a column for each (unique) cell
+
+    # make sure the order of column names in full_m matches the rows in df_full
+    df_full <- df_full[match(cn, df_full$strID)]
+    df_full
   }
-  outA <- c_finalize(object = outA, input = params)
-  outB <- c_finalize(object = outB, input = params)
-  return(list(outObj1 = outA, outObj2 = outB))
+
+  message("a (temp) full-dataset with cells from both problems is computed ... ", appendLF = FALSE)
+  full_df <- .create_full_df(
+    df_x = df_x,
+    df_y = df_y,
+    df_common = df_common,
+    cn = colnames(full_m)
+  )
+  message("[done]")
+
+  # anonymize the problem
+  message("the linked problem is anonymized ... ", appendLF = FALSE)
+  res <- suppConstraints(
+    dat = full_df,
+    m = full_m,
+    params = list(
+      idname = "strID",
+      freqname = "freq",
+      sdcname = "sdcStatus",
+      wname = .tmpweightname(),
+      is_common_cell = substr(colnames(full_m), 1, 2) == "c_",
+      find_overlaps = TRUE, # possibly generate new constraints!
+      verbose = params$verbose,
+      do_singletons = params$detectSingletons,
+      threshold = ifelse(is.na(params$threshold), -1, params$threshold)
+    )
+  )
+  message("[done]")
+
+  # split again
+  full_df$sdcStatus <- res$sdc_status
+
+  # split into two problems again
+  strID <- NULL
+  full_df[, strID_x := NA_character_]
+  full_df[, strID_x := NA_character_]
+  full_df[grepl("px_", strID), strID_x := sub("px_", "", strID)]
+  full_df[grepl("py_", strID), strID_y := sub("py_", "", strID)]
+
+  idx_common <- grepl("c_", full_df$strID)
+
+  common_strids <- do.call("rbind", lapply(full_df$strID[idx_common], function(x) {
+    ll <- strsplit(x, "_")[[1]]
+    data.frame(x = ll[2], y = ll[3], stringsAsFactors = FALSE)
+  }))
+
+  full_df[idx_common, strID_x := common_strids$x]
+  full_df[idx_common, strID_y := common_strids$y]
+
+  res_x <- full_df[!is.na(strID_x), .(strID_x, sdcStatus, freq)]
+  data.table::setnames(res_x, old = c("strID_x", "sdcStatus"), new = c("strID", "sdcStatus_new"))
+
+  res_y <- full_df[!is.na(strID_y), .(strID_y, sdcStatus, freq)]
+  data.table::setnames(res_y, old = c("strID_y", "sdcStatus"), new = c("strID", "sdcStatus_new"))
+
+  data.table::setkey(res_x, strID)
+  data.table::setkey(res_y, strID)
+
+  # update sdcProblems
+  x@problemInstance@sdcStatus <- res_x$sdcStatus_new
+  y@problemInstance@sdcStatus <- res_y$sdcStatus_new
+
+  res_x <- c_finalize(object = x, input = params)
+  res_y <- c_finalize(object = y, input = params)
+  return(list(
+      outObj1 = res_x,
+      outObj2 = res_y
+    )
+  )
 }
