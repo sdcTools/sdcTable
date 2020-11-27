@@ -3,53 +3,63 @@ context("test protectTable()")
 sp <- searchpaths()
 fn <- file.path(sp[grep("sdcTable", sp)], "data", "problemWithSupps.RData")
 
-problem <- get(load(file = fn))
+p <- get(load(file = fn))
 
-p1 <- protectTable(
-  problem,
-  method = "OPT",
-  useC = FALSE,
-  verbose = FALSE
+p_opt <- protectTable(object = p, method = "OPT", useC = FALSE, verbose = FALSE)
+p_opt_c <- protectTable(object = p, method = "OPT", useC = TRUE, verbose = FALSE)
+p_hyper <- protectTable(object = p, method = "HYPERCUBE", verbose = FALSE)
+p_hitas <- protectTable(object = p, method = "HITAS", useC = TRUE, verbose = FALSE)
+
+expect_equivalent(p_opt@finalData, p_opt_c@finalData)
+expect_is(p_opt, "safeObj")
+expect_equal(p_opt@nrPublishableCells, 11)
+expect_equal(p_opt@nrSecondSupps, 3)
+expect_equal(which(p_opt@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equal(which(p_hyper@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equal(which(p_hitas@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+
+# test SIMPLEHEURISTIC
+p_simple <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE)
+expect_is(p_simple, "safeObj")
+expect_equal(which(p_simple@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+
+# create dataset with singletons
+df <- data.frame(
+  region = c("a", "b", "b", "c"),
+  stringsAsFactors = FALSE
 )
-p2 <- protectTable(
-  problem,
-  method = "OPT",
-  useC = TRUE,
-  verbose = FALSE
-)
-expect_equivalent(p1@finalData, p2@finalData)
-expect_is(p1, "safeObj")
-expect_equal(p1@nrPublishableCells, 11)
-expect_equal(p1@nrSecondSupps, 3)
-expect_equal(which(p1@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+d_region <- hier_create(root = "tot", nodes = letters[1:4])
 
-expect_is(p2, "safeObj")
-expect_equal(p2@nrPublishableCells, 11)
-expect_equal(p2@nrSecondSupps, 3)
-expect_equal(which(p2@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+p <- makeProblem(data = df, dimList = list(region = d_region))
+p <- primarySuppression(p, type = "freq", maxN = 1)
 
-p3 <- protectTable(problem, method = "HYPERCUBE", verbose = FALSE)
-expect_equal(which(p3@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+p_simple1 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, detectSingletons = FALSE)
+p_simple2 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, detectSingletons = TRUE)
 
-p4 <- protectTable(
-  problem,
-  method = "HITAS",
-  useC = TRUE,
-  verbose = FALSE
-)
-expect_equal(which(p4@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equal(p_simple1@nrSecondSupps, 0)
+expect_equal(p_simple2@nrSecondSupps, 1)
 
-rm(problem)
+# threshold
+p_simple3 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, threshold = 3)
+expect_equal(p_simple3@nrSecondSupps, 1)
+
+# due to threshold setting, the entire table needs to be suppressed
+p_simple4 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, threshold = 5)
+expect_equal(p_simple4@nrSecondSupps, 2)
+
+rm(p)
+
+# test file with no suppressions
 fn <- file.path(sp[grep("sdcTable", sp)], "data", "problem.RData")
-problem <- get(load(file = fn))
+p <- get(load(file = fn))
 
-p5 <- protectTable(
+p_opt <- protectTable(
   problem,
   method = "OPT",
   useC = TRUE,
   verbose = FALSE
 )
-expect_is(p5, "safeObj")
-expect_equal(p5@nrPublishableCells, 15)
-expect_equal(p5@nrSecondSupps, 0)
-expect_equal(sum(p5@finalData$sdcStatus != "s"), 0)
+expect_is(p_opt, "safeObj")
+expect_equal(p_opt@nrPublishableCells, 15)
+expect_equal(p_opt@nrSecondSupps, 0)
+expect_equal(sum(p_opt@finalData$sdcStatus != "s"), 0)
