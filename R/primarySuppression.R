@@ -14,7 +14,7 @@
 #' @param type character vector of length 1 defining the primary suppression
 #' rule. Allowed types are:
 #' - `freq`: apply frequency rule with parameters `maxN` and `allowZeros`
-#' - `nk`: apply nk-dominance rule with parameters `n`, `k` 
+#' - `nk`: apply nk-dominance rule with parameters `n`, `k`
 #' - `p`: apply p-percent rule with parameter `p`
 #' - `pq`: apply pq-rule with parameters `p` and `q`
 #' @param ... parameters used in the identification of primary sensitive cells.
@@ -25,7 +25,9 @@
 #' - `allowZeros`: logical vector of length 1 specifying if empty cells
 #' (count==0) should be considered sensitive when using the frequency rule.
 #' The default value of `allowZeros` is `FALSE` so that empty cells are not
-#' considered primary sensitive by default.
+#' considered primary sensitive by default. Such cells (frequency 0) are then
+#' flagged as `z` which indicates such a cell may be published but should (internally)
+#' not be used for (secondary) suppression in the heuristic algorithms.
 #' - `p`: numeric vector of length 1 specifying parameter `p` that is used
 #' when applying the p-percent rule with default value of `80`.
 #' - `pq`: numeric vector of length 2 specifying parameters `p` and `q` that
@@ -48,7 +50,8 @@
 #' @return a [sdcProblem-class] object
 #' @md
 #' @export
-#' @note the nk-dominance rule, the p-percent rule and the pq-rule can only
+#' @note
+#' the nk-dominance rule, the p-percent rule and the pq-rule can only
 #' be applied if micro data have been used as input data to function [makeProblem()]
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 #' @md
