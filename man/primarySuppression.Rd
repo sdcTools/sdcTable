@@ -27,7 +27,9 @@ value of \code{maxN} is \code{3}.
 \item \code{allowZeros}: logical vector of length 1 specifying if empty cells
 (count==0) should be considered sensitive when using the frequency rule.
 The default value of \code{allowZeros} is \code{FALSE} so that empty cells are not
-considered primary sensitive by default.
+considered primary sensitive by default. Such cells (frequency 0) are then
+flagged as \code{z} which indicates such a cell may be published but should (internally)
+not be used for (secondary) suppression in the heuristic algorithms.
 \item \code{p}: numeric vector of length 1 specifying parameter \code{p} that is used
 when applying the p-percent rule with default value of \code{80}.
 \item \code{pq}: numeric vector of length 2 specifying parameters \code{p} and \code{q} that

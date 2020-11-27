@@ -4,7 +4,13 @@
 \alias{protectLinkedTables}
 \title{Protect two tables with common cells}
 \usage{
-protectLinkedTables(objectA, objectB, commonCells, method, ...)
+protectLinkedTables(
+  objectA,
+  objectB,
+  commonCells,
+  method = "SIMPLEHEURISTIC",
+  ...
+)
 }
 \arguments{
 \item{objectA}{a \linkS4class{sdcProblem} object}
@@ -40,8 +46,8 @@ for \code{objectA}.
 }}
 
 \item{method}{scalar character vector defining the algorithm
-that should be used to protect the primary sensitive table cells. The possible
-values are \code{"HITAS"}, \code{"SIMPLEHEURISTIC"} and \code{"OPT"}; For details please see
+that should be used to protect the primary sensitive table cells. In versions \verb{>= 0.32}
+only the \code{SIMPLEHEURISTIC} procedure is supported; For details please see
 \code{\link[=protectTable]{protectTable()}}.}
 
 \item{...}{additional arguments to control the secondary cell suppression
@@ -151,7 +157,6 @@ result <- protectLinkedTables(
   objectA = p1,
   objectB = p2,
   commonCells = common_cells,
-  method = "HITAS",
   verbose = TRUE)
 
 # having a look at the results
@@ -160,7 +165,6 @@ result_tab2 <- result[[2]]
 summary(result_tab1)
 summary(result_tab2)
 }
-
 }
 \seealso{
 \code{\link[=protectTable]{protectTable()}}
