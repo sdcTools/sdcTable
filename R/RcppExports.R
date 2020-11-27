@@ -13,7 +13,7 @@ cpp_mySplit <- function(stringvec, indices) {
     .Call(`_sdcTable_cpp_mySplit`, stringvec, indices)
 }
 
-greedyMultDimSuppression <- function(dat, indices, subIndices, dimVars, verbose) {
-    .Call(`_sdcTable_greedyMultDimSuppression`, dat, indices, subIndices, dimVars, verbose)
+suppConstraints <- function(dat, m, params) {
+    .Call(`_sdcTable_suppConstraints`, dat, m, params)
 }
 
