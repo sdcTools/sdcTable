@@ -204,3 +204,38 @@ domRule <- function(object, params, type) {
   })
   all_contr_codes
 }
+
+# returns a slam::simple_triplet_matrix containing all
+# linear constraints of a given sdcProblem-instance `x`
+# additionally, as attribute `infodf` a data.frame is
+# returned that has for each cell (identified by cell_id)
+# the information if it is an inner cell or not
+.gen_contraint_matrix <- function(x) {
+  stopifnot(inherits(x, "sdcProblem"))
+  pi <- get.sdcProblem(x, type = "problemInstance")
+  str_ids <- pi@strID
+  m <- c_gen_mat_m(
+    input = list(
+      objectA = pi,
+      objectB = get.sdcProblem(x, type = "dimInfo")
+    )
+  )
+
+  # convert to simple-triplet from slam-pkg because
+  # we can use indexing without converting to full-matrix
+  m <- slam::simple_triplet_matrix(i = m@i, j = m@j, v = m@v)
+  colnames(m) <- str_ids
+
+  index_subtots <- unique(m$j[m$v == -1])
+  infodf <- data.frame(
+    str_id = slot(pi, "strID"),
+    is_inner = TRUE
+  )
+  infodf$is_inner[index_subtots] <- FALSE
+  attr(m, "infodf") <- infodf
+  m
+}
+
+.tmpweightname <- function() {
+  "weight.for.suppression"
+}
