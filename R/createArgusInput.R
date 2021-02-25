@@ -13,7 +13,7 @@
 #' - `"FREE"`
 #' - `"CPLEX"`
 #' - `"XPRESS"`
-#' 
+#'
 #' In case `"CPLEX"` is used, it is also mandatory to specify argument `licensefile` which needs to be
 #' the absolute path the the cplex license file
 #' @param method secondary cell suppression algorithm, possible choices include:
@@ -33,9 +33,9 @@
 #' @param responsevar which variable should be tabulated (defaults to frequencies). For details see tau-argus manual section 4.4.4.
 #' @param shadowvar if specified, this variable is used to apply the safety rules, defaults to `responsevar`. For details
 #' see tau-argus manual section 4.4.4.
-#' @param costvar if specified, this variable describes the costs of suppressing each individual cell. For details see tau-argus 
+#' @param costvar if specified, this variable describes the costs of suppressing each individual cell. For details see tau-argus
 #' manual section 4.4.4.
-#' @param requestvar if specified, this variable (0/1-coded) contains information about records that request protection. 
+#' @param requestvar if specified, this variable (0/1-coded) contains information about records that request protection.
 #' Records with 1 will be protected in case a corresponding request rule matches. It is ignored, if tabular input is used.
 #' @param holdingvar if specified, this variable contains information about records that should be grouped together.
 #' It is ignored, if tabular input is used.
@@ -52,11 +52,11 @@
 #' microData1$weight <- sample(10:100, nrow(microData1), replace=TRUE)
 #'
 #' dim_region <- hier_create(root = "Total", nodes = LETTERS[1:4])
-#' 
+#'
 #' dim_region_dupl <- hier_create(root = "Total", nodes = LETTERS[1:4])
 #' dim_region_dupl <- hier_add(dim_region_dupl, root = "B", nodes = c("b1"))
 #' dim_region_dupl <- hier_add(dim_region_dupl, root = "D", nodes = c("d1"))
-#' 
+#'
 #' dim_gender <- hier_create(root = "Total", nodes = c("male", "female"))
 #'
 #' dimList <- list(region = dim_region, gender = dim_gender)
@@ -94,37 +94,37 @@
 #'
 #' ## create batchInput object
 #' bO_md1 <- createArgusInput(
-#'   ob = obj, 
-#'   typ = "microdata", 
-#'   path = tempdir(), 
-#'   solver = "FREE", 
-#'   method = "OPT",
-#'   primSuppRules = primSuppRules, 
-#'   responsevar = "num1")
-#'   
-#' bO_td1 <- createArgusInput(
-#'   obj = obj, 
-#'   typ = "tabular", 
-#'   path = tempdir(), 
-#'   solver = "FREE", 
-#'   method = "OPT")
-#'   
-#' bO_td2 <- createArgusInput(
-#'   obj = obj_dupl, 
-#'   typ = "tabular", 
+#'   ob = obj,
+#'   typ = "microdata",
 #'   path = tempdir(),
-#'   solver = "FREE", 
+#'   solver = "FREE",
+#'   method = "OPT",
+#'   primSuppRules = primSuppRules,
+#'   responsevar = "num1")
+#'
+#' bO_td1 <- createArgusInput(
+#'   obj = obj,
+#'   typ = "tabular",
+#'   path = tempdir(),
+#'   solver = "FREE",
 #'   method = "OPT")
-#'   
+#'
+#' bO_td2 <- createArgusInput(
+#'   obj = obj_dupl,
+#'   typ = "tabular",
+#'   path = tempdir(),
+#'   solver = "FREE",
+#'   method = "OPT")
+#'
 #' \dontrun{
 #' ## in case CPLEX should be used, it is required to specify argument licensefile
 #' bO_md2 <- createArgusInput(
-#'   obj = obj, 
-#'   typ = "microdata", 
-#'   path = tempdir(), 
-#'   solver = "CPLEX", 
+#'   obj = obj,
+#'   typ = "microdata",
+#'   path = tempdir(),
+#'   solver = "CPLEX",
 #'   method = "OPT",
-#'   primSuppRules = primSuppRules, 
+#'   primSuppRules = primSuppRules,
 #'   responsevar = "num1",
 #'   licensefile = "/path/to/my/cplexlicense")
 #' }
@@ -173,15 +173,15 @@ createArgusInput <- function(
   }
   if (typ == "tabular") {
     if (!is.null(primSuppRules)) {
-      message("ignoring argument 'primSuppRules'!\n")
+      message("ignoring argument 'primSuppRules'")
       primSuppRules <- NULL
     }
     if (!is.null(requestvar)) {
-      message("ignoring argument 'requestvar'!\n")
+      message("ignoring argument 'requestvar'")
       requestvar <- NULL
     }
     if (!is.null(holdingvar)) {
-      message("ignoring argument 'holdingvar'!\n")
+      message("ignoring argument 'holdingvar'")
       holdingvar <- NULL
     }
 

@@ -557,34 +557,57 @@ srule <- function(type, ...) {
 }
 
 ## check for invalid inputs
-check_primrules <- function(primSuppRules, responsevar) {
+check_primrules <- function(primSuppRules, responsevar, contains_holdings = FALSE) {
   out <- list(); length(out) <- length(primSuppRules)
   types <- sapply(primSuppRules, function(x) x$type)
 
   # at least one suppression-rule is required
-  if (length(types)<1) {
-    return(NA)
+  if (length(types) < 1) {
+    stop("at least one suppression rule is required", call. = FALSE)
   }
 
-  if (responsevar!="<freq>") {
-    # max 2 NK() or P()-rules for magnitute-tables possible
-    if (sum(types=="nk")>=2) {
-      return(NA)
+  # max 2 NK() or P()-rules for magnitude-tables possible
+  # exception: holding-variable is specified, then its max. 4
+  # first two: -> individual level
+  # second two: -> holding-level
+  maxval <- 2
+  if (contains_holdings) {
+    maxval <- 4
+  }
+
+  if (sum(types == "nk") > maxval) {
+    if (contains_holdings) {
+      stop("at most 4 nk-rules can be specified (holding-indicator was specified)", call. = FALSE)
+    } else {
+      stop("at most 2 nk-rules can be specified (holding-indicator was not specified)", call. = FALSE)
     }
-    if (sum(types=="p")>=2) {
-      return(NA)
+  }
+  if (sum(types == "p") > maxval) {
+    if (contains_holdings) {
+      stop("at most 4 p%-rules can be specified (holding-indicator was specified)", call. = FALSE)
+    } else {
+      stop("at most 2 p%-rules can be specified (holding-indicator was not specified)", call. = FALSE)
     }
-  } else {
-    # in case of frequency tables, only one FREQ()-rule is possible
-    if (length(types)>1 || primSuppRules[[1]]$type!="freq") {
-      return(NA)
+  }
+
+
+  # checking FREQ rules
+  maxval <- 1
+  if (contains_holdings) {
+    maxval <- 2
+  }
+  if (sum(types == "freq") > maxval) {
+    if (contains_holdings) {
+      stop("at most 2 freq-rules can be specified (holding-indicator was specified)", call. = FALSE)
+    } else {
+      stop("at most 1 freq-rules can be specified (holding-indicator was not specified)", call. = FALSE)
     }
   }
 
   for (i in 1:length(primSuppRules)) {
     res <- try(do.call(srule, primSuppRules[[i]]), silent=TRUE)
     if ("try-error" %in% class(res)) {
-      return(NA)
+      stop("invalid safety-rule specification detected", call. = FALSE)
     }
     out[[i]] <- res
   }
@@ -718,10 +741,11 @@ tauBatchInput_microdata <- function(obj,
   batchObj <- setTable(batchObj, tablestr)
 
   ## primary suppression
-  rules <- check_primrules(primSuppRules, responsevar)
-  if (is.na(rules[1])) {
-    stop("Invalid primary-suppression rules specified!\n")
-  }
+  rules <- check_primrules(
+    primSuppRules = primSuppRules,
+    responsevar = responsevar,
+    contains_holdings = holdingvar != ""
+  )
   batchObj <- setSafetyrules(batchObj, paste0(paste(unlist(rules), collapse="|"),"|"))
 
   ## read the data
