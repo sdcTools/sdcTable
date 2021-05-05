@@ -109,7 +109,7 @@ IntegerVector stl_sort(IntegerVector x) {
 // compares two constraints and checks, if there are only two overlapping common cells;
 // in this case an additional constraint is automatically generated
 List compare_constraints(IntegerVector idx_a, IntegerVector idx_b, LogicalVector is_common_cell) {
-  bool debug = false;
+  bool debug = true;
   List out = List::create();
 
   // compute common_cells
@@ -162,13 +162,15 @@ List compare_constraints(IntegerVector idx_a, IntegerVector idx_b, LogicalVector
  * and possible new constraints are generated that are dealt with in suppConstraints()
 */
 List simple_triplet_to_indices(List m, LogicalVector is_common_cell, bool find_overlaps) {
-  List ll, added_constraints;
+  List added_constraints;
 
   // looping over the constraint matrix"
   IntegerVector vals_i = m["i"]; // row-indices
   IntegerVector vals_j = m["j"]; // column-indices
   IntegerVector vals_v = m["v"]; // -1: total; 1: contributing value
   int nr_constraints = max(vals_i);
+
+  List ll(nr_constraints); //pre-allocate
 
   LogicalVector col_ind;
   IntegerVector mat_cols;
@@ -183,28 +185,43 @@ List simple_triplet_to_indices(List m, LogicalVector is_common_cell, bool find_o
       Rcpp::Named("idx") = mat_cols,
       Rcpp::Named("vals") = vals
     );
-    ll.push_back(tmplist);
+    ll[i - 1] = tmplist;
   }
 
+  // todo: improve computation-time
   if (find_overlaps == true) {
-    List tmpres, a, b;
+    Rcout << "finding overlaps" << std::endl;
+    List a, b;
+    bool debug = true;
+
     int nr_constraints = ll.size();
     for (int i = 0; i < (nr_constraints - 1); i++) {
       a = ll[i];
       IntegerVector ind_a = a["idx"];
+      LogicalVector log_a = is_common_cell[ind_a];
+      IntegerVector common_a = ind_a[log_a];
       for (int j = i + 1; j < nr_constraints; j++) {
         b = ll[j];
         IntegerVector ind_b = b["idx"];
-        tmpres = compare_constraints(ind_a, ind_b, is_common_cell);
+        // new: compare constraints directly in the function to avoid overhead/copying
+        // compute common_cells
+        IntegerVector common_cells = intersect(ind_a, ind_b);
+
+        List tmpres = compare_constraints(ind_a, ind_b, is_common_cell);
         if (tmpres.size() > 0) {
+          if (debug == true) {
+            Rcout << "--> additional constraint generated. i = " << i << " | j = " << j << std::endl;
+          }
           added_constraints.push_back(tmpres);
         }
       }
     }
+    Rcout << "finished finding " << added_constraints.size() << " overlaps" << std::endl;
+    added_constraints = do_unique(added_constraints);
   }
   return Rcpp::List::create(
     Rcpp::Named("constraint_mat") = ll,
-    Rcpp::Named("additional_constraints") = do_unique(added_constraints)
+    Rcpp::Named("additional_constraints") = added_constraints
   );
 }
 
@@ -215,6 +232,9 @@ List simple_triplet_to_indices(List m, LogicalVector is_common_cell, bool find_o
  */
 List perform_suppression(IntegerVector full_ids, CharacterVector sdc, NumericVector freqs, NumericVector weights, CharacterVector ids, IntegerVector ind_poss, List measures) {
   if (ind_poss.size() == 0) {
+    Rcout << "full_ids: " << full_ids << std::endl;
+    Rcout << "freqs: " << freqs << std::endl;
+    Rcout << "sdc: " << sdc << std::endl;
     stop("we cannot find a solution; no cells left to suppress");
   }
 
@@ -437,7 +457,6 @@ List suppConstraints(DataFrame dat, List m, List params) {
     Rcout << "converting simple-triplet matrix to indices (this could take a while ...)" << std::endl;
   }
   List tmpres = simple_triplet_to_indices(m, is_common_cell, find_overlaps);
-
   m = tmpres["constraint_mat"];
   List additional_constraints = tmpres["additional_constraints"];
   int nr_additional_constraints = additional_constraints.size();
@@ -531,6 +550,10 @@ List suppConstraints(DataFrame dat, List m, List params) {
           nr_additional_supps = nr_additional_supps + 1;
         }
       }
+
+      if (verbose == true) {
+        Rcout << "run " << counter << " | additional supps after additional constraints): " << nr_additional_supps << std::endl;
+      }
     }
 
     // we now check all the "regular" constraints
@@ -567,6 +590,7 @@ List suppConstraints(DataFrame dat, List m, List params) {
   return Rcpp::List::create(
     Rcpp::Named("dat") = dat,
     Rcpp::Named("m") = m,
+    Rcpp::Named("additional_constraints") = additional_constraints,
     Rcpp::Named("sdc_status") = sdc_status
   );
 }
