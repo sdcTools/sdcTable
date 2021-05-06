@@ -199,8 +199,6 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
       # we compute variables, we have already dealt with
       cn_x <- cc[[1]]
       cn_y <- cc[[2]]
-      #cn_x_o <- .tmpvname(cn_x)
-      #cn_y_o <- .tmpvname(cn_y)
 
       df_x[[.tmpvname(cn_x)]] <- df_x[[cn_x]]
       df_y[[.tmpvname(cn_y)]] <- df_y[[cn_y]]
@@ -290,7 +288,7 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
     # we need to make sure, variable-order is the same in both matrices so that rbind()-works
     my <- my[, match(colnames(mx), colnames(my))]
     full_m <- rbind(mx, my)
-    full_m
+    unique(full_m)
   }
 
   message("the full constraint-matrix is computed", appendLF = FALSE)
@@ -299,6 +297,7 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
 
   # cn: names of full_m (combined variable names)
   .create_full_df <- function(df_x, df_y, df_common, cn) {
+    strID <- NULL
     df_x <- df_x[, c("strID", "freq", "sdcStatus", .tmpweightname())]
     df_y <- df_y[, c("strID", "freq", "sdcStatus", .tmpweightname())]
 
@@ -315,6 +314,8 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
 
     # make sure the order of column names in full_m matches the rows in df_full
     df_full <- df_full[match(cn, df_full$strID)]
+
+    df_full$is_common_cell <- substr(df_full$strID, 1, 2) == "c_"
     df_full
   }
 
@@ -327,21 +328,32 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
   )
   message("[done]")
 
+  # just for debugging
+  print_constraints <- function(df, mat) {
+    is_innercell <- sapply(df$strID, function(x) {
+      sum(as.matrix(mat[, x]) == -1) == 0
+    })
+    df[, innercell := "st"]
+    df[is_innercell, innercell := "i"]
+    for (i in 1:nrow(mat)) {
+      idx_tot <- which(as.matrix(mat[i, ]) == -1)
+      idx_contr <- which(as.matrix(mat[i, ]) == 1)
+      message("constraint ", i, ": ", paste0(shQuote(df$strID[idx_tot]), "(", df$innercell[idx_tot], ")"), " = ", paste0(shQuote(df$strID[idx_contr]), " (", df$innercell[idx_contr] ,")", collapse = " + "))
+    }
+  }
+  #print_constraints(full_df, full_m)
+
   # anonymize the problem
-  message("the linked problem is anonymized ... ", appendLF = FALSE)
+  message("the linked problem is anonymized ... ")
+
   res <- suppConstraints(
     dat = full_df,
     m = full_m,
     params = list(
-      idname = "strID",
-      freqname = "freq",
-      sdcname = "sdcStatus",
-      wname = .tmpweightname(),
-      is_common_cell = substr(colnames(full_m), 1, 2) == "c_",
-      find_overlaps = TRUE, # possibly generate new constraints!
+      check_constraints = TRUE, # possibly generate new constraints!
       verbose = params$verbose,
       do_singletons = params$detectSingletons,
-      threshold = ifelse(is.na(params$threshold), -1, params$threshold)
+      threshold = ifelse(is.na(params$threshold), 0, params$threshold)
     )
   )
   message("[done]")
@@ -383,7 +395,9 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
   res_y <- c_finalize(object = y, input = params)
   return(list(
       outObj1 = res_x,
-      outObj2 = res_y
+      outObj2 = res_y,
+      full_df = full_df,
+      full_m = res$constraints
     )
   )
 }

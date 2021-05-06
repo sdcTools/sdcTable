@@ -1061,24 +1061,19 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
 
   df <- sdcProb2df(object, addDups = FALSE, dimCodes = "original")
   df[[.tmpweightname()]] <- g_weight(pi)
+  df$is_common_cell <- FALSE # required for suppConstraints()
 
-  # anonymize and apply singleton-detection all in c++!
+  # anonymize and apply singleton-detection all in cpp
   res <- suppConstraints(
     dat = df,
     m = full_m,
     params = list(
-      idname = "strID",
-      freqname = "freq",
-      sdcname = "sdcStatus",
-      wname = .tmpweightname(),
-      is_common_cell = rep(FALSE, nrow(df)),
-      find_overlaps = FALSE, # only required for linked tables
+      check_constraints = FALSE, # just check the generated constraints
       verbose = input$verbose,
       do_singletons = input$detectSingletons,
-      threshold = ifelse(is.na(input$threshold), -1, input$threshold)
+      threshold = ifelse(is.na(input$threshold), 0, input$threshold)
     )
   )
-
   s_sdcStatus(pi) <- list(index = 1:nrow(df), vals=res$sdc_status)
   s_problemInstance(object) <- pi
   invisible(list(object=object, zstatus=NA))

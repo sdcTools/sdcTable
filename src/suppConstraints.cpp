@@ -1,176 +1,22 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-Environment base("package:base");
-Function do_unique = base["unique"];
-
-// returns various information about current sub-problem, relating to a specific constraint
-List info(CharacterVector sdc, NumericVector freqs, IntegerVector indices) {
-  int nr_primsupps = 0;
-  int nr_secondsupps = 0;
-  IntegerVector ind_poss_s;
-  IntegerVector ind_poss_z;
-  IntegerVector ind_poss_w;
-  IntegerVector ind_poss_s_or_z;
-
-  IntegerVector ind_primsupps;
-
-  int nr_singletons = 0;
-  double amount_supped = 0;
-  double amount_available_s = 0;
-  double amount_available_z = 0;
-  double amount_available_w = 0;
-
-  if (indices.size() != sdc.size()) {
-    stop("inputs `sdc` and `indices` do not match in size");
-  }
-  if (freqs.size() != sdc.size()) {
-    stop("inputs `sdc` and `freqs` do not match in size");
-  }
-
-  for (int i = 0; i < sdc.size(); i++) {
-    if (sdc[i] == "u") {
-      amount_supped = amount_supped + freqs[i];
-      nr_primsupps = nr_primsupps + 1;
-      if (freqs[i] == 1) {
-        nr_singletons = nr_singletons + 1;
-      }
-      ind_primsupps.push_back(indices[i]);
-    }
-    if (sdc[i] == "x") {
-      amount_supped = amount_supped + freqs[i];
-      nr_secondsupps = nr_secondsupps + 1;
-      if (freqs[i] == 1) {
-        nr_singletons = nr_singletons + 1;
-      }
-    }
-
-    if (sdc[i] == "s") {
-      ind_poss_s.push_back(indices[i]);
-      ind_poss_s_or_z.push_back(indices[i]);
-      amount_available_s = amount_available_s + freqs[i];
-    }
-    if (sdc[i] == "z") {
-      ind_poss_z.push_back(indices[i]);
-      ind_poss_s_or_z.push_back(indices[i]);
-      amount_available_z = amount_available_z + freqs[i];
-    }
-    if (sdc[i] == "w") {
-      ind_poss_w.push_back(indices[i]);
-      amount_supped = amount_supped + freqs[i];
-      amount_available_w = amount_available_w + freqs[i];
-    }
-  }
-  // cells that are not w
-  int nr_supps = nr_primsupps + nr_secondsupps;
-  int nr_non_w = indices.size() - ind_poss_w.size();
-  bool fully_supped = nr_supps == nr_non_w;
-  return Rcpp::List::create(
-    Named("nr_primsupps") = nr_primsupps,
-    Named("ind_primsupps") = ind_primsupps,
-    Named("nr_secondsupps") = nr_secondsupps,
-    Named("nr_supps") = nr_supps,
-    Named("fully_supped") = fully_supped,
-    Named("ind_poss_s") = ind_poss_s,
-    Named("nr_s") = ind_poss_s.size(),
-    Named("ind_poss_z") = ind_poss_z,
-    Named("nr_z") = ind_poss_z.size(),
-    Named("ind_poss_w") = ind_poss_w,
-    Named("nr_w") = ind_poss_w.size(),
-    Named("nr_non_w") = nr_non_w,
-    Named("ind_poss_s_or_z") = ind_poss_s_or_z,
-    Named("nr_sz") = ind_poss_s_or_z.size(),
-    Named("nr_singletons") = nr_singletons,
-    Named("amount_available_s") = amount_available_s,
-    Named("amount_available_z") = amount_available_z,
-    Named("amount_available_w") = amount_available_w,
-    Named("amount_supped") = amount_supped
-  );
-}
-
-// uses base::order to order in increasing order by frequencies and ids
-IntegerVector order_(NumericVector x, CharacterVector y) {
-  Function order_r("order");
-  NumericVector x_orig = clone(x);
-  CharacterVector y_orig = clone(y);
-
-  IntegerVector o = order_r(x_orig, y_orig, Rcpp::_["decreasing"]  = false);
-  o = o - 1; // c-indices
-  return(o);
-}
-
-// sorts an IntegerVector using std::sort()
-IntegerVector stl_sort(IntegerVector x) {
-  IntegerVector y = clone(x);
-  std::sort(y.begin(), y.end());
-  return y;
-}
-
-// compares two constraints and checks, if there are only two overlapping common cells;
-// in this case an additional constraint is automatically generated
-List compare_constraints(IntegerVector idx_a, IntegerVector idx_b, LogicalVector is_common_cell) {
-  bool debug = true;
-  List out = List::create();
-
-  // compute common_cells
-  IntegerVector common_cells = intersect(idx_a, idx_b);
-
-  // no common cells -> nothing todo
-  if (common_cells.size() == 0) {
-    return(List::create());
-  }
-
-  // compute non-overlapping common cells;
-  // this must be done in both directions and we have to remove non-common cells first
-
-  LogicalVector log_a = is_common_cell[idx_a];
-  IntegerVector common_a = idx_a[log_a];
-
-  LogicalVector log_b = is_common_cell[idx_b];
-  IntegerVector common_b = idx_b[log_b];
-
-  // check if two cells overlap
-  IntegerVector overlap_a = setdiff(common_a, common_cells);
-  IntegerVector overlap_b = setdiff(common_b, common_cells);
-
-  overlap_a = stl_sort(overlap_a);
-  overlap_b = stl_sort(overlap_b);
-
-  if (overlap_a.size() == 2) {
-    if (debug == true) {
-      Rcout << "problem (a)" << std::endl;
-      Rcout << "common cells without totals in a: " << common_a << std::endl;
-      Rcout << "overlapping cells in a: " << overlap_a << std::endl;
-    }
-    out.push_back(overlap_a, "idx");
-  }
-
-  if (overlap_b.size() == 2) {
-    if (debug == true) {
-      Rcout << "problem (b)" << std::endl;
-      Rcout << "common cells without totals in b: " << common_b << std::endl;
-      Rcout << "overlapping cells in b: " << overlap_b << std::endl;
-    }
-    out.push_back(overlap_b, "idx");
-  }
-  return(out);
-}
-
-/*
- * creates a simple-triplet input (provided as list) to c-style indices
- * if find_overlaps is true; all constraints are compared if they have exactly two overlapping common cells
- * and possible new constraints are generated that are dealt with in suppConstraints()
-*/
-List simple_triplet_to_indices(List m, LogicalVector is_common_cell, bool find_overlaps) {
-  List added_constraints;
+List simple_triplet_to_indices(List mat, LogicalVector is_common_cell, IntegerVector freqs) {
+  Function cpp_print("print");
 
   // looping over the constraint matrix"
+  List m = clone(mat);
   IntegerVector vals_i = m["i"]; // row-indices
   IntegerVector vals_j = m["j"]; // column-indices
   IntegerVector vals_v = m["v"]; // -1: total; 1: contributing value
   int nr_constraints = max(vals_i);
 
-  List ll(nr_constraints); //pre-allocate
+  // pre-allocate results
+  List ll(nr_constraints);
+  LogicalVector contains_common(nr_constraints);
+  LogicalVector contains_singletons(nr_constraints);
+
+  LogicalVector is_protected = rep(false, nr_constraints);
 
   LogicalVector col_ind;
   IntegerVector mat_cols;
@@ -181,416 +27,668 @@ List simple_triplet_to_indices(List m, LogicalVector is_common_cell, bool find_o
     mat_cols = vals_j[col_ind];
     mat_cols = mat_cols - 1; // cpp-index
     vals = vals_v[col_ind];
+
+    // check if the constraint contains common cells
+    LogicalVector to_check = is_common_cell[mat_cols];
+    if (sum(to_check) > 0) {
+      contains_common[i - 1] = true;
+    } else {
+      contains_common[i - 1] = false;
+    }
+
+    // check if the constraint contains singletons
+    IntegerVector cc_freqs = freqs[mat_cols];
+    LogicalVector cc_is_singleton = cc_freqs == 1;
+    if (sum(cc_is_singleton) > 0) {
+      contains_singletons[i - 1] = true;
+    } else {
+      contains_singletons[i - 1] = false;
+    }
+
     List tmplist = List::create(
-      Rcpp::Named("idx") = mat_cols,
-      Rcpp::Named("vals") = vals
+      Named("idx") = mat_cols,
+      Named("vals") = vals
     );
     ll[i - 1] = tmplist;
   }
 
-  // todo: improve computation-time
-  if (find_overlaps == true) {
-    Rcout << "finding overlaps" << std::endl;
-    List a, b;
-    bool debug = true;
+  IntegerVector constraint_type = rep(1, nr_constraints);
+  List res = List::create(
+    Named("constraints") = ll,
+    Named("contains_common") = contains_common,
+    Named("contains_singletons") = contains_singletons,
+    Named("is_protected") = is_protected,
+    Named("nr_constraints") = nr_constraints,
+    Named("constraint_type") = constraint_type
+  );
+  return(res);
+}
 
-    int nr_constraints = ll.size();
-    for (int i = 0; i < (nr_constraints - 1); i++) {
-      a = ll[i];
-      IntegerVector ind_a = a["idx"];
-      LogicalVector log_a = is_common_cell[ind_a];
-      IntegerVector common_a = ind_a[log_a];
-      for (int j = i + 1; j < nr_constraints; j++) {
-        b = ll[j];
-        IntegerVector ind_b = b["idx"];
-        // new: compare constraints directly in the function to avoid overhead/copying
-        // compute common_cells
-        IntegerVector common_cells = intersect(ind_a, ind_b);
+List find_linked_constraints(List constraints, IntegerVector freqs, LogicalVector is_common_cell, bool verbose) {
+  // we use the result from  `simple_triplet_to_indices()` as input and compute additional constraints
+  Function cpp_print("print");
+  List output;
 
-        List tmpres = compare_constraints(ind_a, ind_b, is_common_cell);
-        if (tmpres.size() > 0) {
-          if (debug == true) {
-            Rcout << "--> additional constraint generated. i = " << i << " | j = " << j << std::endl;
+  List cc = clone(constraints);
+  int nr_constraints = cc.length();
+  int counter = 0;
+  IntegerVector jvec = {-1, 1, 1};
+
+  IntegerVector vvec, vval;
+  for (int i = 0; i < (nr_constraints - 1); i++) {
+    for (int j = i + 1; j < nr_constraints; j++) {
+      counter = counter + 1;
+      List inp_i = cc[i];
+      List inp_j = cc[j];
+
+      IntegerVector idx_i = inp_i["idx"];
+      IntegerVector idx_j = inp_j["idx"];
+
+      // total and contributing indices
+      IntegerVector vind = {0};
+      IntegerVector idx_tot_i = idx_i[vind];
+      IntegerVector idx_tot_j = idx_j[vind];
+
+      IntegerVector idx_contr_i = setdiff(idx_i, idx_tot_i);
+      IntegerVector idx_contr_j = setdiff(idx_j, idx_tot_j);
+
+      // constraint generation //
+      IntegerVector vint = intersect(idx_contr_i, idx_contr_j);
+      IntegerVector vposs = union_(idx_contr_i, idx_contr_j);
+
+      IntegerVector overlapping_ids = setdiff(vposs, vint);
+      if (overlapping_ids.size() == 1) {
+        bool ccell = is_common_cell[overlapping_ids];
+        // the overlapping cell is a common-cell
+        if (ccell == true) {
+          int overlap_id = overlapping_ids[0];
+          IntegerVector val_i = freqs[idx_tot_i];
+          int tot_i = val_i[0];
+          IntegerVector val_j = freqs[idx_tot_j];
+          int tot_j = val_j[0];
+          if (tot_i >= tot_j) {
+            IntegerVector vvec = {idx_tot_i[0], idx_tot_j[0], overlap_id};
+            List ll = List::create(
+              Named("idx") = vvec,
+              Named("vals") = jvec
+            );
+            output.push_back(ll);
+          } else {
+            IntegerVector vvec = {idx_tot_j[0], idx_tot_i[0], overlap_id};
+            List ll = List::create(
+              Named("idx") = vvec,
+              Named("vals") = jvec
+            );
+            output.push_back(ll);
           }
-          added_constraints.push_back(tmpres);
         }
       }
+
+      if (overlapping_ids.size() == 2) {
+        // check if all overlapping cells are from the same constraint
+        std::vector<int> v_chk = Rcpp::as<std::vector<int> >(idx_contr_i);
+        std::vector<int>::iterator it;
+        LogicalVector l1 = { false, false};
+        int chkval;
+        for (int j = 0; j < 2; j++) {
+          chkval = overlapping_ids[j];
+          it = std::find(v_chk.begin(), v_chk.end(), chkval);
+          if (it != v_chk.end()) {
+            l1[j] = true;
+          }
+        }
+        int sum1 = sum(l1);
+        if (sum1 == 0) {
+          // case1: both contributing overlapping cells come from constraint j
+          vvec = {idx_tot_i[0], idx_tot_j[0], overlapping_ids[0], overlapping_ids[1]};
+          vval = {-1, 1, -1, -1};
+        } else if (sum1 == 2) {
+          // case2: both contributing overlapping cells come from constraint i
+          vvec = {idx_tot_j[0], idx_tot_i[0], overlapping_ids[0], overlapping_ids[1]};
+          vval = {-1, 1, -1, -1};
+        } else {
+          // case3: one overlapping cell is in constraint i, the other in j
+          bool from_con_a = l1[0];
+          vvec = {idx_tot_i[0], idx_tot_j[0], overlapping_ids[0], overlapping_ids[1]};
+          if (from_con_a == true) {
+            vval = {-1, 1, 1, -1};
+          } else {
+            vval = {-1, 1, -1, 1};
+          }
+        }
+        List ll = List::create(
+          Named("idx") = vvec,
+          Named("vals") = vval
+        );
+        output.push_back(ll);
+      }
     }
-    Rcout << "finished finding " << added_constraints.size() << " overlaps" << std::endl;
-    added_constraints = do_unique(added_constraints);
   }
-  return Rcpp::List::create(
-    Rcpp::Named("constraint_mat") = ll,
-    Rcpp::Named("additional_constraints") = added_constraints
-  );
+  if (verbose == true) {
+    Rcout << output.size() << " new constraints detected | nr_comparisons: " << counter << std::endl;
+  }
+  return(output);
 }
 
-/*
- * This function computes an additional suppression and returns an updated
- * set of measures like the number of suppressed cells together with its amount and a
- * an updated suppression-pattern of the given constraint
- */
-List perform_suppression(IntegerVector full_ids, CharacterVector sdc, NumericVector freqs, NumericVector weights, CharacterVector ids, IntegerVector ind_poss, List measures) {
-  if (ind_poss.size() == 0) {
-    Rcout << "full_ids: " << full_ids << std::endl;
-    Rcout << "freqs: " << freqs << std::endl;
-    Rcout << "sdc: " << sdc << std::endl;
-    stop("we cannot find a solution; no cells left to suppress");
+bool check_constraints(List inp) {
+  /* returns true if all constraints are valid (summing to zero) */
+  List con = inp["constraints"];
+  IntegerVector freqs = inp["freqs"];
+  int nr_constraints = inp["nr_constraints"];
+  LogicalVector res = rep(false, nr_constraints);
+
+  for (int i = 0; i < nr_constraints; i++) {
+    List cur_constraint = con[i];
+    IntegerVector idx = cur_constraint["idx"];
+    IntegerVector f = freqs[idx];
+    IntegerVector v =  cur_constraint["vals"];
+    IntegerVector sumvec = v * f;
+    int summe = sum(sumvec);
+    if (summe == 0) {
+      res[i] = true;
+    } else {
+      Rcout << "problem mit constraint " << i << " | summe: " << summe << std::endl;
+      res[i] = false;
+    }
   }
-
-  IntegerVector additional_supps = measures["additional_supps"];
-  int nr_supps = measures["nr_supps"];
-  int nr_s = measures["nr_s"];
-  int nr_non_w = measures["nr_non_w"];
-  double amount_avail = measures["amount_avail"];
-  double amount_supped = measures["amount_supped"];
-
-  // we need to _order/sort and use the first index to be suppressed
-  IntegerVector tmporder = order_(weights[ind_poss], ids[ind_poss]);
-  IntegerVector final_index = ind_poss[tmporder];
-  final_index = final_index[0];
-  ind_poss = setdiff(ind_poss, final_index);
-  int idx = final_index[0];
-  int idx_full = full_ids[idx];
-
-  // we update the indices that need to be suppressed
-  // and that are relative to the entire problem
-  additional_supps.push_back(idx_full);
-
-  // update (sub)problem (relative to current constraint)
-  sdc[idx] = "x";
-  nr_supps = nr_supps + 1;
-  nr_s = nr_s - 1;
-  bool fully_supped = nr_supps == nr_non_w;
-  amount_avail = amount_avail - freqs[idx];
-  amount_supped = amount_supped + freqs[idx];
-  return List::create(
-    Named("final_index") = idx_full,
-    Named("sdc") = sdc,
-    Named("additional_supps") = additional_supps,
-    Named("ind_poss") = ind_poss,
-    Named("nr_supps") = nr_supps,
-    Named("nr_s") = nr_s,
-    Named("fully_supped") = fully_supped,
-    Named("amount_avail") = amount_avail,
-    Named("amount_supped") = amount_supped
-  );
+  int sum_ok = sum(res);
+  bool ok = false;
+  if (sum_ok == nr_constraints) {
+    ok = true;
+  }
+  return(ok);
 }
 
-/*
- * makes sure that for each constraint at least 2 cells are suppressed
- * if do_singletons is specified possibly additional suppressions are done if one ore two primary singleton suppressions are part of the pattern
- * if threshold is larger > 0 we suppress additional cells until the threshold is reached of the row is completely suppressed
- */
-IntegerVector supp_single_constraint(IntegerVector full_ids, CharacterVector str_ids, CharacterVector sdc, NumericVector weights, NumericVector freqs, bool do_singletons, double threshold) {
-  bool debug = false;
-  int nr_elements = sdc.size();
-  bool run_singleton = false;
-
-  if (do_singletons == true or threshold > 0) {
-    run_singleton = true;
-  }
-
-  IntegerVector additional_supps;
-  IntegerVector final_index;
-
-  // these indices are relative only the the current constraint
-  IntegerVector indices = seq(0, nr_elements - 1);
-
-  // compute information
-  List suppinfo = info(sdc, freqs, indices);
-
-  int nr_primsupps = suppinfo["nr_primsupps"];
-  int nr_supps = suppinfo["nr_supps"];
-  int nr_s = suppinfo["nr_s"];
-  int nr_non_w = suppinfo["nr_non_w"];
-  int nr_singletons = suppinfo["nr_singletons"];
-  IntegerVector ind_poss_s = suppinfo["ind_poss_s"];
-  IntegerVector ind_primsupps = suppinfo["ind_primsupps"];
-
-  bool fully_supped = suppinfo["fully_supped"];
-  double amount_avail = suppinfo["amount_available_s"];
-  double amount_supped = suppinfo["amount_supped"];
-  double amount_w = suppinfo["amount_available_w"];
-
-  IntegerVector cur_indices;
-
-  // no "open" cells left; we have nothing todo
-  if (fully_supped == true) {
-    return(additional_supps.sort());
-  }
-
-  // default-case: we have only a single suppression in the row/column
-  if ((nr_supps == 1) and (fully_supped == false) and (amount_w <= 0)) {
-    // we need to find an additional suppression
-    if (debug) {
-      Rcout << "we have a single suppression and "
-            << nr_s << " s-cells with "
-            << amount_avail << " frequencies to suppress" << std::endl;
-    }
-
-    // default case: a single supp and n
-    List measures = List::create(
-      Named("nr_supps") = nr_supps,
-      Named("nr_s") = nr_s,
-      Named("nr_non_w") = nr_non_w,
-      Named("additional_supps") = additional_supps,
-      Named("fully_supped") = fully_supped,
-      Named("amount_avail") = amount_avail,
-      Named("amount_supped") = amount_supped
+List create_supp_inputs(List mat, LogicalVector is_common_cell, IntegerVector freqs, NumericVector weights, CharacterVector sdc_status, bool find_overlaps, bool verbose) {
+  List cc = simple_triplet_to_indices(mat, is_common_cell, freqs);
+  if (find_overlaps == true) {
+    // subset to constraints that contain at least a single common cell
+    // improves performance as it reduces the number of required comparisons
+    LogicalVector contains_common = cc["contains_common"];
+    List all_constraints = cc["constraints"];
+    List constraints_with_commoncells = all_constraints[contains_common];
+    List linked_constraints = find_linked_constraints(
+      constraints_with_commoncells,
+      freqs,
+      is_common_cell,
+      verbose
     );
 
-    List res = perform_suppression(full_ids, sdc, freqs, weights, str_ids, ind_poss_s, measures);
-    additional_supps = res["additional_supps"];
-    sdc = res["sdc"];
-    nr_supps = res["nr_supps"];
-    nr_s = res["nr_s"];
-    ind_poss_s = res["ind_poss"];
-    fully_supped = res["fully_supped"];
-    amount_avail = res["amount_avail"];
-    amount_supped =  res["amount_supped"];
+    // update
+    IntegerVector cc_type = cc["constraint_type"];
+    LogicalVector cc_common = cc["contains_common"];
+    LogicalVector cc_singletons = cc["contains_singletons"];
+    LogicalVector cc_is_protected = cc["is_protected"];
+    List cc_con = cc["constraints"];
+
+    int nr_additional_constraints = linked_constraints.size();
+    for (int i = 0; i < nr_additional_constraints; i++) {
+      cc_type.push_back(2);
+      cc_common.push_back(true);
+
+      List xx = linked_constraints[i];
+      IntegerVector chk_idx = xx["idx"];
+      IntegerVector chk_f = freqs[chk_idx];
+      LogicalVector chk_singleton = chk_f == 1;
+      bool chk_singletons = sum(chk_singleton) > 0;
+
+      cc_singletons.push_back(chk_singletons);
+      cc_is_protected.push_back(false);
+      cc_con.push_back(linked_constraints[i]);
+    }
+    cc["constraint_type"]  = cc_type;
+    cc["contains_common"]  = cc_common;
+    cc["contains_singletons"] = cc_singletons;
+    cc["is_protected"]  = cc_is_protected;
+    cc["constraints"]  = cc_con;
+    int nr_ex_constraints = cc["nr_constraints"];
+    cc["nr_constraints"] = nr_ex_constraints + nr_additional_constraints;
   }
 
-  if (run_singleton == true) {
-    if (do_singletons == true and nr_singletons > 0 and nr_supps == 2 and fully_supped == false) {
-      if (debug) {
-        Rcout << "we have exactly two supps and " << nr_singletons << " singleton(s) --> additional supps must be found" << std::endl;
-      }
+  // constraint_type: 1 -> ordinary constraint
+  // constraint_type: 2 -> constraint due to linked tables
+  IntegerVector ids = seq_len(freqs.length());
+  ids = ids - 1;
+  cc.push_back(ids, "ids");
+  cc.push_back(freqs, "freqs");
+  cc.push_back(weights, "weights");
+  cc.push_back(sdc_status, "sdc_status");
+  return(cc);
+}
 
-      List measures = List::create(
-        Named("nr_supps") = nr_supps,
-        Named("nr_s") = nr_s,
-        Named("nr_non_w") = nr_non_w,
+bool compare_charvecs(CharacterVector x, CharacterVector y) {
+  LogicalVector r(x.size());
+  for (int i = 0; i < x.size(); i++) {
+    if (x[i] != y[i]) {
+      return(false);
+    }
+  }
+  return(true);
+}
+
+/* finds a new suppression-index; based on minimal value of input `weights`
+ * and returns a vector of length 2 with first element being the global and
+ * the second element the local index of the cell that needs to be suppressed
+ * weights: weights used to identify a suitable suppession-index
+ * idx_global: (global) indices
+ * idx_local: (local) indices
+ */
+IntegerVector find_additional_suppression(NumericVector weights, IntegerVector idx_global, IntegerVector idx_local) {
+  int tmp_idx = which_min(weights);
+  IntegerVector min_idx = { tmp_idx };
+  IntegerVector supp_idx = idx_global[min_idx];
+  IntegerVector supp_idx_local = idx_local[min_idx];
+
+  int res_global = supp_idx[0];
+  int res_local = supp_idx_local[0];
+  IntegerVector result = {res_global, res_local};
+  return(result);
+}
+
+List constraint_info(CharacterVector sdc, IntegerVector freqs, NumericVector weights, IntegerVector indices) {
+  // returns various information about current sub-problem, relating to a specific constraint
+  IntegerVector v_nr = rep(0, 9);
+  v_nr.names() = CharacterVector({"s", "w", "z", "sz", "primsupps", "secondsupps", "non_w", "singletons", "supps"});
+
+  IntegerVector v_amount = rep(0, 4);
+  v_amount.names() = CharacterVector({"avail_s", "avail_z", "avail_w", "supped"});
+
+  // "indices relevant to global, overall position */
+  IntegerVector ind_poss_s;
+  IntegerVector ind_poss_z;
+  IntegerVector ind_poss_w;
+  IntegerVector ind_poss_s_or_z;
+  IntegerVector ind_primsupps;
+
+  // possible indices relevant to local position */
+  IntegerVector local_poss_primsupps;
+  IntegerVector local_poss_s;
+  IntegerVector local_poss_s_or_z;
+  IntegerVector local_poss_z;
+  IntegerVector local_poss_w;
+
+  for (int i = 0; i < sdc.size(); i++) {
+    if (sdc[i] == "u") {
+      v_amount["supped"] = v_amount["supped"] + freqs[i];
+      v_nr["primsupps"] = v_nr["primsupps"] + 1;
+      if (freqs[i] == 1) {
+        v_nr["singletons"] = v_nr["singletons"] + 1;
+      }
+      ind_primsupps.push_back(indices[i]);
+      local_poss_primsupps.push_back(i);
+    }
+    if (sdc[i] == "x") {
+      v_amount["supped"] = v_amount["supped"] + freqs[i];
+      v_nr["secondsupps"] = v_nr["secondsupps"] + 1;
+      if (freqs[i] == 1) {
+        v_nr["singletons"] = v_nr["singletons"] + 1;
+      }
+    }
+
+    if (sdc[i] == "s") {
+      ind_poss_s.push_back(indices[i]);
+      local_poss_s.push_back(i);
+      ind_poss_s_or_z.push_back(indices[i]);
+      local_poss_s_or_z.push_back(i);
+      v_amount["avail_s"] = v_amount["avail_s"] + freqs[i];
+    }
+    if (sdc[i] == "z") {
+      ind_poss_z.push_back(indices[i]);
+      local_poss_z.push_back(i);
+      ind_poss_s_or_z.push_back(indices[i]);
+      local_poss_s_or_z.push_back(i);
+      v_amount["avail_z"] = v_amount["avail_z"] + freqs[i];
+    }
+    if (sdc[i] == "w") {
+      ind_poss_w.push_back(indices[i]);
+      local_poss_w.push_back(i);
+      v_amount["supped"] = v_amount["supped"] + freqs[i];
+      v_amount["avail_w"] = v_amount["avail_w"] + freqs[i];
+    }
+  }
+  // cells that are not w
+  v_nr["supps"] = v_nr["primsupps"] + v_nr["secondsupps"];
+
+  v_nr["s"] = ind_poss_s.size();
+  v_nr["z"] = ind_poss_z.size();
+  v_nr["w"] = ind_poss_w.size();
+  v_nr["sz"] = ind_poss_s_or_z.size();
+
+  int nr_non_w = indices.size() - v_nr["w"];
+  v_nr["non_w"] = nr_non_w;
+
+  List poss_ind = List::create(
+    Named("primsupps") = ind_primsupps,
+    Named("s") = ind_poss_s,
+    Named("z") = ind_poss_z,
+    Named("w") = ind_poss_w,
+    Named("s_or_z") = ind_poss_s_or_z
+  );
+
+  List local_ind = List::create(
+    Named("primsupps") = local_poss_primsupps,
+    Named("s") = local_poss_s,
+    Named("z") = local_poss_z,
+    Named("w") = local_poss_w,
+    Named("s_or_z") = local_poss_s_or_z
+  );
+
+  bool fully_supped = v_nr["supps"] == nr_non_w;
+  return Rcpp::List::create(
+    Named("idx") = indices,
+    Named("freqs") = freqs,
+    Named("sdc") = sdc,
+    Named("weights") = weights,
+    Named("fully_supped") = fully_supped,
+    Named("numbers") = v_nr,
+    Named("poss_ind") = poss_ind,
+    Named("local_ind") = local_ind,
+    Named("amounts") = v_amount
+  );
+}
+
+/* computes sdc-constraints for each constraint in the input list */
+List sdc_info(List inp) {
+  IntegerVector freqs = inp["freqs"];
+  NumericVector weights = inp["weights"];
+
+  CharacterVector sdc_status = inp["sdc_status"];
+  int nr_constraints = inp["nr_constraints"];
+
+  List con = inp["constraints"];
+  List out(nr_constraints); //pre-allocate
+
+  for (int i = 0; i < nr_constraints; i++) {
+    //Rcout << "dealing with constraint " << i << std::endl;
+
+    List cur_constraint = con[i];
+    IntegerVector idx = cur_constraint["idx"];
+    IntegerVector f = freqs[idx];
+    NumericVector w = weights[idx];
+    CharacterVector s = sdc_status[idx];
+    out[i] = constraint_info(s, f, w, idx);
+  }
+  return(out);
+}
+
+/*
+ * Inputs:
+ * - con: one of the constraints retrieved via constraint_info() or sdc_info()
+ * - sdc: the full sdc-status vector
+ * - do_singletons: if true, we try to identify additional required suppressions due to singletons
+ * - threshold: threshold-value used to identify additional required suppressions (if > 0)
+ * - run: if > 1, singleton-detection procedure is not required to be run (again)
+ */
+List supp_constraint(List con, CharacterVector sdc, bool do_singletons, double threshold, int run) {
+  /*
+   * makes sure that for each constraint at least 2 cells are suppressed
+   * if do_singletons == true: possibly additional suppressions are done if one ore two primary singleton suppressions are part of the pattern
+   * if threshold > 0: additional cells are suppressed until the threshold is reached or the row is fully_suppressed
+   */
+  Function cpp_print("print");
+  IntegerVector idx, cur_freq, numbers, poss_s, poss_idx;
+  CharacterVector cur_sdc, old_sdc;
+  NumericVector cur_w, amounts, poss_w;
+  int nr_singletons, nr_supps, idx_global, idx_local;
+  IntegerVector additional_supps;
+  bool fully_supped = con["fully_supped"];
+
+  // we cannot do anything more if all cells are already suppressed
+  if (fully_supped == true) {
+    return(Rcpp::List::create(
         Named("additional_supps") = additional_supps,
-        Named("fully_supped") = fully_supped,
-        Named("amount_avail") = amount_avail,
-        Named("amount_supped") = amount_supped
-      );
+        Named("con") = con
+    ));
+  }
 
-      List res = perform_suppression(full_ids, sdc, freqs, weights, str_ids, ind_poss_s, measures);
-      additional_supps = res["additional_supps"];
-      sdc = res["sdc"];
-      nr_supps = res["nr_supps"];
-      nr_s = res["nr_s"];
-      ind_poss_s = res["ind_poss"];
-      fully_supped = res["fully_supped"];
-      amount_avail = res["amount_avail"];
-      amount_supped =  res["amount_supped"];
+  idx = con["idx"];
+  cur_sdc = sdc[idx];
+  old_sdc = con["sdc"];
+  cur_freq = con["freqs"];
+  numbers = con["numbers"];
+  amounts = con["amounts"];
+  cur_w = con["weights"];
+
+  int nr_primsupps = numbers["primsupps"];
+  List poss_indices_local = con["local_ind"];
+  List poss_indices_global = con["poss_ind"];
+  bool recheck_measures = true;
+
+  if (run == 1 and (do_singletons == true or threshold > 0)) {
+    nr_singletons = numbers["singletons"];
+    if (nr_singletons == 0 ) {
+      // no singletons in this constraint -> nothing todo
+      do_singletons = false;
     }
 
-    // if a frequency rule is used, it could happen that two cells on a row/column are
-    // primary unsafe, but the sum of the two cells could still be unsafe. In that case
-    // it should be prevented that these two cells protect each other.
-    if ((do_singletons == true) and (nr_supps == 3) and (nr_primsupps == 3) and (fully_supped == false)) {
-      Rcout << "case detected!" << std::endl;
-      if (sdc[0] == "u") { // the total is a primary suppressed cell
-        List measures = List::create(
-          Named("nr_supps") = nr_supps,
-          Named("nr_s") = nr_s,
-          Named("nr_non_w") = nr_non_w,
-          Named("additional_supps") = additional_supps,
-          Named("fully_supped") = fully_supped,
-          Named("amount_avail") = amount_avail,
-          Named("amount_supped") = amount_supped
-        );
+    if (do_singletons == true) {
+      nr_supps = numbers["supps"];
+      //Rcout << "nr_supps: " << nr_supps  << " | nr_singletons: " << nr_singletons << std::endl;
+      // first case: we have a constraint with 2 primary suppressions,
+      // one of them being a singleton; we need an additional suppression
+      if (nr_supps == 2 and nr_singletons >= 1) {
+        poss_s = poss_indices_local["s"];
+        poss_w = cur_w[poss_s];
+        poss_idx = idx[poss_s];
 
-        List res = perform_suppression(full_ids, sdc, freqs, weights, str_ids, ind_poss_s, measures);
-        additional_supps = res["additional_supps"];
-        sdc = res["sdc"];
-        nr_supps = res["nr_supps"];
-        nr_s = res["nr_s"];
-        ind_poss_s = res["ind_poss"];
-        fully_supped = res["fully_supped"];
-        amount_avail = res["amount_avail"];
-        amount_supped =  res["amount_supped"];
+        IntegerVector add_supp = find_additional_suppression(poss_w, poss_idx, poss_s);
+        idx_global = add_supp[0];
+        idx_local = add_supp[1];
+
+        //Rcout << "additional suppression found: " << idx_global << " (" << idx_local << ")" << std::endl;
+
+        // in order to return the value
+        additional_supps.push_back(idx_global);
+
+        // recompute sdc-measures for current constraint
+        cur_sdc[idx_local] = "x";
+        List con2 = constraint_info(cur_sdc, con["freqs"], con["weights"], idx);
+        con = con2;
+
+        // we need to update measures that might have changed
+        numbers = con["numbers"];
+        nr_singletons = numbers["singletons"];
+        nr_supps = numbers["supps"];
+        poss_indices_local = con["local_ind"];
+        poss_indices_global = con["poss_ind"];
+        fully_supped = con["fully_supped"];
+        recheck_measures = false;
+      }
+
+      // if a frequency rule is used, it could happen that two cells on a row/column are
+      // primary unsafe, but the sum of the two cells could still be unsafe. In that case
+      // it should be prevented that these two cells protect each other.
+      if ((cur_sdc[0] == "u") and (nr_supps == 3) and (nr_primsupps == 3) and (fully_supped == false)) {
+        poss_s = poss_indices_local["s"];
+        poss_w = cur_w[poss_s];
+        poss_idx = idx[poss_s];
+
+        IntegerVector add_supp = find_additional_suppression(poss_w, poss_idx, poss_s);
+        idx_global = add_supp[0];
+        idx_local = add_supp[1];
+
+        //Rcout << "additional suppression found: " << idx_global << " (" << idx_local << ")" << std::endl;
+
+        // in order to return the value
+        additional_supps.push_back(idx_global);
+
+        // recompute sdc-measures for current constraint
+        cur_sdc[idx_local] = "x";
+        List con2 = constraint_info(cur_sdc, con["freqs"], con["weights"], idx);
+        con = con2;
+
+        // we need to update measures that might have changed
+        numbers = con["numbers"];
+        nr_singletons = numbers["singletons"];
+        nr_supps = numbers["supps"];
+        poss_indices_local = con["local_ind"];
+        poss_indices_global = con["poss_ind"];
+        fully_supped = con["fully_supped"];
+        recheck_measures = false;
       }
     }
 
-    // we want to make sure that a given amount (threshold) is primary suppressed
-    if ((threshold > 0) and amount_supped < threshold) {
-      if (debug) {
-        Rcout << " --> the required threshold " << threshold
-              << " is not reached with amount_supped = " << amount_supped
-              << " --> additional supps must be found" << std::endl;
-      }
+    amounts = con["amounts"];
+    double amount_supped = amounts["supped"];
+    if (threshold > 0 and amount_supped < threshold) {
+      //Rcout << "--> threshold: " << threshold << " --> we suppress cells until threshold is reached " << std::endl;
+      fully_supped = con["fully_supped"];
       while ((amount_supped < threshold) and (fully_supped == false)) {
-        List measures = List::create(
-          Named("nr_supps") = nr_supps,
-          Named("nr_s") = nr_s,
-          Named("nr_non_w") = nr_non_w,
-          Named("additional_supps") = additional_supps,
-          Named("fully_supped") = fully_supped,
-          Named("amount_avail") = amount_avail,
-          Named("amount_supped") = amount_supped
-        );
+        poss_s = poss_indices_local["s"];
+        poss_w = cur_w[poss_s];
+        poss_idx = idx[poss_s];
 
-        List res = perform_suppression(full_ids, sdc, freqs, weights, str_ids, ind_poss_s, measures);
-        additional_supps = res["additional_supps"];
-        sdc = res["sdc"];
-        nr_supps = res["nr_supps"];
-        nr_s = res["nr_s"];
-        ind_poss_s = res["ind_poss"];
-        fully_supped = res["fully_supped"];
-        amount_avail = res["amount_avail"];
-        amount_supped =  res["amount_supped"];
+        IntegerVector add_supp = find_additional_suppression(poss_w, poss_idx, poss_s);
+        idx_global = add_supp[0];
+        idx_local = add_supp[1];
+        //Rcout << "additional suppression (threshold) found: " << idx_global << " (" << idx_local << ")" << std::endl;
+
+        // in order to return the value
+        additional_supps.push_back(idx_global);
+
+        // recompute sdc-measures for current constraint
+        cur_sdc[idx_local] = "x";
+        List con2 = constraint_info(cur_sdc, con["freqs"], con["weights"], idx);
+        con2["sdc"] = cur_sdc;
+        con = con2;
+
+        // we need to update measures that might have changed
+        numbers = con["numbers"];
+        nr_singletons = numbers["singletons"];
+        nr_supps = numbers["supps"];
+        poss_indices_local = con["local_ind"];
+        poss_indices_global = con["poss_ind"];
+        amounts = con["amounts"];
+        fully_supped = con["fully_supped"];
+        amount_supped = amounts["supped"];
       }
+      recheck_measures = false; // we have just recomputed the sdc-measures
     }
   }
-  return(additional_supps.sort());
+
+  if (fully_supped == true) {
+    return(Rcpp::List::create(
+        Named("additional_supps") = additional_supps,
+        Named("con") = con
+    ));
+  }
+
+  if (recheck_measures == true) {
+    bool all_equal = compare_charvecs(old_sdc, cur_sdc);
+    if (all_equal == false) {
+      // the sdc-pattern has changed; we need to re-compute the
+      // sdc-measures for the given constraint
+      List con2 = constraint_info(cur_sdc, con["freqs"], con["weights"], idx);
+      con2["sdc"] = cur_sdc;
+      con = con2;
+    }
+  }
+
+  numbers = con["numbers"];
+  amounts = con["amounts"];
+  nr_supps = numbers["supps"];
+  double amount_w = amounts["avail_w"];
+  fully_supped = con["fully_supped"];
+  poss_indices_local = con["local_ind"];
+
+  // this is the default case; we have a single suppression in the
+  // constraint which is not fully suppressed and the amount of noice
+  // suppressed by "w"-cells (not published) is also zero
+  if ((nr_supps == 1) and (amount_w <= 0) and (fully_supped == false)) {
+    //Rcout << "default case: find a single additional suppression" << std::endl;
+    poss_s = poss_indices_local["s"];
+    poss_w = cur_w[poss_s];
+    poss_idx = idx[poss_s];
+
+    IntegerVector add_supp = find_additional_suppression(poss_w, poss_idx, poss_s);
+    idx_global = add_supp[0];
+    idx_local = add_supp[1];
+    //Rcout << "additional suppression (default-case) found: " << idx_global << " (" << idx_local << ")" << std::endl;
+
+    // append value to additional cells to suppress
+    additional_supps.push_back(idx_global);
+
+    cur_sdc[idx_local] = "x";
+    List con2 = constraint_info(cur_sdc, con["freqs"], con["weights"], idx);
+    con2["sdc"] = cur_sdc;
+    con = con2;
+    List xx = Rcpp::List::create(
+      Named("additional_supps") = additional_supps,
+      Named("con") = con
+    );
+  }
+  return(Rcpp::List::create(
+      Named("additional_supps") = additional_supps,
+      Named("con") = con
+  ));
 }
 
 // [[Rcpp::export]]
 List suppConstraints(DataFrame dat, List m, List params) {
   Function cpp_print("print");
-  String wname = params["wname"];
-  String idname = params["idname"];
-  String sdcname = params["sdcname"];
-  String freqname = params["freqname"];
-  LogicalVector is_common_cell = params["is_common_cell"];
-  bool find_overlaps = params["find_overlaps"];
-  bool verbose = params["verbose"];
-  bool do_singletons = params["do_singletons"];
-  double threshold = params["threshold"];
 
-  // convert simple-triplet-input matrix to indices and values
-  if (verbose == true) {
-    Rcout << "converting simple-triplet matrix to indices (this could take a while ...)" << std::endl;
-  }
-  List tmpres = simple_triplet_to_indices(m, is_common_cell, find_overlaps);
-  m = tmpres["constraint_mat"];
-  List additional_constraints = tmpres["additional_constraints"];
-  int nr_additional_constraints = additional_constraints.size();
+  LogicalVector v_is_common = dat["is_common_cell"];
+  IntegerVector v_freqs = dat["freq"];
+  NumericVector v_weights = dat["weight.for.suppression"];
+  CharacterVector sdc = dat["sdcStatus"];
+  CharacterVector v_sdc = clone(sdc);
 
-  if (verbose == true) {
-    Rcout << nr_additional_constraints << " additional constraints have been created" << std::endl;
-  }
+  /* params */
+  bool param_verbose = params["verbose"];
+  bool param_check_constraints = params["check_constraints"];
+  bool param_do_singletons = params["do_singletons"];
+  double param_threshold = params["threshold"];
 
-  if (do_singletons == true or threshold > 0) {
-    if (verbose == true) {
-      Rcout << "procedure checks for singletons" << std::endl;
+  bool check_for_overlaps = is_true(any(v_is_common));
+  List constraints = create_supp_inputs(m, v_is_common, v_freqs, v_weights, v_sdc, check_for_overlaps, param_verbose);
+
+  if (param_check_constraints == true) {
+    if (param_verbose == true) {
+      Rcout << "checking constraint validity" << std::endl;
+    }
+    bool all_ok = check_constraints(constraints);
+    if (all_ok == false) {
+      stop("invalid constraints detected.");
     }
   }
 
-  // start protection
-  int nr_vars = dat.nrow();
-  int nr_constraints = m.size();
-  if (verbose == true) {
-    Rcout << "we protect a dataset with " << nr_vars << " variables"
-    " and " << nr_constraints << " linear constraints" << std::endl;
-  }
-
-  // "global" variables
-  int idx_weightcol = dat.findName(wname);
-  NumericVector weights = dat[idx_weightcol];
-
-  int idx_sdccol = dat.findName(sdcname);
-  CharacterVector tmpsdc = dat[idx_sdccol];
-  CharacterVector sdc_status = clone(tmpsdc);
-
-  int idx_idcol = dat.findName(idname);
-  CharacterVector tmpids = dat[idx_idcol];
-  CharacterVector strids = clone(tmpids);
-
-  int idx_freqcol = dat.findName(freqname);
-  NumericVector freqs = dat[idx_freqcol];
-
-  // variables used for each constraint
-  IntegerVector indices;
-  NumericVector cur_w;
-  CharacterVector cur_sdc;
-  IntegerVector cur_indices;
-  NumericVector cur_freqs;
-  CharacterVector cur_ids;
-
-  List suppinfo;
-  List tmplist;
-
+  List constraint_info = sdc_info(constraints);
+  IntegerVector new_supps;
+  List tmpres;
+  List cur_constraint, result;
+  int run = 0;
   bool finished = false;
-  bool supps_added;
-  int nr_additional_supps = 0;
-  int counter = 0;
-  while (!finished) {
-    counter += 1;
-    if (counter > 1) {
-      // we only need to run singleton-detection procedure once (if it is required at all)
-      do_singletons = false;
-      threshold = -1;
-    }
-    supps_added = false;
-    nr_additional_supps = 0;
-
-    // we start by dealing with additionally created constraints
-    // that would allow differencing attacks in constraints that
-    // differ by exactly two common cells
-    // we make sure that in such cases; either none or both common cells
-    // are suppressed
-    if (nr_additional_constraints > 0) {
-      IntegerVector tmpind;
-      int to_supp;
-      for (int i = 0; i < nr_additional_constraints; i++) {
-        List tmpindlist = additional_constraints[i];
-        tmpind = tmpindlist["idx"];
-        cur_sdc = sdc_status[tmpind];
-        cur_freqs = freqs[tmpind];
-        List add_suppinfo = info(cur_sdc, cur_freqs, tmpind);
-
-        bool is_fully_supped = add_suppinfo["fully_supped"];
-        int nr_tmp_supps = add_suppinfo["nr_supps"];
-        if ((is_fully_supped == false) and (nr_tmp_supps == 1)) {
-          // suppress the other remaining cell to make sure, both cells are suppressed
-          IntegerVector tmp_poss_s = add_suppinfo["ind_poss_s"];
-          if (tmp_poss_s.size() > 0) {
-            to_supp = add_suppinfo["ind_poss_s"];
-          } else {
-            // also if a cell is known to be 0 it could be used to compute other cell-values
-            to_supp = add_suppinfo["ind_poss_s_or_z"];
-          }
-          sdc_status[to_supp] = "x";
-          supps_added = true;
-          nr_additional_supps = nr_additional_supps + 1;
-        }
-      }
-
-      if (verbose == true) {
-        Rcout << "run " << counter << " | additional supps after additional constraints): " << nr_additional_supps << std::endl;
-      }
+  bool additional_supps;
+  int nr_add_supps = 0;
+  while (finished == false) {
+    run = run + 1;
+    additional_supps = false;
+    nr_add_supps = 0;
+    if (param_verbose == true) {
+      Rcout << "run: " << run;
     }
 
-    // we now check all the "regular" constraints
-    for (int i = 0; i < nr_constraints; i++) {
-      tmplist = m[i];
-      indices = tmplist["idx"];
-
-      // get weights + sdc_status (integer) for cells in this constraint
-      cur_w = weights[indices];
-      cur_sdc = sdc_status[indices];
-      cur_freqs = freqs[indices];
-      cur_ids = strids[indices];
-
-      // indices: contains the full indices relevant to this constraint within the larger problem
-      IntegerVector new_supps = supp_single_constraint(indices, cur_ids, cur_sdc, cur_w, cur_freqs, do_singletons, threshold);
+    for (int i = 0; i < constraint_info.size(); i++) {
+      cur_constraint = constraint_info[i];
+      tmpres = supp_constraint(cur_constraint, v_sdc, param_do_singletons, param_threshold, run);
+      new_supps = tmpres["additional_supps"];
+      constraint_info[i] =  tmpres["con"]; // possibly newly computed measures
+      nr_add_supps = nr_add_supps + new_supps.size();
       if (new_supps.size() > 0) {
-        sdc_status[new_supps] = "x";
-        supps_added = true;
-        nr_additional_supps = nr_additional_supps + 1;
+        v_sdc[new_supps] = "x";
+        additional_supps = true;
       }
     }
-
-    if (verbose == true) {
-      Rcout << "run " << counter << " | additional supps: " << nr_additional_supps << std::endl;
+    if (param_verbose == true) {
+      Rcout << " | new suppressions: " << nr_add_supps << std::endl;
     }
-    if (supps_added == false) {
+    if (additional_supps == false) {
       finished = true;
-    } else {
-      if (counter >= 10) {
-        stop("no solution after 10 counts!");
-      }
     }
   }
-  return Rcpp::List::create(
-    Rcpp::Named("dat") = dat,
-    Rcpp::Named("m") = m,
-    Rcpp::Named("additional_constraints") = additional_constraints,
-    Rcpp::Named("sdc_status") = sdc_status
-  );
+
+  return(List::create(
+      Named("sdc_status") = v_sdc,
+      Named("constraints") = constraints
+  ));
 }
