@@ -137,37 +137,37 @@ primSuppRules[[2]] <- list(type = "p", n = 5, p = 20)
 
 ## create batchInput object
 bO_md1 <- createArgusInput(
-  ob = obj, 
-  typ = "microdata", 
-  path = tempdir(), 
-  solver = "FREE", 
-  method = "OPT",
-  primSuppRules = primSuppRules, 
-  responsevar = "num1")
-  
-bO_td1 <- createArgusInput(
-  obj = obj, 
-  typ = "tabular", 
-  path = tempdir(), 
-  solver = "FREE", 
-  method = "OPT")
-  
-bO_td2 <- createArgusInput(
-  obj = obj_dupl, 
-  typ = "tabular", 
+  ob = obj,
+  typ = "microdata",
   path = tempdir(),
-  solver = "FREE", 
+  solver = "FREE",
+  method = "OPT",
+  primSuppRules = primSuppRules,
+  responsevar = "num1")
+
+bO_td1 <- createArgusInput(
+  obj = obj,
+  typ = "tabular",
+  path = tempdir(),
+  solver = "FREE",
   method = "OPT")
-  
+
+bO_td2 <- createArgusInput(
+  obj = obj_dupl,
+  typ = "tabular",
+  path = tempdir(),
+  solver = "FREE",
+  method = "OPT")
+
 \dontrun{
 ## in case CPLEX should be used, it is required to specify argument licensefile
 bO_md2 <- createArgusInput(
-  obj = obj, 
-  typ = "microdata", 
-  path = tempdir(), 
-  solver = "CPLEX", 
+  obj = obj,
+  typ = "microdata",
+  path = tempdir(),
+  solver = "CPLEX",
   method = "OPT",
-  primSuppRules = primSuppRules, 
+  primSuppRules = primSuppRules,
   responsevar = "num1",
   licensefile = "/path/to/my/cplexlicense")
 }
