@@ -2,35 +2,39 @@
 #' @rdname get.sdcProblem-method
 setMethod(f="get.sdcProblem", signature=c("sdcProblem", "character"),
   definition=function(object, type) {
-    if ( !type %in% c("dataObj", "problemInstance", "partition", "elapsedTime", "dimInfo", "indicesDealtWith",
-        "startI", "startJ", "innerAndMarginalCellInfo") ) {
-      stop("get.sdcProblem:: argument 'type' is not valid!\n")
+    poss <- c("dataObj", "problemInstance", "partition", "elapsedTime", "dimInfo", "indicesDealtWith",
+      "startI", "startJ", "innerAndMarginalCellInfo")
+    if (!type %in% poss) {
+      err <- c(
+        "get.sdcProblem:: argument 'type' is not valid. possible chocices are: ", paste(shQuote(poss), collapse = ", ")
+        )
+      stop(paste(err, collapse = "\n"), call. = FALSE)
     }
-    if ( type == "dataObj" ) {
+    if (type == "dataObj") {
       return(g_dataObj(object))
     }
-    if ( type == "problemInstance" ) {
+    if (type == "problemInstance") {
       return(g_problemInstance(object))
     }
-    if ( type == "partition" ) {
+    if (type == "partition") {
       return(g_partition(object))
     }
-    if ( type == "elapsedTime" ) {
+    if (type == "elapsedTime") {
       return(g_elapsedTime(object))
     }
-    if ( type == "dimInfo" ) {
+    if (type == "dimInfo") {
       return(g_dimInfo(object))
     }
-    if ( type == "indicesDealtWith" ) {
+    if (type == "indicesDealtWith") {
       return(g_indicesDealtWith(object))
     }
-    if ( type == "startI" ) {
+    if (type == "startI") {
       return(g_startI(object))
     }
-    if ( type == "startJ" ) {
+    if (type == "startJ") {
       return(g_startJ(object))
     }
-    if ( type == "innerAndMarginalCellInfo" ) {
+    if (type == "innerAndMarginalCellInfo") {
       return(g_innerAndMarginalCellInfo(object))
     }
   }
