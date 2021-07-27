@@ -94,7 +94,7 @@
 #'
 #' ## create batchInput object
 #' bO_md1 <- createArgusInput(
-#'   ob = obj,
+#'   obj = obj,
 #'   typ = "microdata",
 #'   path = tempdir(),
 #'   solver = "FREE",
