@@ -95,7 +95,8 @@ domRule <- function(object, params, type) {
   pI <- g_problemInstance(object)
   dataObj <- g_dataObj(object)
   strIDs <- g_strID(pI)
-  numVal <- g_raw_data(dataObj)[[params$numVarName]]
+  raw_data <- g_raw_data(dataObj)
+  numVal <- raw_data[[params$numVarName]]
 
   if (any(na.omit(numVal) < 0)) {
     e <- c(
@@ -115,10 +116,19 @@ domRule <- function(object, params, type) {
 
   # calculate contributing indices
   nr_cells <- g_nrVars(pI)
-  indices <- contributing_indices(
-    prob = object,
-    ids = strIDs
-  )
+
+  # we check if we need to compute contributing indices
+  indices <- attributes(raw_data)[["computed_indices"]]
+  if (is.null(indices)) {
+    # indices of contributing units have not yet been computed
+    indices <- contributing_indices(
+      prob = object,
+      ids = strIDs
+    )
+    attr(raw_data, "computed_indices") <- indices
+    object@dataObj@rawData <- raw_data
+    object <<- object
+  }
 
   # values and totals of contributing units
   inp <- lapply(1:nr_cells, function(x) {
@@ -170,28 +180,15 @@ domRule <- function(object, params, type) {
 }
 
 # returns all contributing codes for each dimensions
-# of a sdcProblem-object; dimensions are converted
-# sdcHierarchies-trees and hier_info() is then used.
+# of a sdcProblem-object; dimensions are stored as attributes
+# in sdcProblem-objects; thus we can use sdcHierarchies::hier_info()
+# this is used in createRegSDCInput() and contributing_indices()
 .get_all_contributing_codes <- function(x) {
-  .sdchier_from_sdc <- function(d) {
-    df <- data.frame(
-      levels = slot(d, "levels"),
-      codes = slot(d, "codesOriginal"),
-      stringsAsFactors = FALSE
-    )
-    df$levels <- sapply(1:nrow(df), function(x) {
-      paste0(rep("@", df$levels[x]), collapse = "")
-    })
-    hier_import(df, from = "df")
-  }
-
   stopifnot(inherits(x, "sdcProblem"))
-  dims_hier <- lapply(x@dimInfo@dimInfo, function(x) {
-    .sdchier_from_sdc(x)
-  })
+  dims_hier <- attributes(x)$hierinfo
 
   dims_info <- lapply(dims_hier, function(x) {
-    hier_info(x)
+    sdcHierarchies::hier_info(x)
   })
 
   all_contr_codes <- lapply(dims_info, function(x) {

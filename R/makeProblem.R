@@ -130,12 +130,12 @@ makeProblem <- function(data,
     varNamesInDims <- sapply(1:length(dimList), function(x) {
       g_varname(dimList[[x]])
     })
-    
+
     if (!all(varNamesInDims %in% varNames)) {
       e <- "Some dimensional variables are missing in the data."
       stop(e, call. = FALSE)
     }
-    
+
     rawData <- g_raw_data(inputData)
 
     # variable names in dataObj
@@ -164,7 +164,7 @@ makeProblem <- function(data,
     dimVarInd <- g_dimvar_ind(inputData)
     if (length(posIndex) < 1) {
       stop("Matching of variable names failed.", call. = FALSE)
-    } 
+    }
     if (any(is.na(posIndex))) {
       dimVarInd <- setdiff(dimVarInd, which(is.na(posIndex)))
       vNamesInData <- vNamesInData[dimVarInd]
@@ -264,11 +264,16 @@ makeProblem <- function(data,
   }
 
   # convert from tree- to standard format
+  hierinfo_sdchier <- vector("list", length = length(dimList))
   for (i in 1:length(dimList)) {
     if (inherits(dimList[[i]], "sdc_hierarchy")) {
-      dimList[[i]] <- hier_convert(dimList[[i]], as = "df")
+      hierinfo_sdchier[[i]] <- dimList[[i]]
+      dimList[[i]] <- sdcHierarchies::hier_convert(dimList[[i]], as = "df")
+    } else {
+      hierinfo_sdchier[[i]] <- sdcHierarchies::hier_import(inp = dimList[[i]], from = "df")
     }
   }
+  names(hierinfo_sdchier) <- names(dimList)
 
   if (is.null(dimVarInd)) {
     # we need to calculate dimVarInd from names in dimList
@@ -304,16 +309,18 @@ makeProblem <- function(data,
       sampWeightInd = .convert_to_ind(cn, v = sampWeightInd)
     )
   )
-  
+
   ## calculate the dimInfoObj and eventually recode inputData
   ## (eventually recode rawData slot of inputData if "rawData" contains "wrong" dups)
   out <- doPrep(inputData, dimList)
 
   ## compute the full sdcProblem object
-  c_calc_full_prob(
+  out <- c_calc_full_prob(
     input = list(
       objectA = out$inputData,
       objectB = out$dimInfoObj
     )
   )
+  attr(out, "hierinfo") <- hierinfo_sdchier
+  out
 }
