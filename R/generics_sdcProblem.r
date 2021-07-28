@@ -6,7 +6,6 @@
 #' \item dataObj: a list containing the (raw) input data
 #' \item problemInstance: return the current problem instance
 #' \item partition: a list containing information on the subtables that are required to be protected as well as information on the processing order of the subtables
-#' \item elapsedTime: the elapsed time of the protection algorithm so far
 #' \item dimInfo: information on the variables defining the hierarchical table
 #' \item indicesDealtWith: a set of indices that have already been dealt with during the protection algorithmus
 #' \item startI: current level at which subtables need to be protected (useful when restarting HITAS|HYPERCUBE)
@@ -31,7 +30,6 @@
 #' \item element 'indexInnerCells': numeric vector specifying indices of inner cells
 #' \item element 'indexTotCells': numeric vector specifying indices of marginal cells}
 #' \item an object of class \code{dimInfo} (or NULL) if \code{type} matches 'dimInfo'
-#' \item numeric vector if argument \code{type} matches 'elapsedTime'
 #' \item numeric vector of length 1 if argument \code{type} matches 'startI' or 'startJ'
 #' }
 #'
@@ -55,13 +53,12 @@ setGeneric("get.sdcProblem", function(object, type) {
 #' \item startI: set|modify slot 'startI' of argument \code{object}
 #' \item startJ: set|modify slot 'startJ' of argument \code{object}
 #' \item indicesDealtWith: set|modify slot 'indicesDealtWith' of argument \code{object}
-#' \item elapsedTime: set|modify slot 'elapsedTime' of argument \code{object}
 #' @param input a list with elements depending on argument \code{type}.}
 #'
 #' \itemize{
 #' \item an object of class \code{problemInstance} if argument \code{type} matches 'problemInstance'
 #' \item a list (derived from calc.multiple(type='makePartition', ...) if argument \code{type} matches 'partition'
-#' \item a numeric vector of length 1 if argument \code{type} matches 'startI', 'startJ' or 'elapsedTime'
+#' \item a numeric vector of length 1 if argument \code{type} matches 'startI' or 'startJ'
 #' \item a numeric vector if argument \code{type} matches 'indicesDealtWith'
 #'
 #' @return an object of class \code{sdcProblem}
@@ -184,9 +181,6 @@ setGeneric("g_dimInfo", function(object) {
 setGeneric("g_partition", function(object) {
   standardGeneric("g_partition")
 })
-setGeneric("g_elapsedTime", function(object) {
-  standardGeneric("g_elapsedTime")
-})
 setGeneric("g_dataObj", function(object) {
   standardGeneric("g_dataObj")
 })
@@ -217,8 +211,6 @@ setGeneric("s_startJ<-", function(object, value)
   standardGeneric("s_startJ<-"))
 setGeneric("s_indicesDealtWith<-", function(object, value)
   standardGeneric("s_indicesDealtWith<-"))
-setGeneric("s_elapsedTime<-", function(object, value)
-  standardGeneric("s_elapsedTime<-"))
 
 # calc methods
 setGeneric("c_rule_freq", function(object, input) {

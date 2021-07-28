@@ -249,7 +249,6 @@ setMethod(f = "c_calc_full_prob", signature = c("list"), definition = function(i
   .SD <- ID <- id <- NULL
   x <- input$objectA
   y <- input$objectB
-  time.start <- proc.time()
   datO <- g_raw_data(x)
   dimObj <- g_dim_info(y)
 
@@ -489,8 +488,7 @@ setMethod(f = "c_calc_full_prob", signature = c("list"), definition = function(i
     partition = partition,
     startI = 1,
     startJ = 1,
-    indicesDealtWith = NULL,
-    elapsedTime = (proc.time() - time.start)[3]
+    indicesDealtWith = NULL
   )
   return(sdcProblem)
 })

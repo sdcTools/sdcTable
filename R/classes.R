@@ -298,12 +298,11 @@ setClassUnion("problemInstanceOrNULL", c("problemInstance", "NULL"))
 #' variables. Such an object holds the data itself  (slot \code{dataObj}), the
 #' entire information about the dimensional variables (slot \code{dimInfo}),
 #' information on all table cells (ID's, bounds, values, anonymization state in
-#' slot \code{problemInstance}), the indices on the subtables that need to be
+#' slot \code{problemInstance}), the indices on the sub tables that need to be
 #' considered if one wants to protect primary sensitive cells using a heuristic
-#' approach (slot \code{partition}, information on which groups or rather
+#' approach (slot \code{partition} and the information on which groups or rather
 #' subtables have already been protected while performing a heuristic method
-#' (slots \code{startI} and \code{startJ}) and the time that has been elapsed
-#' (slot \code{elapsedTime}).
+#' (slots \code{startI} and \code{startJ}).
 #'
 #' \describe{
 #' \item{slot \code{dataObj}:}{an object of class \code{dataObj} (or NULL) holding information on the underlying data}
@@ -313,7 +312,6 @@ setClassUnion("problemInstanceOrNULL", c("problemInstance", "NULL"))
 #' \item{slot \code{startI}:}{a numeric vector of length 1 defining the group-level of the subtables in which a heuristic algorithm needs to start. All subtables having a group-index less than \code{startI} have already been protected}
 #' \item{slot \code{startJ}:}{a numeric vector of length 1 defining the number of the table within the group defined by parameter \code{startI} at which a heuristic algorithm needs to start. All tables in the group having an index \code{j} smaller than \code{startJ} have already been protected}
 #' \item{slot \code{indicesDealtWith}:}{a numeric vector holding indices of table cells that have protected and whose anonymization state must remain fixed}
-#' \item{slot \code{elapsedTime}:}{a numeric vector of length 1 holding the time that has already been elapsed during the anonymization process}
 #'  }
 #' @name sdcProblem-class
 #' @rdname sdcProblem-class
@@ -330,7 +328,7 @@ setClass(
     startI = "numeric",
     startJ = "numeric",
     indicesDealtWith = "numericOrNULL",
-    elapsedTime = "numericOrNULL"
+    results = "dataframeOrNULL"
   ),
   prototype = prototype(
     dataObj = NULL,
@@ -340,7 +338,7 @@ setClass(
     startI = 1,
     startJ = 1,
     indicesDealtWith = NULL,
-    elapsedTime = NULL
+    results = NULL
   ),
   validity = function(object) {
     if (g_startI(object) > g_partition(object)$nrGroups) {
@@ -361,9 +359,6 @@ setClass(
     }
     if (g_startJ(object) < 1) {
       stop("sdcProblem:: argument 'startJ' must be >= 1!\n")
-    }
-    if (length(g_elapsedTime(object)) != 1) {
-      stop("sdcProblem:: length of argument 'elapsedTime' must equal 1!\n")
     }
     return(TRUE)
   }
@@ -575,10 +570,8 @@ setClass(
 #' non-duplicated table cells (slot \code{nrNonDuplicatedCells}) is returned
 #' along with the number of primary (slot \code{nrPrimSupps}) and secondary
 #' (slot \code{nrSecondSupps}) suppressions. Furthermore, the number of cells
-#' that can be published (slot \code{nrPublishableCells}), the algorithm that
-#' has  been used to protect the data (slot \code{suppMethod}) and the time that
-#' was needed to protect the data structure (slot \code{elapsedTime}) is
-#' returned.
+#' that can be published (slot \code{nrPublishableCells}) and the algorithm that
+#' has  been used to protect the data (slot \code{suppMethod}) is returned.
 #'
 #' \describe{
 #' \item{slot \code{finalData}:}{a data.frame (or NULL) featuring columns for each variable defining the table (with their original codes), the cell counts and values of any numerical variables and the anonymization status for each cell with
@@ -593,7 +586,6 @@ setClass(
 #' \item{slot \code{nrSecondSupps}:}{numeric vector of length 1 (or NULL) showing the number of secondary suppressions}
 #' \item{slot \code{nrPublishableCells}:}{numeric vector of length 1 (or NULL) showing the number of cells that may be published}
 #' \item{slot \code{suppMethod}:}{character vector of length 1 holding information on the protection method}
-#' \item{slot \code{elapsedTime}:}{numeric vector of length 1 holding the time that was required to protect the table}
 #' }
 #' @name safeObj-class
 #' @rdname safeObj-class
@@ -609,8 +601,7 @@ setClass(
     nrPrimSupps = "numericOrNULL",
     nrSecondSupps = "numericOrNULL",
     nrPublishableCells = "numericOrNULL",
-    suppMethod = "characterOrNULL",
-    elapsedTime = "numericOrNULL"
+    suppMethod = "characterOrNULL"
   ),
   prototype = prototype(
     finalData = NULL,
@@ -619,8 +610,7 @@ setClass(
     nrPrimSupps = NULL,
     nrSecondSupps = NULL,
     nrPublishableCells = NULL,
-    suppMethod = NULL,
-    elapsedTime = NULL
+    suppMethod = NULL
   ),
   validity = function(object) {
     if (length(g_nrPrimSupps(object)) != 1) {
@@ -645,9 +635,6 @@ setClass(
         "or ", shQuote("OPT")
       )
       stop(paste(e, collapse = ""), call. = FALSE)
-    }
-    if (length(g_elapsedTime(object)) != 1) {
-      stop("safeObj:: length of 'elapsedTime' must equal 1!\n")
     }
     return(TRUE)
   }

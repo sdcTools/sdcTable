@@ -2,7 +2,7 @@
 #" @rdname get.safeObj-method
 setMethod(f="get.safeObj", signature=c("safeObj", "character", "list"),
   definition=function(object, type, input) {
-    if ( !type %in% c("dimInfo", "elapsedTime", "finalData", "nrNonDuplicatedCells",
+    if ( !type %in% c("dimInfo", "finalData", "nrNonDuplicatedCells",
         "nrPrimSupps", "nrSecondSupps", "nrPublishableCells", "suppMethod",
         "cellInfo", "cellID") ) {
       stop("get.safeObj:: argument 'type' is not valid!\n")
@@ -10,9 +10,6 @@ setMethod(f="get.safeObj", signature=c("safeObj", "character", "list"),
 
     if ( type == "dimInfo" ) {
       return(g_dimInfo(object))
-    }
-    if ( type == "elapsedTime" ) {
-      return(g_elapsedTime(object))
     }
     if ( type == "finalData" ) {
       return(g_finalData(object))
@@ -56,7 +53,6 @@ setMethod(f="summary", signature="safeObj",
     cat("### Summary of the result object of class 'safeObj' ###\n")
     cat("######################################################\n")
     cat(paste("--> The input data have been protected using algorithm ",g_suppMethod(object),".\n", sep=""))
-    cat(paste("--> The algorithm ran for ",formatTime(g_elapsedTime(object))$time.str,".\n", sep=""))
     cat(paste("--> To protect ",g_nrPrimSupps(object)," primary sensitive cells, ", g_nrSecondSupps(object)," cells need to be additionally suppressed.\n", sep=""))
     cat(paste("--> A total of ",g_nrPublishableCells(object)," cells may be published.\n", sep=""))
 
@@ -87,10 +83,6 @@ setMethod(f="show", signature="safeObj",
 
 setMethod(f="g_dimInfo", signature="safeObj", definition=function(object) {
   object@dimInfo
-})
-
-setMethod(f="g_elapsedTime", signature="safeObj", definition=function(object) {
-  object@elapsedTime
 })
 
 setMethod(f="g_finalData", signature="safeObj", definition=function(object) {

@@ -97,7 +97,6 @@
 #'   p2_sdc = getInfo(p2, type = "sdcStatus")
 #' )
 primarySuppression <- function(object, type, ...) {
-  start.time <- proc.time()
   if (!type %in% c("nk", "freq", "p", "pq")) {
     stop("valid types are 'nk', 'freq', 'p' or 'pq'!\n")
   }
@@ -144,8 +143,5 @@ primarySuppression <- function(object, type, ...) {
   if (type == "pq") {
     object <- domRule(object = object, params = paraList, type = "pq")
   }
-
-  elapsed.time <- g_elapsedTime(object) + (proc.time() - start.time)[3]
-  s_elapsedTime(object) <- elapsed.time
   return(object)
 }

@@ -43,11 +43,6 @@ mySplit <- function(strVec, keepIndices) {
   return(cpp_mySplit(as.character(strVec), as.integer(keepIndices)))
 }
 
-#strs <- rep(paste(LETTERS[1:6],collapse=""), 10000)
-#system.time({
-#  sapply(strs, mySplit, c(1,6))
-#})
-
 mySplitIndicesList <- function(strVec, keepList, coll="-") {
   u <- unlist(keepList)
   if ( min(u) < 1 | max(u) > nchar(strVec[1]) ) {
@@ -132,83 +127,6 @@ my.Rglpk_solve_LP <- function(obj, mat, dir, rhs, types=NULL, max=FALSE,
     status = x$status,
     dual = x$solution_dual
   )
-}
-
-
-# calculates years, weeks, days, hours, minutes and seconds from integer number
-# secs: count of elapsed seconds (proc.time()[3])
-# returns also a formatted string
-formatTime <- function(secs){
-  time.vec <- rep(NA, 6)
-  names(time.vec) <- c('seconds', 'minutes','hours', 'days','weeks','years')
-
-  secs <- ceiling(secs)
-
-  time.vec['years'] <- floor(secs / (60*60*24*7*52))
-  if ( time.vec['years'] > 0 ) {
-    secs <- secs - (time.vec['years'] * (60*60*24*7*52))
-  }
-
-  time.vec['weeks'] <- floor(secs / (60*60*24*7))
-  if ( time.vec['weeks'] > 0 ) {
-    secs <- secs - (time.vec['weeks'] * (60*60*24*7))
-  }
-
-  time.vec['days'] <- floor(secs / (60*60*24))
-  if ( time.vec['days'] > 0 ) {
-    secs <- secs - time.vec['days']*(60*60*24)
-  }
-
-  time.vec['hours'] <- floor(secs / (60*60))
-  if ( time.vec['hours'] > 0 ) {
-    secs <- secs - time.vec['hours']*(60*60)
-  }
-
-  time.vec['minutes'] <- floor(secs / (60))
-  if ( time.vec['minutes'] > 0 ) {
-    secs <- secs - time.vec['minutes']*(60)
-  }
-
-  time.vec['seconds'] <- secs
-  time.vec <- rev(time.vec)
-
-  # time str #
-  x <- time.vec[time.vec!=0]
-  shortNames <- sapply(1:length(x), function(y) { substr(names(x)[y], 1, nchar(names(x)[y])-1)  } )
-
-  time.str <- NULL
-  for ( i in seq_along(names(x))) {
-
-    if ( length(x) == 1 ) {
-      if ( x[i] > 1 ) {
-        time.str <- paste(time.str, x[i], " ", names(x[i]), sep="")
-      } else {
-        time.str <- paste(time.str, x[i], " ", shortNames[i], sep="")
-      }
-    }
-    else {
-
-      if ( names(x)[i]=="seconds") {
-        if ( x[i] > 1 ) {
-          time.str <- paste(time.str, "and", x[i], names(x[i]), sep=" ")
-        } else {
-          time.str <- paste(time.str, "and", x[i], shortNames[i], sep=" ")
-        }
-
-      } else {
-        if ( x[i] > 1 ) {
-          time.str <- paste(time.str, x[i], " ", names(x[i]), sep="")
-        } else {
-          time.str <- paste(time.str, x[i], " ", shortNames[i], sep="")
-        }
-
-        if ( i != length(x)-1 ) {
-          time.str <- paste(time.str,", ", sep="")
-        }
-      }
-    }
-  }
-  return(list(time.vec=time.vec, time.str=time.str))
 }
 
 # create default parameter objects suitable for primary|secondary suppression
@@ -451,7 +369,6 @@ csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
     attackonly <- as.integer(0)
   }
   final_pattern <- as.integer(rep(0, length(vals)))
-  time.start <- proc.time()
   res <- .C("csp",
     ind_prim=ind_prim,
     len_prim=len_prim,
@@ -505,9 +422,6 @@ csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
       pI <- g_problemInstance(sdcProblem)
       s_sdcStatus(pI) <- list(index=1:nr_vars, vals=status_new)
       s_problemInstance(sdcProblem) <- pI
-
-      time.el <- g_elapsedTime(sdcProblem)+(proc.time()-time.start)[3]
-      s_elapsedTime(sdcProblem) <- time.el
       s_indicesDealtWith(sdcProblem) <- 1:nr_vars
       return(sdcProblem)
     }

@@ -4,7 +4,6 @@
 #' @param type a character vector of length 1 defining what to calculate|return|modify. Allowed types are:}
 #' \itemize{
 #' \item dimInfo: get infos on dimensional variables that formed the base of the protected data
-#' \item elapsedTime: get elapsed time of the protection procedure
 #' \item finalData: return final data object
 #' \item nrNonDuplicatedCells: total number of cells that are duplicates
 #' \item nrPrimSupps: total number of primary suppressed cells
@@ -15,7 +14,7 @@
 #' \item cellID: calculate ID of a specific cell defined by level-codes and variable names
 #' @param input a list depending on argument \code{type}.}
 #' \itemize{
-#' \item type matches 'dimInfo', 'elapsedTime', 'finalData', 'nrNonDuplicatedCells', 'nrPrimSupps', 'nrSecondSupps', 'nrPublishableCells' or 'suppMethod': input is not used (empty list)
+#' \item type matches 'dimInfo', 'finalData', 'nrNonDuplicatedCells', 'nrPrimSupps', 'nrSecondSupps', 'nrPublishableCells' or 'suppMethod': input is not used (empty list)
 #' \item type matches 'cellInfo' or 'cellID': input is a list of length 3
 #' \itemize{
 #' \item first element: character vector specifying variable names that need to exist in slot 'dimInfo' of \code{object}
@@ -25,7 +24,7 @@
 #' @return information from \code{object} depending on \code{type}
 #' \itemize{
 #' \item an object of class \code{dimInfo} (or NULL) if type matches 'dimInfo'
-#' \item a numeric vector if type matches 'elapsedTime', 'nrNonDuplicatedCells', 'nrPrimSupps', 'nrSecondSupps', 'nrPublishableCells' or 'cellID'
+#' \item a numeric vector if type matches 'nrNonDuplicatedCells', 'nrPrimSupps', 'nrSecondSupps', 'nrPublishableCells' or 'cellID'
 #' \item a character vector if type matches 'suppMethod'
 #' \item a data.frame if type matches 'finalData'
 #' \item a list if type matches 'cellInfo' containing the following elements:
@@ -49,9 +48,6 @@ setGeneric("get.safeObj", function(object, type, input) {
 
 setGeneric("g_dimInfo", function(object) {
   standardGeneric("g_dimInfo")
-})
-setGeneric("g_elapsedTime", function(object) {
-  standardGeneric("g_elapsedTime")
 })
 setGeneric("g_finalData", function(object) {
   standardGeneric("g_finalData")
