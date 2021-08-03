@@ -22,15 +22,15 @@
 #' @md
 #' @examples
 #' \dontrun{
-#' data("microData1", package = "sdcTable")
-#' head(microData1)
+#' utils::data("microdata1", package = "sdcTable")
+#' head(microdata1)
 #'
 #' # define the problem
-#' dim_region <- hier_create(root = "total", nodes = sort(unique(microData1$region)))
-#' dim_gender <- hier_create(root = "total", nodes = sort(unique(microData1$gender)))
+#' dim_region <- hier_create(root = "total", nodes = sort(unique(microdata1$region)))
+#' dim_gender <- hier_create(root = "total", nodes = sort(unique(microdata1$gender)))
 #'
 #' prob <- makeProblem(
-#'   data = microData1,
+#'   data = microdata1,
 #'   dimList = list(region = dim_region, gender = dim_gender),
 #'   freqVarInd = NULL
 #' )

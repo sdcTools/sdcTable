@@ -2,7 +2,7 @@ context("test protectTable()")
 
 # create a test-problem without any suppressions
 testprob <- function() {
-  data("microdata1")
+  utils::data("microdata1", package = "sdcTable")
   p <- makeProblem(
     data = microdata1,
     dimList =  list(

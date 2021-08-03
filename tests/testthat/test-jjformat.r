@@ -1,6 +1,6 @@
 context("test jj_format")
 
-data("microdata1", package = "sdcTable")
+utils::data("microdata1", package = "sdcTable")
 
 # create hierarchies
 dimList <- list(

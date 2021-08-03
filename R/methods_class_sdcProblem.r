@@ -2,7 +2,7 @@
 #' @rdname get.sdcProblem-method
 setMethod(f="get.sdcProblem", signature=c("sdcProblem", "character"),
   definition=function(object, type) {
-    poss <- c("dataObj", "problemInstance", "partition", "elapsedTime", "dimInfo", "indicesDealtWith",
+    poss <- c("dataObj", "problemInstance", "partition", "dimInfo", "indicesDealtWith",
       "startI", "startJ", "innerAndMarginalCellInfo")
     if (!type %in% poss) {
       err <- c(
@@ -18,9 +18,6 @@ setMethod(f="get.sdcProblem", signature=c("sdcProblem", "character"),
     }
     if (type == "partition") {
       return(g_partition(object))
-    }
-    if (type == "elapsedTime") {
-      return(g_elapsedTime(object))
     }
     if (type == "dimInfo") {
       return(g_dimInfo(object))
@@ -51,8 +48,7 @@ setMethod(f = "set.sdcProblem",
     "rule.freq",
     "startI",
     "startJ",
-    "indicesDealtWith",
-    "elapsedTime"
+    "indicesDealtWith"
   )) {
     stop("set.sdcProblem:: check argument 'type'!\n")
   }
@@ -70,9 +66,6 @@ setMethod(f = "set.sdcProblem",
   }
   if (type == "indicesDealtWith") {
     s_indicesDealtWith(object) <- input[[1]]
-  }
-  if (type == "elapsedTime") {
-    s_elapsedTime(object) <- input[[1]]
   }
   validObject(object)
   return(object)
@@ -150,13 +143,19 @@ setMethod(f="calc.sdcProblem", signature=c("sdcProblem", "character", "list"),
 #' @export
 #' @docType methods
 setMethod(f="summary", signature="sdcProblem",
-  definition=function(object, ...) {
+  definition = function(object, ...) {
+
+    if (!is.null(object@results)) {
+      summarize_safeobj(object = object, ...)
+      return(invisible(NULL))
+    }
+
     pI <- g_problemInstance(object)
     dO <- g_dataObj(object)
     dI <- g_dimInfo(object)
-    if ( g_is_microdata(dO) ) {
+    if (g_is_microdata(dO)) {
       cat("The raw data contains micro data!")
-      if ( length(pI@numVars) > 0 ) {
+      if (length(pI@numVars) > 0) {
         cat("--> the use of dominance rules for primary suppressions is possible!")
       }
       cat("\n")
@@ -195,20 +194,35 @@ setMethod(f="summary", signature="sdcProblem",
 setMethod("print", signature="sdcProblem",
   definition=function(x, ...) {
     dims <- x@dimInfo@dimInfo
-    nrDims <- length(dims)
-    nrCells <- length(x@problemInstance@strID)
-    cat(paste("The object is an 'sdcProblem' with",nrCells,"cells in",nrDims, "dimension(s)!\n"))
-    cat("\nThe dimensions are:\n")
-    for ( i in 1:nrDims ) {
-      nrCodes <- length(dims[[i]]@codesOriginal)
-      nrAggregates <- sum(dims[[i]]@codesMinimal==FALSE)
-      maxHier <- length(dims[[i]]@structure)
-      cat(paste0("\t- ",names(dims)[i]," (",maxHier," levels; ",nrCodes," codes; of these being ",nrAggregates," aggregates)\n"))
+    nr_dims <- length(dims)
+    nr_cells <- length(x@problemInstance@strID)
+
+    is_protected <- !is.null(x@results)
+    message(paste("The object is a sdcProblem instance with", nr_cells, "cells in", nr_dims, "dimension(s)!"))
+    if (is_protected) {
+      message(paste0("Protection: yes (using ", shQuote(attributes(x@results)$supp_method), ")"))
+    } else {
+      message("Protection: no")
     }
-    cat("\nCurrent suppression pattern:\n")
-    cat("\t- Primary suppressions:",sum(x@problemInstance@sdcStatus=="u"),"\n")
-    cat("\t- Secondary suppressions:",sum(x@problemInstance@sdcStatus=="x"),"\n")
-    cat("\t- Publishable cells:",sum(x@problemInstance@sdcStatus%in% c("s","z")),"\n")
+
+    message("\nThe dimensions are:")
+    for (i in 1:nr_dims) {
+      nr_codes <- length(dims[[i]]@codesOriginal)
+      nr_aggregates <- sum(dims[[i]]@codesMinimal == FALSE)
+      max_hier <- length(dims[[i]]@structure)
+      message(paste0("\t- ", names(dims)[i]," (", max_hier," levels; ", nr_codes," codes; of these being ", nr_aggregates," aggregates)"))
+    }
+
+    if (is_protected) {
+      message("\nSuppression pattern:")
+      sdc_status <- x@results$sdcStatus
+    } else {
+      message("\nCurrent suppression pattern:")
+      sdc_status <- x@problemInstance@sdcStatus
+    }
+    message("\t- Primary suppressions: ", sum(sdc_status == "u"))
+    message("\t- Secondary suppressions: ", sum(sdc_status == "x"))
+    message("\t- Publishable cells: ", sum(sdc_status %in% c("s","z")))
   }
 )
 
@@ -237,10 +251,6 @@ setMethod("g_dimInfo", signature="sdcProblem", definition=function(object) {
 
 setMethod("g_partition", signature="sdcProblem", definition=function(object) {
   object@partition
-})
-
-setMethod("g_elapsedTime", signature="sdcProblem", definition=function(object) {
-  object@elapsedTime
 })
 
 setMethod("g_dataObj", signature="sdcProblem", definition=function(object) {
@@ -353,12 +363,6 @@ setReplaceMethod("s_startJ", signature=c("sdcProblem", "numeric"), definition=fu
 
 setReplaceMethod("s_indicesDealtWith", signature=c("sdcProblem"), definition=function(object, value) {
   object@indicesDealtWith <- value
-  validObject(object)
-  object
-})
-
-setReplaceMethod("s_elapsedTime", signature=c("sdcProblem"), definition=function(object, value) {
-  object@elapsedTime <- value
   validObject(object)
   object
 })
@@ -624,12 +628,10 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
   timeLimit <- input$timeLimit
   verbose <- input$verbose
   save <- input$save
-
-  if ( save == TRUE ) {
+  if (save == TRUE) {
     files <- NULL
   }
 
-  start.time <- proc.time()
   pI <- g_problemInstance(object)
   sdcStatusBegin <- g_sdcStatus(pI)
   primSupps <- primSuppsOrig <- g_primSupps(pI)
@@ -637,18 +639,20 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
   indexPool <- numeric()
   allStrIDs <- g_strID(pI)
 
-  if ( input$method == 'OPT' ) {
-    s_elapsedTime(object) <- g_elapsedTime(object) + (proc.time()-start.time)[3]
-
-    if ( input$useC == TRUE ) {
-      result <- csp_cpp(sdcProblem=object, attackonly=FALSE, verbose=input$verbose)
+  if (input$method == "OPT") {
+    if (input$useC == TRUE) {
+      result <- csp_cpp(
+        sdcProblem = object,
+        attackonly = FALSE,
+        verbose = input$verbose
+      )
     } else {
       result <- c_cut_and_branch(object, input)
     }
 
-    if ( save==TRUE ) {
-      fn <- paste(input$method,"_Object-Final.RData", sep="")
-      save(object, file=fn)
+    if (save == TRUE) {
+      fn <- paste0(input$method, "-object-final.rds")
+      saveRDS(object, file = fn)
     }
     return(result)
   }
@@ -659,31 +663,31 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
   startI <- g_startI(object)
   startJ <- g_startJ(object)
 
-  if ( startI !=1 | startJ != 1 ) {
+  if (startI != 1 | startJ != 1) {
     maxI <- partition$nrGroups
-    if ( startJ < length(partition$indices[[startI]]) ) {
-      startJ <- startJ+1
+    if (startJ < length(partition$indices[[startI]])) {
+      startJ <- startJ + 1
     } else {
       startJ <- 1
-      startI <- startI+1
+      startI <- startI + 1
     }
   }
 
-  if ( input$method == 'HITAS' ) {
-    for ( i in startI:(partition$nrGroups) ) {
+  if (input$method == "HITAS") {
+    for (i in startI:(partition$nrGroups)) {
       s_startJ(object) <- 1 # reset j before updating i
       s_startI(object) <- i
 
       #indexPool <- g_indicesDealtWith(object)
-      if ( i == 1 ) {
+      if (i == 1) {
         indexPool <- c()
       } else {
-        indexPool <- sort(unique(unlist(partition$indices[1:(i-1)])))
+        indexPool <- sort(unique(unlist(partition$indices[1:(i - 1)])))
       }
       ind <- partition$indices[[i]]
 
       beginJ <- ifelse(i==startI, startJ, 1)
-      for ( j in beginJ:(length(ind)) ) {
+      for (j in beginJ:(length(ind))) {
         s_startJ(object) <- j
         currentIndices <- ind[[j]] # within complete table
 
@@ -734,10 +738,14 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
           s_problemInstance(probNew) <- pI.new
 
           ### solving the problem
-          if ( input$useC == TRUE ) {
-            probNew <- csp_cpp(sdcProblem=probNew, attackonly=FALSE, verbose=input$verbose)
+          if (input$useC == TRUE) {
+            probNew <- csp_cpp(
+              sdcProblem = probNew,
+              attackonly = FALSE,
+              verbose = input$verbose
+            )
           } else {
-            probNew <- c_cut_and_branch(object=probNew, input=input)
+            probNew <- c_cut_and_branch(object = probNew, input = input)
           }
 
           ### update sdcStatus
@@ -756,16 +764,16 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
           s_sdcStatus(pI) <- list(index=currentIndices, vals=status)
           s_problemInstance(object) <- pI
         }
-        if ( save == TRUE ) {
-          if ( verbose ) {
-            cat("saving object after i=",i,"and j=",j,"\n")
+        if (save == TRUE) {
+          if (verbose) {
+            cat("saving object after i=", i, "and j=", j, "\n")
           }
-          fn <- paste(input$method,"_Object_",i,"-",j,".RData", sep="")
+          fn <- paste0(input$method, "-object_", i, "-", j, ".rds")
           files <- c(files, fn)
-          save(object, file=fn)
+          save(object, file = fn)
 
           # removing old files
-          if ( length(files) > 1 ) {
+          if (length(files) > 1) {
             sapply(rev(files)[-1], file.remove)
             files <- files[length(files)]
           }
@@ -776,7 +784,7 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
     }
   }
 
-  if ( input$method == 'HYPERCUBE' ) {
+  if (input$method == 'HYPERCUBE') {
     runInd <- TRUE
     nrRuns <- 1
     while ( runInd == TRUE ) {
@@ -830,14 +838,14 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
           }
           if ( save == TRUE ) {
             if ( verbose ) {
-              cat("saving object after i=",i,"and j=",j,"\n")
+              cat("saving object after i=", i, "and j=", j, "\n")
             }
-            fn <- paste(input$method,"_Object_",i,"-",j,".RData", sep="")
+            fn <- paste0(input$method, "-object_", i, "-", j, ".rds")
             files <- c(files, fn)
-            save(object, file=fn)
+            save(object, file = fn)
 
             # removing old files
-            if ( length(files) > 1 ) {
+            if (length(files) > 1) {
               sapply(rev(files)[-1], file.remove)
               files <- files[length(files)]
             }
@@ -853,7 +861,7 @@ setMethod("c_anon_worker", signature=c("sdcProblem", "list"), definition=functio
       pI <- g_problemInstance(object)
 
       nrVars <- length(g_freq(pI))
-      if ( length(newSupps) == 0 ) {
+      if (length(newSupps) == 0) {
         runInd <- FALSE
         newSdcStatus <- rep('s', length=nrVars)
         newSdcStatus[forcedCells] <- 'z'
@@ -880,15 +888,12 @@ setMethod("c_opt_cpp", signature=c("sdcProblem", "list"), definition=function(ob
   verbose <- input$verbose
   save <- input$save
 
-  start.time <- proc.time()
   pI <- g_problemInstance(object)
   sdcStatusBegin <- g_sdcStatus(pI)
   primSupps <- primSuppsOrig <- g_primSupps(pI)
 
   indexPool <- numeric()
   allStrIDs <- g_strID(pI)
-
-  s_elapsedTime(object) <- g_elapsedTime(object) + (proc.time()-start.time)[3]
   invisible(csp_cpp(sdcProblem=object, attackonly=FALSE, verbose=input$verbose))
 })
 
@@ -897,7 +902,6 @@ setMethod("c_hitas_cpp", signature=c("sdcProblem", "list"), definition=function(
   verbose <- input$verbose
   save <- input$save
 
-  start.time <- proc.time()
   pI <- g_problemInstance(object)
   sdcStatusBegin <- g_sdcStatus(pI)
   primSupps <- primSuppsOrig <- g_primSupps(pI)
@@ -1084,8 +1088,6 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
 })
 
 setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=function(object, input) {
-  time.start <- proc.time()
-
   timeLimit <- input$timeLimit
   fixVariables <- input$fixVariables
   maxVars <- input$maxVars
@@ -1139,8 +1141,7 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
                partition=g_partition(object),
                startI=g_startI(object),
                startJ=g_startJ(object),
-               indicesDealtWith=g_indicesDealtWith(object),
-               elapsedTime=g_elapsedTime(object)+(proc.time()-time.start)[3]
+               indicesDealtWith=g_indicesDealtWith(object)
     )
     return(out)
   }
@@ -1578,14 +1579,12 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     partition=g_partition(object),
     startI=g_startI(object),
     startJ=g_startJ(object),
-    indicesDealtWith=g_indicesDealtWith(object),
-    elapsedTime=g_elapsedTime(object)+(proc.time()-time.start)[3]
+    indicesDealtWith=g_indicesDealtWith(object)
   )
   return(out)
 })
 
 setMethod("c_ghmiter", signature=c("sdcProblem", "list"), definition=function(object, input) {
-  time.start <- proc.time()
   protectionLevel <- input$protectionLevel
   suppMethod <- input$suppMethod
   suppAdditionalQuader <- input$suppAdditionalQuader
@@ -1644,7 +1643,6 @@ setMethod("c_ghmiter", signature=c("sdcProblem", "list"), definition=function(ob
       cat("[done]\n")
     }
   }
-  s_elapsedTime(object) <- g_elapsedTime(object)+(proc.time()-time.start)[3]
   return(object)
 })
 
@@ -1808,8 +1806,6 @@ setMethod("c_cellID", signature=c("sdcProblem", "list"), definition=function(obj
 
 setMethod("c_finalize", signature=c("sdcProblem", "list"), definition=function(object, input) {
   Freq <- NULL
-  time.start <- proc.time()
-
   pI <- g_problemInstance(object)
   dI <- g_dimInfo(object)
   levelObj <- g_dim_info(dI)
@@ -1874,17 +1870,12 @@ setMethod("c_finalize", signature=c("sdcProblem", "list"), definition=function(o
       }
     }
   }
-  safeObj <- new("safeObj",
-    finalData=out,
-    dimInfo=dI,
-    nrNonDuplicatedCells=nrNonDuplicatedCells,
-    nrPrimSupps=nrPrimSupps,
-    nrSecondSupps=nrSecondSupps,
-    nrPublishableCells=nrPublishableCells,
-    suppMethod=input$method,
-    elapsedTime=g_elapsedTime(object) + (proc.time()-time.start)[3]
-  )
-  return(safeObj)
+
+  attr(out, "supp_method") <- input$method
+  attr(out, "nr_nondup") <- nrNonDuplicatedCells
+  class(out) <- unique(c("safeObj", class(out)))
+  object@results <- out
+  return(object)
 })
 
 setMethod("c_ghmiter_diag_obj", signature=c("sdcProblem", "list"), definition=function(object, input) {

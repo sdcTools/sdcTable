@@ -46,10 +46,10 @@
 #' @md
 #' @examples
 #' # loading micro data from sdcTable
-#' data("microData1", package="sdcTable")
-#' microData1$num1 <- rnorm(mean=100, sd=25, nrow(microData1))
-#' microData1$num2 <- round(rnorm(mean=500, sd=125, nrow(microData1)),2)
-#' microData1$weight <- sample(10:100, nrow(microData1), replace=TRUE)
+#' utils::data("microdata1", package="sdcTable")
+#' microdata1$num1 <- rnorm(mean = 100, sd = 25, nrow(microdata1))
+#' microdata1$num2 <- round(rnorm(mean = 500, sd=125, nrow(microdata1)),2)
+#' microdata1$weight <- sample(10:100, nrow(microdata1), replace = TRUE)
 #'
 #' dim_region <- hier_create(root = "Total", nodes = LETTERS[1:4])
 #'
@@ -67,7 +67,7 @@
 #'
 #' # creating an object of class \code{\link{sdcProblem-class}}
 #' obj <- makeProblem(
-#'   data = microData1,
+#'   data = microdata1,
 #'   dimList = dimList,
 #'   dimVarInd = dimVarInd,
 #'   numVarInd = numVarInd,
@@ -75,7 +75,7 @@
 #'
 #' # creating an object of class \code{\link{sdcProblem-class}} containing "duplicated" codes
 #' obj_dupl <- makeProblem(
-#'   data = microData1,
+#'   data = microdata1,
 #'   dimList = dimList_dupl,
 #'   dimVarInd = dimVarInd,
 #'   numVarInd = numVarInd,
@@ -120,7 +120,7 @@
 #' ## in case CPLEX should be used, it is required to specify argument licensefile
 #' bO_md2 <- createArgusInput(
 #'   obj = obj,
-#'   typ = "microdata",
+#'   typ = "microdata1",
 #'   path = tempdir(),
 #'   solver = "CPLEX",
 #'   method = "OPT",

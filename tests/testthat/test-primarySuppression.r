@@ -43,7 +43,7 @@ expect_error(primarySuppression(problem, type = "pq", pq = c(60, 80), numVarName
 
 # use weights
 rm(list = ls())
-data("microdata1", package = "sdcTable")
+utils::data("microdata1", package = "sdcTable")
 microdata1$samp_weights <- sample(rnorm(nrow(microdata1), mean = 10))
 dim_region <- sdcHierarchies::hier_create(
   root = "Total",

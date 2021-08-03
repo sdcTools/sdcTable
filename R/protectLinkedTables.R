@@ -41,27 +41,27 @@
 #' @examples
 #' \dontrun{
 #' # load micro data for further processing
-#' data("microdata2", package = "sdcTable")
+#' utils::data("microdata2", package = "sdcTable")
 #'
 #' # table1: defined by variables 'gender' and 'ecoOld'
-#' microData1 <- microData[,c(2,3,5)]
+#' md1 <- microdata2[,c(2,3,5)]
 #'
 #' # table2: defined by variables 'region', 'gender' and 'ecoNew'
-#' microData2 <- microData[,c(1,2,4,5)]
+#' md2 <- microdata2[,c(1,2,4,5)]
 #'
 #' # we need to create information on the hierarchies
-#' # variable 'region': exists only in microDat2
+#' # variable 'region': exists only in md2
 #' d_region <- hier_create(root = "Tot", nodes = c("R1", "R2"))
 #'
 #' # variable 'gender': exists in both datasets
 #' d_gender <- hier_create(root = "Tot", nodes = c("m", "f"))
 #'
-#' # variable 'eco1': exists only in microDat1
+#' # variable 'eco1': exists only in md1
 #' d_eco1 <- hier_create(root = "Tot", nodes = c("A", "B"))
 #' d_eco1 <- hier_add(d_eco1, root = "A", nodes = c("Aa", "Ab"))
 #' d_eco1 <- hier_add(d_eco1, root = "B", nodes = c("Ba", "Bb"))
 #'
-#' # variable 'ecoNew': exists only in microDat2
+#' # variable 'ecoNew': exists only in md2
 #' d_eco2 <- hier_create(root = "Tot", nodes = c("C", "D"))
 #' d_eco2 <- hier_add(d_eco2, root = "C", nodes = c("Ca", "Cb", "Cc"))
 #' d_eco2 <- hier_add(d_eco2, root = "D", nodes = c("Da", "Db", "Dc"))
@@ -73,13 +73,13 @@
 #' # creating input objects for further processing.
 #' # For details, see ?makeProblem.
 #' p1 <- makeProblem(
-#'   data = microData1,
+#'   data = md1,
 #'   dimList = dl1,
 #'   dimVarInd = 1:2,
 #'   numVarInd = 3)
 #'
 #' p2 <- makeProblem(
-#'   data = microData2,
+#'   data = md2,
 #'   dimList = dl2,
 #'   dimVarInd = 1:3,
 #'   numVarInd = 4)
@@ -143,7 +143,7 @@
 #' @seealso [protectTable()]
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEHEURISTIC", ...) {
-  . <- sdcStatus <- freq <- striD <- strID_x <- strID_y <- NULL
+  . <- sdcStatus <- freq <- striD <- strID_x <- strID_y <- innercell <- NULL
 
   x <- objectA
   y <- objectB

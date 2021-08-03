@@ -14,41 +14,25 @@
 #' @export
 #' @md
 #' @examples
-#' # loading test data
-#' data("microData1", package="sdcTable")
+#' # loading test problem
+#' p <- testprob_a(with_supps = FALSE)
+#' dt <- sdcProb2df(p, dimCodes = "original")
 #'
-#' # specify hierarchies for `age` and `region`
-#' dim_region <- hier_create(root = "Total", nodes = LETTERS[1:4])
-#' dim_gender <- hier_create(root = "Total", nodes = c("male", "female"))
-#' dl <- list(region = dim_region, gender = dim_gender)
+#' # question: which units contribute to cell region = "A" and gender = "female"?
 #'
-#' # no variables holding counts, numeric values, weights or sampling
-#' # weights are available in the input data
-#'
-#' # using variable names is also possible
-#' prob <- makeProblem(
-#'   data = microData1,
-#'   dimList = dl
-#' )
-#'
-#' df <- sdcProb2df(prob, dimCodes = "original")
-#'
-#' # which units contribute to cell region = "A" and gender = "female"?
-#'
-#' # compute the id ("0101")
-#' df[region == "A" & gender == "female", strID]
+#' # compute the id ("0102")
+#' dt[region == "A" & gender == "female", strID]
 #'
 #' # which indices contribute to the cell?
-#' ids <- contributing_indices(prob = prob, ids = "0101")
+#' ids <- contributing_indices(prob = p, ids = "0101")
 #'
 #' # check
-#' dataObj <- get.sdcProblem(prob, "dataObj")
+#' dataObj <- get.sdcProblem(p, "dataObj")
 #' rawData <- slot(dataObj, "rawData")
 #' rawData[ids[["0101"]]]
 #'
-#' # compute contributing ids for each cell
-#' contributing_indices(prob)
-#'
+#' # compute contributing ids for all cells
+#' contributing_indices(p)
 contributing_indices <- function(prob, ids = NULL) {
   . <- NULL
   dt <- sdcProb2df(prob, addDups = FALSE, dimCodes = "original")

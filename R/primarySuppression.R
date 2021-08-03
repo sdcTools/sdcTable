@@ -57,19 +57,19 @@
 #' @md
 #' @examples
 #' # load micro data
-#' data("microData1", package = "sdcTable")
+#' utils::data("microdata1", package = "sdcTable")
 #'
 #' # load problem (as it was created in the example in ?makeProblem
-#' data("problem", package = "sdcTable")
+#' p <- testprob_a(with_supps = FALSE)
 #'
 #' # we have a look at the frequency table by gender and region
-#' xtabs(rep(1, nrow(microData1)) ~ gender + region, data = microData1)
+#' xtabs(rep(1, nrow(microdata1)) ~ gender + region, data = microdata1)
 #'
 #' # 2 units contribute to cell with region=='A' and gender=='female'
 #' # --> this cell is considered sensitive according the the
 #' # freq-rule with 'maxN' equal to 2!
 #' p1 <- primarySuppression(
-#'   object = problem,
+#'   object = p,
 #'   type = "freq",
 #'   maxN = 2
 #' )
@@ -78,7 +78,7 @@
 #' # This is only possible if we are dealing with micro data and we also
 #' # have to specify the name of a numeric variable.
 #' p2 <- primarySuppression(
-#'   object = problem,
+#'   object = p,
 #'   type = "p",
 #'   p = 30,
 #'   numVarName = "val"

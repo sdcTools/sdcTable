@@ -1,6 +1,6 @@
 context("test makeProblem()")
 
-data("microdata1")
+utils::data("microdata1", package = "sdcTable")
 dim.region <- data.frame(
   levels = c("@", "@@", "@@", "@@", "@@"),
   codes = c("Total", "A", "B", "C", "D"),

@@ -2,7 +2,7 @@ context("test problem generation with sampling weights")
 
 set.seed(10)
 
-data("microdata1")
+utils::data("microdata1", package = "sdcTable")
 microdata1$sampweights <- sample(1:10, nrow(microdata1), replace = TRUE)
 
 dims <- list(

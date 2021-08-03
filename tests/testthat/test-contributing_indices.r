@@ -1,5 +1,5 @@
 context("test contributing_indices")
-data("microdata1", package = "sdcTable")
+utils::data("microdata1", package = "sdcTable")
 
 # specify hierarchies for `age` and `region`
 dim_region <- sdcHierarchies::hier_create(root = "Total", nodes = LETTERS[1:4])
