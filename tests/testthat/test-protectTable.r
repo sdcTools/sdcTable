@@ -1,34 +1,52 @@
 context("test protectTable()")
 
-sp <- searchpaths()
-fn <- file.path(sp[grep("sdcTable", sp)], "data", "problemWithSupps.RData")
+# create a test-problem without any suppressions
+testprob <- function() {
+  data("microdata1")
+  p <- makeProblem(
+    data = microdata1,
+    dimList =  list(
+      region = sdcHierarchies::hier_create("total", LETTERS[1:4]),
+      gender = sdcHierarchies::hier_create("total", c("male", "female"))
+    ),
+    numVarInd = "val")
+  p
+}
 
-p <- get(load(file = fn))
+# create testproblem and mark a single cell as primary suppressed
+p <- testprob()
+p <- changeCellStatus(
+  object = p,
+  characteristics = c("A", "female"),
+  varNames = c("region", "gender"),
+  rule = "u"
+)
 
 p_opt <- protectTable(object = p, method = "OPT", useC = FALSE, verbose = FALSE)
 p_opt_c <- protectTable(object = p, method = "OPT", useC = TRUE, verbose = FALSE)
 p_hyper <- protectTable(object = p, method = "HYPERCUBE", verbose = FALSE)
 p_hitas <- protectTable(object = p, method = "HITAS", useC = TRUE, verbose = FALSE)
 
-expect_equivalent(p_opt@finalData, p_opt_c@finalData)
-expect_is(p_opt, "safeObj")
-expect_equal(p_opt@nrPublishableCells, 11)
-expect_equal(p_opt@nrSecondSupps, 3)
-expect_equal(which(p_opt@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
-expect_equal(which(p_hyper@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
-expect_equal(which(p_hitas@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equivalent(p_opt@results, p_opt_c@results)
+expect_is(p_opt@results, "data.frame")
+expect_equal(sum(p_opt@results$sdcStatus %in% c("s", "z")), 11) # nr_publishable
+expect_equal(sum(p_opt@results$sdcStatus == c("x")), 3) # second_supps
+
+expect_equal(which(p_opt@results$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equal(which(p_hyper@results$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equal(which(p_hitas@results$sdcStatus != "s"), c(5, 6, 11, 12))
 
 # test SIMPLEHEURISTIC
 p_simple <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE)
-expect_is(p_simple, "safeObj")
-expect_equal(which(p_simple@finalData$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_is(p_simple@results, "data.frame")
+expect_equal(which(p_simple@results$sdcStatus != "s"), c(5, 6, 11, 12))
 
 # create dataset with singletons
 df <- data.frame(
   region = c("a", "b", "b", "c"),
   stringsAsFactors = FALSE
 )
-d_region <- hier_create(root = "tot", nodes = letters[1:4])
+d_region <- sdcHierarchies::hier_create(root = "tot", nodes = letters[1:4])
 
 p <- makeProblem(data = df, dimList = list(region = d_region))
 p <- primarySuppression(p, type = "freq", maxN = 1)
@@ -36,30 +54,29 @@ p <- primarySuppression(p, type = "freq", maxN = 1)
 p_simple1 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, detectSingletons = FALSE)
 p_simple2 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, detectSingletons = TRUE)
 
-expect_equal(p_simple1@nrSecondSupps, 0)
-expect_equal(p_simple2@nrSecondSupps, 1)
+expect_equal(sum(p_simple1@results$sdcStatus == "x"), 0)
+expect_equal(sum(p_simple2@results$sdcStatus == "x"), 1)
 
 # threshold
 p_simple3 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, threshold = 3)
-expect_equal(p_simple3@nrSecondSupps, 1)
+expect_equal(sum(p_simple3@results$sdcStatus == "x"), 1)
 
 # due to threshold setting, the entire table needs to be suppressed
 p_simple4 <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE, threshold = 5)
-expect_equal(p_simple4@nrSecondSupps, 2)
+expect_equal(sum(p_simple4@results$sdcStatus == "x"), 2)
 
-rm(p)
-
-# test file with no suppressions
-fn <- file.path(sp[grep("sdcTable", sp)], "data", "problem.RData")
-p <- get(load(file = fn))
+# create testproblem without suppressions
+p <- testprob()
+expect_is(p, "sdcProblem")
+expect_equal(sum(p@problemInstance@sdcStatus == "s"), 15)
 
 p_opt <- protectTable(
-  problem,
+  object = p,
   method = "OPT",
   useC = TRUE,
   verbose = FALSE
 )
-expect_is(p_opt, "safeObj")
-expect_equal(p_opt@nrPublishableCells, 15)
-expect_equal(p_opt@nrSecondSupps, 0)
-expect_equal(sum(p_opt@finalData$sdcStatus != "s"), 0)
+expect_is(p_opt, "sdcProblem")
+expect_is(p_opt@results, "data.frame")
+expect_equal(sum(p_opt@results$sdcStatus == "s"), 15)
+expect_equal(sum(p_opt@results$sdcStatus != "s"), 0)

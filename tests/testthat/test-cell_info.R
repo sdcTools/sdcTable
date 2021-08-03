@@ -10,7 +10,7 @@ expect_error(cell_info(p, 1))
 
 # vector input
 specs_vec <- c(region = "D", gender = "male")
-res <- cell_info(p, specs = specs_vec)
+res <- cell_info(sdc, specs = specs_vec)
 expect_identical(nrow(res), 1L)
 expect_identical(res$id, 14L)
 expect_identical(res$strID, "0401")
@@ -25,14 +25,14 @@ specs_df <- data.frame(
   region = c("A", "D", "A"),
   gender = c("male", "female", "female")
 )
-res <- cell_info(p, specs = specs_df)
+res <- cell_info(sdc, specs = specs_df)
 expect_identical(nrow(res), 3L)
 expect_identical(res$id, as.integer(c(5, 15, 6)))
 expect_identical(res$sdcStatus, c("s", "s", "u"))
 
 # protect the table
-p_safe <- protectTable(p, method = "SIMPLEHEURISTIC")
-res <- cell_info(p_safe, specs = specs_df)
+sdc_safe <- protectTable(sdc, method = "SIMPLEHEURISTIC")
+res <- cell_info(sdc_safe, specs = specs_df)
 expect_identical(nrow(res), 3L)
 expect_identical(res$id, as.integer(c(5, 15, 6)))
 expect_identical(res$sdcStatus, c("x", "s", "u"))

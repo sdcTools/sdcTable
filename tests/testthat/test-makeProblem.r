@@ -1,8 +1,6 @@
 context("test makeProblem()")
 
-sp <- searchpaths()
-fn <- file.path(sp[grep("sdcTable", sp)], "data", "microData1.RData")
-microData <- get(load(fn))
+data("microdata1")
 dim.region <- data.frame(
   levels = c("@", "@@", "@@", "@@", "@@"),
   codes = c("Total", "A", "B", "C", "D"),
@@ -18,7 +16,7 @@ dimVarInd <- c(1, 2)
 freqVarInd <- numVarInd <- weightInd <- sampWeightInd <- NULL
 
 problem <- makeProblem(
-  data = microData,
+  data = microdata1,
   dimList = dimList,
   dimVarInd = dimVarInd,
   freqVarInd = freqVarInd,

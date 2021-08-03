@@ -1,12 +1,12 @@
 context("test contributing_indices")
-data("microData1", package = "sdcTable")
+data("microdata1", package = "sdcTable")
 
 # specify hierarchies for `age` and `region`
-dim_region <- hier_create(root = "Total", nodes = LETTERS[1:4])
-dim_gender <- hier_create(root = "Total", nodes = c("male", "female"))
+dim_region <- sdcHierarchies::hier_create(root = "Total", nodes = LETTERS[1:4])
+dim_gender <- sdcHierarchies::hier_create(root = "Total", nodes = c("female", "male"))
 dl <- list(region = dim_region, gender = dim_gender)
 prob <- makeProblem(
-  data = microData1,
+  data = microdata1,
   dimList = dl
 )
 
@@ -43,8 +43,9 @@ for (i in 1:nrow(df)) {
   if (code_gender == "Total") {
     code_gender <- c("male", "female")
   }
-  ids <- contributing_indices(prob = prob, ids = df$strID[i])[[1]]
+  ids <- suppressMessages(contributing_indices(prob = prob, ids = df$strID[i])[[1]])
   dt <- rawData[ids]
   expect_true(all(unique(dt$region) %in% code_region))
   expect_true(all(unique(dt$gender) %in% code_gender))
 }
+

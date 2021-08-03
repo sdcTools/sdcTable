@@ -10,14 +10,14 @@ df <- data.frame(
 )
 
 # defining hierarchies
-r1 <- hier_create(root = "Total", nodes = c("county-1", "county-2"))
-r1 <- hier_add(r1, root = "county-1", nodes = c("A", "B", "I", "J"))
-r1 <- hier_add(r1, root = "county-2", nodes = c("K", "L", "M", "N"))
+r1 <- sdcHierarchies::hier_create(root = "Total", nodes = c("county-1", "county-2"))
+r1 <- sdcHierarchies::hier_add(r1, root = "county-1", nodes = c("A", "B", "I", "J"))
+r1 <- sdcHierarchies::hier_add(r1, root = "county-2", nodes = c("K", "L", "M", "N"))
 dl1 <- list(region = r1)
 
-r2 <- hier_create(root = "Total", nodes = c("big", "small"))
-r2 <- hier_add(r2, root = "big", nodes = c("L", "M"))
-r2 <- hier_add(r2, root = "small", nodes = c("A", "B", "I", "J", "K", "N"))
+r2 <- sdcHierarchies::hier_create(root = "Total", nodes = c("big", "small"))
+r2 <- sdcHierarchies::hier_add(r2, root = "big", nodes = c("L", "M"))
+r2 <- sdcHierarchies::hier_add(r2, root = "small", nodes = c("A", "B", "I", "J", "K", "N"))
 dl2 <- list(region = r2)
 
 # defining common cells
@@ -45,8 +45,8 @@ out <- protectLinkedTables(
 #  Thus B can be calculated as 10-7 = 3.
 
 # Look at output
-res_a <- getInfo(out$outObj1, "finalData")
-res_b <- getInfo(out$outObj2, "finalData")
+res_a <- out$outObj1@results
+res_b <- out$outObj2@results
 
 # without any additional secondary suppression, both tables would (individually be safe).
 # however: the difference between "county-1" and "small" is two cells, K and N and

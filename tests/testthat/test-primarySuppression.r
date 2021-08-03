@@ -1,8 +1,7 @@
 context("test primarySuppression()")
 
-sp <- searchpaths()
-fn <- file.path(sp[grep("sdcTable", sp)], "data", "problem.RData")
-problem <- get(load(file = fn))
+# load problem without suppressions
+problem <- testprob_a(with_supps = FALSE)
 
 p1 <- primarySuppression(problem, type = "freq", maxN = 2)
 p1.sdc <- get.problemInstance(p1@problemInstance, "sdcStatus")
@@ -44,13 +43,13 @@ expect_error(primarySuppression(problem, type = "pq", pq = c(60, 80), numVarName
 
 # use weights
 rm(list = ls())
-data("microData1", package = "sdcTable")
-microData1$samp_weights <- sample(rnorm(nrow(microData1), mean = 10))
-dim_region <- hier_create(
+data("microdata1", package = "sdcTable")
+microdata1$samp_weights <- sample(rnorm(nrow(microdata1), mean = 10))
+dim_region <- sdcHierarchies::hier_create(
   root = "Total",
   nodes = LETTERS[1:5]
 )
-dim_gender <- hier_create(
+dim_gender <- sdcHierarchies::hier_create(
   root = "Total",
   nodes = c("male", "female")
 )
@@ -59,7 +58,7 @@ dimList <- list(
   gender = dim_gender
 )
 problem <- makeProblem(
-  data = microData1,
+  data = microdata1,
   dimList = dimList,
   freqVarInd = NULL,
   numVarInd = 3,
