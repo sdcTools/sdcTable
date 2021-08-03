@@ -111,6 +111,9 @@ primarySuppression <- function(object, type, ...) {
     numVarIndices = numVarsIndices, ...
   )
 
+  # starting-pattern
+  pat <- g_suppPattern(object@problemInstance)
+
   if (type == "freq") {
     object <- c_rule_freq(object, input = paraList)
   }
@@ -142,6 +145,11 @@ primarySuppression <- function(object, type, ...) {
 
   if (type == "pq") {
     object <- domRule(object = object, params = paraList, type = "pq")
+  }
+
+  # reset previous solution if suppression-pattern has changed
+  if (!identical(pat, g_suppPattern(object@problemInstance))) {
+    object@results <- NULL
   }
   return(object)
 }

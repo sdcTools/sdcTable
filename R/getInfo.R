@@ -31,53 +31,54 @@
 #' @return manipulated data dependend on arguments \code{object} and \code{type}
 #'
 #' @examples
-#' # load problem (as it was created in the example
-#' # of \code{\link{makeProblem}})
-#' sp <- searchpaths()
-#' fn <- paste(sp[grep("sdcTable", sp)], "/data/problem.RData", sep="")
-#' problem <- get(load(fn))
+#' # define an example problem with two hierarchies
+#' p <- testprob_a(with_supps = FALSE)
 #'
-#' # problem is an object of class \code{\link{sdcProblem-class}}
-#' print(class(problem))
+#' # apply primary suppression
+#' p <- primarySuppression(p, type = "freq", maxN = 3)
 #'
-#' for (slot in c('lb','ub','LPL','SPL','UPL','sdcStatus',
-#'   'freq', 'strID', 'numVars', 'w')) {
-#'   cat('slot', slot,':\n')
-#'   print(getInfo(problem, type=slot))
+#' # `p` is an object of class \code{\link{sdcProblem-class}}
+#' print(class(p))
+#'
+#' for (slot in c("lb", "ub", "LPL", "SPL", "UPL", "sdcStatus",
+#'   "freq", "strID", "numVars", "w")) {
+#'   message("slot: ", shQuote(slot))
+#'   print(getInfo(p, type = slot))
 #' }
 #'
-#' # extracting information for objects of class \code{\link{safeObj-class}}
-#' fn <- paste(sp[grep("sdcTable", sp)], "/data/protectedData.RData", sep="")
-#' protectedData <- get(load(fn))
-#' for (slot in c('finalData', 'nrNonDuplicatedCells', 'nrPrimSupps',
-#'   'nrSecondSupps', 'nrPublishableCells', 'suppMethod')) {
-#'   cat('slot', slot,':\n')
-#'   print(getInfo(protectedData, type=slot))
+#' # protect the cell and extract results
+#' p_protected <- protectTable(p, method = "SIMPLEHEURISTIC")
+#' for (slot in c("finalData", "nrNonDuplicatedCells", "nrPrimSupps",
+#'   "nrSecondSupps", "nrPublishableCells", "suppMethod")) {
+#'   message("slot: ", shQuote(slot))
+#'   print(getInfo(p_protected, type = slot))
 #' }
 #' @rdname getInfo
 #' @export getInfo
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 getInfo <- function(object, type) {
   if (!class(object) %in% c("sdcProblem", "problemInstance", "safeObj")) {
-    stop("getInfo:: argument 'object' must be of class 'sdcProblem', 'problemInstance' or 'safeObj'!\n")
+    stop("getInfo:: argument `object` must be of class `sdcProblem` or `problemInstance`!", call. = FALSE)
   }
-  
-  if (class(object) == "safeObj") {
-    if (!type %in% c(
+
+  if (!is.null(object@results)) {
+    ok <- c(
       "finalData",
       "nrNonDuplicatedCells",
       "nrPrimSupps",
       "nrSecondSupps",
       "nrPublishableCells",
       "suppMethod"
-    )) {
-      stop("getInfo:: type must be one of 'finalData', 'nrNonDuplicatedCells', 'nrPrimSupps', 'nrSecondSupps', 'nrPublishableCells' or 'suppMethod'!\n")
+    )
+    if (!type %in% ok) {
+      stop("getInfo:: type must be one of", paste(shQuote(ok), collapse = ", "), call. = FALSE)
     }
-    return(get.safeObj(object, type = type, input = list()))
+    return(get_safeobj(object = object, type = type))
   }
   else {
-    if (!type %in% c("lb", "ub", "LPL", "SPL", "UPL", "sdcStatus", "freq", "strID", "numVars", "w")) {
-      stop("getInfo:: check argument 'type'!\n")
+    ok <- c("lb", "ub", "LPL", "SPL", "UPL", "sdcStatus", "freq", "strID", "numVars", "w")
+    if (!type %in% ok) {
+      stop("getInfo:: type must be one of", paste(shQuote(ok), collapse = ", "), call. = FALSE)
     }
     if (class(object) == "sdcProblem") {
       pI <- g_problemInstance(object)

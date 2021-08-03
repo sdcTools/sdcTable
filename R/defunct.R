@@ -41,3 +41,19 @@ rename_node <- function(...) {
   msg <- "Please use `hier_rename()` instead."
   .Defunct(new = "hier_rename", package = "sdcHierarchies", msg = msg)
 }
+
+
+#' Extract information about a cell in a protected table
+#'
+#' cellInfo() is defunct, please use [cell_info()]
+#'
+#' @keywords internal
+#' @rdname defunct-sdcTable
+cellInfo <- function(...) {
+  .Defunct(
+    new = "cell_info",
+    package = "sdcTable",
+    msg = "please use sdcTable::cell_info();
+      this is a more flexible way to extract the required information."
+  )
+}

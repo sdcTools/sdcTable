@@ -236,3 +236,56 @@ domRule <- function(object, params, type) {
 .tmpweightname <- function() {
   "weight.for.suppression"
 }
+
+# returns a relevant row from a protecte dataset (slot "results") or
+# the current status (from "problemInstance") depending on the inputs
+# specs is a named vector and complete allows to return the entire row
+# or only the id
+cell_id <- function(x, specs, complete = TRUE, addDups = FALSE) {
+  stopifnot(inherits(x, "sdcProblem"))
+  df <- slot(x, "results")
+  if (is.null(df)) {
+    df <- sdcProb2df(
+      obj = x,
+      dimCodes = "original",
+      addNumVars = TRUE,
+      addDups = addDups
+    )
+  }
+
+  stopifnot(rlang::is_scalar_logical(complete))
+
+  # check inputs
+  if (!rlang::is_named(specs)) {
+    stop("input `specs` must be a named character vector", call. = FALSE)
+  }
+  if (!rlang::is_character(specs)) {
+    stop("input `specs` must be a named character vector", call. = FALSE)
+  }
+
+  di <- slot(x, "dimInfo")
+  vnames <- slot(di, "vNames")
+
+  if (length(specs) != length(vnames)) {
+    stop("length of input `specs` does not match number of dimensions.", call. = FALSE)
+  }
+
+  idx <- match(names(specs), vnames)
+  if (any(is.na(idx))) {
+    stop("names of input `specs` does not match names of dimensions.", call. = FALSE)
+  }
+
+  specs <- specs[idx]
+  df$id <- 1:nrow(df)
+  for (v in vnames) {
+    df <- df[get(v) == specs[v]]
+  }
+  if (nrow(df) != 1) {
+    stop("0 or > 1 cells identified, check inputs `specs`", call. = FALSE)
+  }
+  if (complete) {
+    return(df)
+  } else {
+    return(df$id)
+  }
+}
