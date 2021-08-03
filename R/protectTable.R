@@ -72,20 +72,18 @@
 #' @return an [safeObj-class] object
 #' @md
 #' @examples
-#' # load problem (as it was created after performing primary suppression
-#' # in the example of \code{\link{primarySuppression}})
-#' sp <- searchpaths()
-#' fn <- paste(sp[grep("sdcTable", sp)], "/data/problemWithSupps.RData", sep="")
-#' problem <- get(load(fn))
+#' # load example-problem with with a single primary suppression
+#' # (same as example from ?primarySuppression)
+#' p <- testprob_a(with_supps = TRUE)
 #'
 #' # protect the table using the 'HITAS' algorithm with verbose output
-#' protectedData <- protectTable(problem, method='HITAS', verbose=TRUE, useC=TRUE)
+#' p_protected <- protectTable(p, method = "HITAS", verbose = TRUE, useC = TRUE)
 #'
 #' # showing a summary
-#' summary(protectedData)
+#' summary(p_protected)
 #'
 #' # looking at the final table with result suppression pattern
-#' print(getInfo(protectedData, type='finalData'))
+#' print(getInfo(p_protected, type= "finalData"))
 #' @rdname protectTable
 #' @export protectTable
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}

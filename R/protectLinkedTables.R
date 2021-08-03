@@ -41,9 +41,7 @@
 #' @examples
 #' \dontrun{
 #' # load micro data for further processing
-#' sp <- searchpaths()
-#' fn <- paste(sp[grep("sdcTable", sp)], "/data/microData2.RData", sep="")
-#' microData <- get(load(fn))
+#' data("microdata2", package = "sdcTable")
 #'
 #' # table1: defined by variables 'gender' and 'ecoOld'
 #' microData1 <- microData[,c(2,3,5)]
