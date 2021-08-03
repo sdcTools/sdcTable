@@ -15,10 +15,9 @@ testprob <- function() {
 
 # create testproblem and mark a single cell as primary suppressed
 p <- testprob()
-p <- changeCellStatus(
+p <- change_cellstatus(
   object = p,
-  characteristics = c("A", "female"),
-  varNames = c("region", "gender"),
+  specs = c(region = "A", gender = "female"),
   rule = "u"
 )
 

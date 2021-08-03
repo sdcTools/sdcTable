@@ -102,9 +102,6 @@ setMethod(f="calc.sdcProblem", signature=c("sdcProblem", "character", "list"),
     if (type == "preprocess") {
       return(c_preprocess(object, input))
     }
-    if (type == "cellID") {
-      return(c_cellID(object, input))
-    }
     if (type == "finalize") {
       return(c_finalize(object, input))
     }
@@ -1755,53 +1752,6 @@ setMethod("c_preprocess", signature=c("sdcProblem", "list"), definition=function
   }
   s_problemInstance(object) <- problemInstance
   return(list(sdcProblem=object, aProb=aProb, validCuts=validCuts))
-})
-
-setMethod("c_cellID", signature=c("sdcProblem", "list"), definition=function(object, input) {
-  para.names <- input[[1]]
-  para.codes <- input[[2]]
-  para.verbose <- input[[3]]
-
-  pI <- g_problemInstance(object)
-  dimInfoObj <- g_dimInfo(object)
-
-  vNames <- g_varname(dimInfoObj)
-  vIndex <- g_pos_index(dimInfoObj)
-
-  indexVar <- match(para.names, vNames)
-  strInfo <- g_str_info(dimInfoObj)
-  dimInfo <- g_dim_info(dimInfoObj)
-
-  # calculate original codes
-  codesDefault <- lapply(1:length(strInfo), function(x) {
-    mySplit(g_strID(pI), strInfo[[x]][1]:strInfo[[x]][2])
-  })
-  codesOrig <- list()
-  for ( i in 1:length(codesDefault) ) {
-    codesOrig[[i]] <- c_match_orig_codes(object=dimInfo[[i]], input=codesDefault[[i]])
-  }
-
-  if ( length(input) != 3 ) {
-    stop("c_cellID:: length of argument 'input' must equal 3!\n")
-  }
-  if ( length(para.names) != length(para.codes) ) {
-    stop("c_cellID:: check argument 'input'!\n")
-  }
-  if ( !all(para.names %in% vNames) ) {
-    stop("c_cellID:: check variable names in 'input[[1]]'!\n")
-  }
-  if ( !is.logical(para.verbose) ) {
-    stop("c_cellID:: argument in 'input[[3]]' must be logical!\n")
-  }
-
-  cellID <- 1:g_nrVars(pI)
-  for ( i in seq_along(para.names) ) {
-    cellID <- intersect(cellID, which(!is.na(match(as.character(codesOrig[[indexVar[i]]]), para.codes[i]))))
-  }
-  if ( length(cellID) != 1) {
-    stop("c_cellID:: check argument 'input' -> 0 or > 1 cells identified!\n")
-  }
-  return(cellID)
 })
 
 setMethod("c_finalize", signature=c("sdcProblem", "list"), definition=function(object, input) {

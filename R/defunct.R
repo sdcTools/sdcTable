@@ -57,3 +57,17 @@ cellInfo <- function(...) {
       this is a more flexible way to extract the required information."
   )
 }
+
+#' Extract information about a cell in a protected table
+#'
+#' changeCellStatus() is defunct, please use [change_cellstatus()]
+#'
+#' @keywords internal
+#' @rdname defunct-sdcTable
+changeCellStatus <- function(...) {
+  .Defunct(
+    new = "change_cellstatus",
+    package = "sdcTable",
+    msg = "please use sdcTable::change_cellstatus() instead"
+  )
+}

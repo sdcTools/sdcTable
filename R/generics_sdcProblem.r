@@ -240,9 +240,6 @@ setGeneric("c_ghmiter", function(object, input) {
 setGeneric("c_preprocess", function(object, input) {
   standardGeneric("c_preprocess")
 })
-setGeneric("c_cellID", function(object, input) {
-  standardGeneric("c_cellID")
-})
 setGeneric("c_finalize", function(object, input) {
   standardGeneric("c_finalize")
 })
