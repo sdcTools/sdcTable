@@ -9,3 +9,4 @@ debugzeugs
 ^NEWS\.md$
 ^README\.md$
 ^README\.Rmd$
+^data-raw$
