@@ -69,6 +69,10 @@
 #'    * `threshold`: if not `NULL` (the default) an integerish number (> `0`). If specified, a procedure similar
 #'    to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
 #'    contains primary sensitive cells the suppressed number of contributors is `>=` the specified threshold.
+#'    * `solve_attackerprobs`: logical value; if `TRUE` (default), attacker problems are solved for
+#'    each primary sensitive cells and possibly additional suppressions are added until
+#'    these cells are adequately protected; if this parameter is `FALSE`, attacker-problems
+#'    are not checked (which is potentially unsafe)
 #' @return an [safeObj-class] object
 #' @md
 #' @examples
