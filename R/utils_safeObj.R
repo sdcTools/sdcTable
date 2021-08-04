@@ -59,11 +59,11 @@ get_safeobj <- function(object, type, ...) {
     stopifnot(rlang::is_scalar_logical(verbose))
   }
 
-
   if (type == "dimInfo") {
     return(object@dimInfo)
   }
   if (type == "finalData") {
+    results$strID <- NULL
     attr(results, "supp_method") <- NULL
     attr(results, "nr_nondup") <- NULL
     attr(results, "index") <- NULL

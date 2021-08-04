@@ -1758,71 +1758,22 @@ setMethod("c_finalize", signature=c("sdcProblem", "list"), definition=function(o
   Freq <- NULL
   pI <- g_problemInstance(object)
   dI <- g_dimInfo(object)
-  levelObj <- g_dim_info(dI)
-  strInfo <- g_str_info(dI)
+  sdcStatus <- NULL
+  out <- sdcProb2df(
+    obj = object,
+    addDups = TRUE,
+    addNumVars = TRUE,
+    dimCodes = "original"
+  )
+  out[sdcStatus == "z", sdcStatus := "s"]
 
-  sdcStatus <- g_sdcStatus(pI)
-
-  nrNonDuplicatedCells <- g_nrVars(pI)
-  nrPrimSupps <- length(which(sdcStatus == 'u'))
-  nrSecondSupps <- length(which(sdcStatus == 'x'))
-  nrPublishableCells <- length(which(sdcStatus %in% c('z','s')))
-
-  # merge codes and labels
-  codesOriginal <- list()
-  strIDs <- g_strID(pI)
-  for ( i in seq_along(levelObj) ) {
-    codesDefault <- mySplit(strIDs, strInfo[[i]][1]:strInfo[[i]][2])
-    codesOriginal[[i]] <- c_match_orig_codes(object=levelObj[[i]], input=codesDefault)
-  }
-  out <- as.data.table(codesOriginal)
-  setnames(out, g_varname(dI))
-  out[,Freq:=g_freq(pI)]
-
-  numVars <- g_numVars(pI)
-  if ( !is.null(numVars) ) {
-    data.obj <- g_dataObj(object)
-    nV <- as.data.table(numVars)
-    setnames(nV, colnames(g_raw_data(data.obj))[g_numvar_ind(data.obj)])
-    out <- cbind(out, nV)
-  }
-  out[,sdcStatus:=g_sdcStatus(pI)]
-  out[sdcStatus=="z", sdcStatus:="s"]
-
-  # add duplicates
-  hasDups <- sapply(1:length(levelObj), function(x) {
-    g_has_dups(levelObj[[x]])
-  })
-  if (any(hasDups)) {
-    for (i in which(hasDups==TRUE)) {
-      dups <- g_dups(levelObj[[i]])
-      dupsUp <- g_dups_up(levelObj[[i]])
-      runInd <- TRUE
-      while (runInd) {
-        add <- list(); length(add) <- length(dups)
-        for (j in 1:length(dups)) {
-          if (!is.na(dups[j])) {
-            cmd <- paste0("sub <- out[",names(out)[i],"=='",dupsUp[j],"',]")
-            eval(parse(text=cmd))
-
-            if (nrow(sub) > 0) {
-              sub[[i]] <- dups[j]
-              add[[j]] <- sub
-              dups[j] <- dupsUp[j] <- NA
-            }
-          }
-        }
-        add <- rbindlist(add)
-        out <- rbind(out, add); rm(add)
-        if (all(is.na(dups))) {
-          runInd <- FALSE
-        }
-      }
-    }
-  }
+  # order
+  cols <- c(slot(dI, "vNames"), "freq", g_numvar_names(slot(object, "dataObj")), "sdcStatus")
+  data.table::setcolorder(out, cols)
+  data.table::setnames(out, old = "freq", new = "Freq")
 
   attr(out, "supp_method") <- input$method
-  attr(out, "nr_nondup") <- nrNonDuplicatedCells
+  attr(out, "nr_nondup") <- g_nrVars(slot(object, "problemInstance"))
   class(out) <- unique(c("safeObj", class(out)))
   object@results <- out
   return(object)

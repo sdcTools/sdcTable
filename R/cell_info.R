@@ -67,23 +67,17 @@ cell_info <- function(object, specs, ...) {
   ids <- res$id
   res$id <- NULL
   dt <- data.table::data.table(id = ids)
-  if (!is_protected) {
-    strids <- res$strID
-    dt$strID <- res$strID
-    res$strID <- NULL
-  } else {
-    dt$strID <- NA_character_
+
+  if (is_protected) {
     data.table::setnames(res, old = "Freq", new = "freq")
   }
+
   res <- cbind(dt, res)
 
   dv <- g_var_name(object@dataObj)
   nv <- g_numvar_names(object@dataObj)
   data.table::setcolorder(res, c("id", "strID", dv, "freq", nv, "sdcStatus"))
 
-  if (is_protected) {
-    res$strID <- NULL
-  }
   res$is_primsupp <- res$sdcStatus == "u"
   res$is_secondsupp <- res$sdcStatus == "x"
   return(res)
