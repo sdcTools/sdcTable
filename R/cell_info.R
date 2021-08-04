@@ -28,7 +28,7 @@
 #' @md
 #' @examples
 #' # as in makeProblem() with a single primary suppression
-#' p <- testprob_a(with_supps = TRUE)
+#' p <- sdc_testproblem(with_supps = TRUE)
 #' sdcProb2df(p)
 #'
 #' # vector input

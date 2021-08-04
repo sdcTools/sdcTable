@@ -74,7 +74,7 @@
 #' @examples
 #' # load example-problem with with a single primary suppression
 #' # (same as example from ?primarySuppression)
-#' p <- testprob_a(with_supps = TRUE)
+#' p <- sdc_testproblem(with_supps = TRUE)
 #'
 #' # protect the table using the 'HITAS' algorithm with verbose output
 #' p_protected <- protectTable(p, method = "HITAS", verbose = TRUE, useC = TRUE)

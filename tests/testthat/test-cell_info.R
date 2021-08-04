@@ -1,6 +1,6 @@
 context("test cell_info()")
 
-sdc <- testprob_a(with_supps = TRUE)
+sdc <- sdc_testproblem(with_supps = TRUE)
 expect_is(sdc, "sdcProblem")
 expect_equal(sum(sdc@problemInstance@sdcStatus == "u"), 1)
 

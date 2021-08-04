@@ -1,75 +1,75 @@
-#' set information of \code{\link{sdcProblem-class}}- or \code{\link{problemInstance-class}} objects
+#' Set/Update information in `sdcProblem` or `problemInstance` objects
 #'
-#' Function \code{\link{getInfo}} is used to query information from
-#' \code{\link{sdcProblem-class}}- or \code{\link{problemInstance-class}} objects
+#' Function [setInfo()] is used to update values in
+#' `sdcProblem` or `problemInstance` objects
 #'
-#' @param object an object of class \code{\link{sdcProblem-class}} or \code{\link{problemInstance-class}}
-#' @param type a character vector of length 1 specifying the the information that should be changed or modified, valid choices are:
-#' \itemize{
-#' \item \code{lb}: slot 'lb' of input \code{object} if it is of class \code{\link{problemInstance-class}} or slot 'lb' within slot 'problemInstance' if \code{object} is of class \code{\link{sdcProblem-class}}
-#' \item \code{ub}: slot 'ub' of input \code{object} if it is of class \code{\link{problemInstance-class}} or slot 'ub' within slot 'problemInstance' if \code{object} is of class \code{\link{sdcProblem-class}}
-#' \item \code{LPL}: slot 'LPL' of input \code{object} if it is of class \code{\link{problemInstance-class}} or slot 'LPL' within slot 'problemInstance' if \code{object} is of class \code{\link{sdcProblem-class}}
-#' \item \code{SPL}: slot 'SPL' of input \code{object} if it is of class \code{\link{problemInstance-class}} or slot 'SPL' within slot 'problemInstance' if \code{object} is of class \code{\link{sdcProblem-class}}
-#' \item \code{UPL}: slot 'UPL' of input \code{object} if it is of class \code{\link{problemInstance-class}} or slot 'UPL' within slot 'problemInstance' if \code{object} is of class \code{\link{sdcProblem-class}}
-#' \item \code{sdcStatus}:  slot 'sdcStatus' of input \code{object} if it is of class \code{\link{problemInstance-class}} or slot 'sdcStatus' within slot 'problemInstance' if \code{object} is of class \code{\link{sdcProblem-class}} }
+#' @param object an object of class `sdcProblem` or `problemInstance`
+#' @param type a scalar character specifying the kind of information that
+#' should be changed or modified; if `object` inherits class `problemInstance`, the
+#' slots are directly changed, otherwise the values within slot `problemInstance`
+#' are updated. Valid choices are:
+#' - `lb`: lower possible bounds for the cell
+#' - `ub`: max. upper bound for the given cell
+#' - `LPL`: lower protection level
+#' - `SPL`: sliding protection level
+#' - `UPL`: upper protection level
+#' - `sdcStatus`:  cell-status
 #' @param index numeric vector defining cell-indices for which which values in a specified slot should be changed|modified
-#' @param input numeric or character vector depending on argument \code{type} with its length matching the length of argument \code{index}
-#' \itemize{
-#' \item character vector if type matches 'sdcStatus'
-#' \item a numeric vector if type matches 'lb', 'ub', 'LPL', 'SPL' or 'UPL'
-#' }
-#'
-#' @return a \code{\link{sdcProblem-class}}- or \code{\link{problemInstance-class}} object
-#'
+#' @param input numeric or character vector depending on argument `type` with its length matching the length of argument `index`
+#' - character vector if type matches 'sdcStatus'
+#' - a numeric vector if type matches 'lb', 'ub', 'LPL', 'SPL' or 'UPL'
+#' @return a `sdcProblem`- or `problemInstance` object
+#' @md
 #' @examples
-#' # load primary suppressed data (created in the example of \code{\link{primarySuppression}})
-#' sp <- searchpaths()
-#' fn <- paste(sp[grep("sdcTable", sp)], "/data/problemWithSupps.RData", sep="")
-#' problem <- get(load(fn))
+#' # load example-problem with suppressions
+#' # (same as example from ?primarySuppression)
+#' p <- sdc_testproblem(with_supps = TRUE)
 #'
 #' # which is the overall total?
-#' index.tot <- which.max(getInfo(problem, 'freq'))
-#' index.tot
+#' idx <- which.max(getInfo(p, "freq")); idx
 #'
-#' # we see that the cell with index.tot==1 is the overall total and its
+#' # we see that the cell with idx = 1 is the overall total and its
 #' # anonymization state of the total can be extracted as follows:
-#' print(getInfo(problem, type='sdcStatus')[index.tot])
+#' print(getInfo(p, type = "sdcStatus")[idx])
 #'
 #' # we want this cell to never be suppressed
-#' problem <- setInfo(problem, type='sdcStatus', index=index.tot, input='z')
+#' p <- setInfo(p, type = "sdcStatus", index = idx, input = "z")
 #'
 #' # we can verify this:
-#' print(getInfo(problem, type='sdcStatus')[index.tot])
+#' print(getInfo(p, type = "sdcStatus")[idx])
 #'
 #' # changing slot 'UPL' for all cells
-#' inp <- data.frame(strID=getInfo(problem,'strID'), UPL_old=getInfo(problem,'UPL'))
-#' inp$UPL_new <- inp$UPL_old+1
-#' problem <- setInfo(problem, type='UPL', index=1:nrow(inp), input=inp$UPL_new)
-#'
+#' inp <- data.frame(
+#'   strID = getInfo(p, "strID"),
+#'   UPL_old = getInfo(p, "UPL")
+#' )
+#' inp$UPL_new <- inp$UPL_old + 1
+#' p <- setInfo(p, type = "UPL", index = 1:nrow(inp), input = inp$UPL_new)
 #' @rdname setInfo
-#' @export setInfo
+#' @export
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 setInfo <- function(object, type, index, input) {
   if (!class(object) %in% c("sdcProblem", "problemInstance")) {
-    stop("setInfo:: argument 'object' must be of class 'sdcProblem' or 'problemInstance'!\n")
+    stop("setInfo:: argument `object` must be of class `sdcProblem` or `problemInstance`.", call. = FALSE)
   }
-  
-  if (!type %in% c("lb", "ub", "LPL", "SPL", "UPL", "sdcStatus")) {
-    stop("setInfo:: check argument 'type'!\n")
+
+  ok <- c("lb", "ub", "LPL", "SPL", "UPL", "sdcStatus")
+  if (!type %in% ok) {
+    stop("setInfo:: type must be one of", paste(shQuote(ok), collapse = ", "), call. = FALSE)
   }
-  
+
   if (class(object) == "sdcProblem") {
     pI <- g_problemInstance(object)
   } else {
     pI <- object
   }
-  
+
   pI <- set.problemInstance(
-    pI,
+    object = pI,
     type = type,
     input = list(index = index, values = input)
   )
-  
+
   if (class(object) == "sdcProblem") {
     s_problemInstance(object) <- pI
   } else {

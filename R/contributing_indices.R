@@ -15,7 +15,7 @@
 #' @md
 #' @examples
 #' # loading test problem
-#' p <- testprob_a(with_supps = FALSE)
+#' p <- sdc_testproblem(with_supps = FALSE)
 #' dt <- sdcProb2df(p, dimCodes = "original")
 #'
 #' # question: which units contribute to cell region = "A" and gender = "female"?

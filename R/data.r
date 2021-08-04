@@ -3,19 +3,24 @@
 #' A `data.frame` used for examples and problem-generation in various
 #' examples.
 #'
-#' @name microdata1
-#' @format A data frame with `100` rows and variables `region`, `gender`
+#' @format a `data.frame` with `100` rows and variables `region`, `gender`
 #' and `val`.
+#' @usage data(microdata1)
+#' @examples
+#' utils::data("microdata1", package = "sdcTable")
+#' head(microdata1)
 "microdata1"
 
 #' Synthetic Microdata (2)
 #'
 #' Example microdata used for example in [protectLinkedTables()].
 #'
-#' @name microdata2
-#' @docType data
-#' @format A `data.frame` with `100` observations containing variables `region`,
+#' @format a `data.frame` with `100` observations containing variables `region`,
 #' `gender`,  `ecoOld`, `ecoNew` and `numVal`.
-#' @keywords datasets
+#' @usage data(microdata2)
+#' @examples
+#' utils::data("microdata2", package = "sdcTable")
+#' head(microdata2)
 "microdata2"
+
 NULL

@@ -1,7 +1,7 @@
 context("test primarySuppression()")
 
 # load problem without suppressions
-problem <- testprob_a(with_supps = FALSE)
+problem <- sdc_testproblem(with_supps = FALSE)
 
 p1 <- primarySuppression(problem, type = "freq", maxN = 2)
 p1.sdc <- get.problemInstance(p1@problemInstance, "sdcStatus")

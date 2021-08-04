@@ -13,7 +13,7 @@
 #' @examples
 #' # load example-problem
 #' # (same as example from ?makeProblem)
-#' p <- testprob_a(with_supps = FALSE)
+#' p <- sdc_testproblem(with_supps = FALSE)
 #'
 #' # goal: set cells with region = "D" and gender != "total" as primary sensitive
 #'

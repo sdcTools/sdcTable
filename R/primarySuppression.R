@@ -60,7 +60,7 @@
 #' utils::data("microdata1", package = "sdcTable")
 #'
 #' # load problem (as it was created in the example in ?makeProblem
-#' p <- testprob_a(with_supps = FALSE)
+#' p <- sdc_testproblem(with_supps = FALSE)
 #'
 #' # we have a look at the frequency table by gender and region
 #' xtabs(rep(1, nrow(microdata1)) ~ gender + region, data = microdata1)
