@@ -36,8 +36,8 @@ Function `protectTable()` is used to protect primary sensitive table cells in ob
 
 More detailed information on all the possibilities is available in the help-files, additional information is given in the corresponding sections of this vignette that deal with specific functions. The first step however to get started is to load the package, which can easily be done as  shown below:
 
-```{r, echo=F}
-suppressPackageStartupMessages(library(sdcTable))
+```{r, include=FALSE}
+library(sdcTable)
 ```
 
 
@@ -48,18 +48,25 @@ packageVersion("sdcTable")
 
 # A simple example
 
-```{r, echo=FALSE}
+```{r, include=FALSE}
 # daten laden
-workDat <- get(load('workDat.RData'))
-inputData <- workDat$inputData
-microData <- inputData$microDat
-aggregatedData <- inputData$aggDat
-dimList <- inputData$dimList
+microData <- readRDS("microdat.rds")
+aggregatedData <- readRDS("aggdat.rds")
+completeData <- readRDS("completedat.rds")
 
-resOPT <- workDat$resOPT
+h1 <- sdcHierarchies::hier_create("Tot", nodes = LETTERS[1:4])
+h1 <- sdcHierarchies::hier_add(h1, "B", nodes = paste0("B", letters[1:3]))
+h2 <- sdcHierarchies::hier_create("Tot", nodes = c("m", "w"))
+h3 <- sdcHierarchies::hier_create("Tot", nodes = letters[1:6])
+dimList <- list(
+  V1 = sdcHierarchies::hier_convert(h1, as = "df"),
+  V2 = sdcHierarchies::hier_convert(h2, as = "df"),
+  V3 = sdcHierarchies::hier_convert(h3, as = "df")
+)
 
-completeData <- getInfo(workDat$resOPT, 'finalData')
-completeData <- completeData[, -ncol(completeData)]
+#resOPT <- workDat$resOPT
+#completeData <- workDat$resOPT@finalData
+#completeData <- completeData[, -ncol(completeData)]
 ```
 
 We now walk through the steps that are required to protect tabular data using **sdcTable**. In the first example we are going to protect table cells given a three-dimensional tabular structure with some sub-totals. 
@@ -226,9 +233,9 @@ Using this information, **sdcTable** internally calculates all kinds of informat
 Since versions `>= 0.27`, **sdcTable** allows to use inputs created from package [**sdcHierarchies**](https://CRAN.R-project.org/package=sdcHierarchies) as input. This package allows for a very simple way to create, compute and modify hierarchies. For a complete introduction, the package vignette can be viewed with `hier_vignette()`. The main functions are `hier_create()`, `hier_add()`, `hier_rename()` and `hier_delete()`. We now show an alternative way to generate the hierarchy for variable `V1`.
 
 ```{r}
-dimV1 <- hier_create(root = "Tot", nodes = LETTERS[1:4])
-dimV1 <- hier_add(dimV1, root = "B", nodes = c("Ba","Bb","Bc"))
-hier_display(dimV1)
+dimV1 <- sdcHierarchies::hier_create(root = "Tot", nodes = LETTERS[1:4])
+dimV1 <- sdcHierarchies::hier_add(dimV1, root = "B", nodes = c("Ba","Bb","Bc"))
+sdcHierarchies::hier_display(dimV1)
 ```
 
 **sdcTable** will internally convert the tree-based structure generated using functionality from the [**sdcHierarchies**](https://CRAN.R-project.org/package=sdcHierarchies) package automatically into the `data.frame` based structure discussed at the begin of this section. 
@@ -239,8 +246,8 @@ The creation of a suitable object that describes the hierarchical structure of v
 The code how to specify an object that describes the structure of dimensional variable `V2` is given below:
 
 ```{r}
-dimV2 <- hier_create(root = "Tot", nodes = c("m", "w"))
-hier_display(dimV2)
+dimV2 <- sdcHierarchies::hier_create(root = "Tot", nodes = c("m", "w"))
+sdcHierarchies::hier_display(dimV2)
 ```
 
 We see that the overall total (`Tot`) is again listed in the first row with the two other contributing codes (`m` and `w`) being below in the same hierarchy level.
@@ -252,8 +259,8 @@ The required code to generate an object specifying the hierarchical structure of
 variable `V3` is given below:
 
 ```{r}
-dimV3 <- hier_create(root = "Tot", nodes = letters[1:6])
-hier_display(dimV3)
+dimV3 <- sdcHierarchies::hier_create(root = "Tot", nodes = letters[1:6])
+sdcHierarchies::hier_display(dimV3)
 ```
 
 It is required to create an object defining the complete structure and hierarchies for each dimensional variable. Once this step has been done, the multidimensional tabular structure that is required to apply any statistical disclosure methods can be created using **makeProblem()**.
@@ -362,31 +369,31 @@ To protect these cells by solving the secondary cell suppression problem one can
 go on to use function `protectTable()` as explained in the next section.
 
 ### Secondary cell suppression using **sdcTable** {#ex1:secondSupp}
-**sdcTable** provides the algorithms to protect primary sensitive table cells within
-objects of class `sdcProblem`. The algorithms that may be selected are:
+**sdcTable** provides algorithms to protect primary sensitive table cells defined in objects of class `sdcProblem`. The algorithms that may be selected are shown below:
 
 - **"OPT"**: protect the complete hierarchical, multidimensional table at once. This algorithm is however only suitable for small problem instances.
-- **"HITAS"**: solving the secondary cell suppression problem by applying a cut and branch algorithm to subtables that are protected in specific order 
-- **"HYPERCUBE"**: solving the problem using a heuristic that is based on finding geometric hypercubes that are required to protect primary sensitive table cells
-- **"SIMPLEHEURISTIC"**: solving the problem using a fast heuristic approach that only protects against exact recalculation of values
+- **"HITAS"**: solving the secondary cell suppression problem by applying a cut and branch algorithm to sub-tables that are protected in specific order 
+- **"HYPERCUBE"**: solving the problem using a heuristic that is based on finding geometric hyper-cubes that are required to protect primary sensitive table cells. This algorithm is not extensively tested. It is a better idea to create a batch-file usable for [tau-argus](https://github.com/sdcTools/tauargus) using `createArgusInput()` (`?createArgusInput`) and solve the problem using Argus.
+- **"SIMPLEHEURISTIC"**: solving the problem using a fast heuristic approach that aims to only protect against exact recalculation of values
 
 We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function `protectTable()`.
 
-```{r, eval=FALSE}
+```{r, cache=TRUE}
 resHITAS <- protectTable(prob.completeDat, method = "HITAS")
 resOPT <- protectTable(prob.completeDat, method = "OPT")
 resHYPER <- protectTable(prob.completeDat, method = "HYPERCUBE")
 resSIMPLE <- protectTable(prob.completeDat, method = "SIMPLEHEURISTIC")
 ```
 
+
 Having a look at the Output objects we can observe that the number of secondary suppressions required to protect the `r nrPrimSupps` primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.
 
-Using the *"OPT"*-algorithm, a total of ``r getInfo(workDat$resOPT, 'nrSecondSupps')``
+Using the *"OPT"*-algorithm, a total of ``r getInfo(resOPT, 'nrSecondSupps')``
 cells have been marked as secondary suppressions. When using *"HITAS"*-algorithm, it
-was required to additionally suppress  ``r getInfo(workDat$resHITAS, 'nrSecondSupps')``
-cells. A total of  ``r getInfo(workDat$resHYPER, 'nrSecondSupps')`` cells was
+was required to additionally suppress  ``r getInfo(resHITAS, 'nrSecondSupps')``
+cells. A total of  ``r getInfo(resHYPER, 'nrSecondSupps')`` cells was
 selected and marked as secondary suppressions when the *"HYPERCUBE"* algorithm was
-used while ``r getInfo(workDat$resSIMPLE, 'nrSecondSupps')`` additional suppressions were required for the fast heuristic simple procedure *"SIMPLEHEURISTIC"*.
+used while ``r getInfo(resSIMPLE, 'nrSecondSupps')`` additional suppressions were required for the fast heuristic simple procedure *"SIMPLEHEURISTIC"*.
 
 One now easily get information from the resulting output objects that are instances of class `safeObj` by using function `getInfo()` or applying the `summary`-method. For the former we show how to extract the final data set which can be achieved as follows:
 
