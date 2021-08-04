@@ -1059,7 +1059,20 @@ setMethod("c_hitas_cpp", signature=c("sdcProblem", "list"), definition=function(
 })
 
 setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=function(object, input) {
+  if (input$verbose) {
+    if (input$solve_attackerprobs == TRUE) {
+      message("note: attacker-problems are iteratively solved in this procedure")
+    } else {
+      message("note: attacker-problems are not solved; this might be unsafe.")
+    }
+  }
+
+  sdcStatus <- chkdf <- NULL
   full_m <- .gen_contraint_matrix(object)
+
+  # store the constraint matrix as attribute; in this case it can be
+  # reused by attack()
+  attr(object@problemInstance, "constraint_matrix") <- full_m
   info_df <- attributes(full_m)$infodf
 
   pi <- slot(object, "problemInstance")
@@ -1068,19 +1081,76 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
   df[[.tmpweightname()]] <- g_weight(pi)
   df$is_common_cell <- FALSE # required for suppConstraints()
 
-  # anonymize and apply singleton-detection all in cpp
-  res <- suppConstraints(
-    dat = df,
-    m = full_m,
-    params = list(
-      check_constraints = FALSE, # just check the generated constraints
-      verbose = input$verbose,
-      do_singletons = input$detectSingletons,
-      threshold = ifelse(is.na(input$threshold), 0, input$threshold)
+  df$id <- 1:nrow(df)
+
+  # we need to solve the problem in any case
+  # looping or not
+  finished <- FALSE
+  run <- 0
+  max_run <- 10
+  while(!finished) {
+    run <- run + 1
+    if (run > max_run) {
+      stop("no solution possible after ", max_run, " runs", call. = FALSE)
+    }
+    if (run > 1) {
+      do_singletons <- FALSE
+      threshold <- 0
+      cppverbose <- FALSE
+    } else {
+      do_singletons <- input$detectSingletons
+      threshold <- ifelse(is.na(input$threshold), 0, input$threshold)
+      cppverbose <- input$verbose
+   }
+
+    # anonymize and apply singleton-detection all in cpp
+    res <- suppConstraints(
+      dat = df,
+      m = full_m,
+      params = list(
+        check_constraints = FALSE, # just check the generated constraints
+        verbose = cppverbose,
+        do_singletons = do_singletons,
+        threshold = threshold
+      )
     )
-  )
-  s_sdcStatus(pi) <- list(index = 1:nrow(df), vals=res$sdc_status)
-  s_problemInstance(object) <- pi
+
+    if (input$solve_attackerprobs == FALSE) {
+      object@problemInstance@sdcStatus <- res$sdc_status
+      return(invisible(list(object = object, zstatus = NA)))
+    }
+
+    if (run == 1) {
+      primsupps <- which(res$sdc_status == c("u"))
+    } else {
+      primsupps <- chkdf$prim_supps
+    }
+
+    # checking attacker's problems for primary unsafe cells
+    object@problemInstance@sdcStatus <- res$sdc_status
+    # cells_to_check are all remaining primary suppressions that were
+    # previously not safe
+    chkdf <- attack(object, to_attack = primsupps)
+    chkdf <- chkdf[chkdf$protected == FALSE, ]
+    if (nrow(chkdf) > 0) {
+      if (input$verbose) {
+        message("--> invalid solution found in run ", run, ": additional suppressions are added")
+      }
+      for (cell in chkdf$prim_supps) {
+        # constraints to which the row contributes
+        rr <- full_m$i[full_m$j == cell]
+        ids <- full_m$j[full_m$i == rr[1]]
+        strids <- colnames(full_m)[ids]
+        st <- df[ids, ]
+        st <- st[sdcStatus == "s"]
+        data.table::setorderv(st, .tmpweightname())
+        add_supp <- st$id[1]
+        df$sdcStatus[add_supp] <- "x"
+      }
+    } else {
+      finished <- TRUE
+    }
+  }
   invisible(list(object=object, zstatus=NA))
 })
 

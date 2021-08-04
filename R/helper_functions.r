@@ -237,6 +237,8 @@ genParaObj <- function(selection, ...) {
     # SIMPLEHEURISTIC - parameter
     paraObj$detectSingletons <- FALSE
     paraObj$threshold <- NA
+    # solve attackerprobs in a loop when using simpleheuristic
+    paraObj$solve_attackerprobs <- TRUE
 
     # protectLinkedTables
     paraObj$maxIter <- 5
@@ -297,6 +299,9 @@ genParaObj <- function(selection, ...) {
       if (paraObj$threshold < 1) {
         stop("argument `threshold` must be >= 1.", call. = FALSE)
       }
+    }
+    if (!rlang::is_scalar_logical(paraObj$solve_attackerprobs)) {
+      stop("argument `solve_attackerprobs` is not a logical value", call. = FALSE)
     }
     return(paraObj)
   }
