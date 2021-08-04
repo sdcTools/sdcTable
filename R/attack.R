@@ -89,8 +89,11 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
   prob <- glpkAPI::initProbGLPK()
   glpkAPI::setProbNameGLPK(prob, "attackersProblem")
 
-  # constraint matrix
-  m <- .gen_contraint_matrix(object)
+  # get/compute constraint matrix
+  m <- attributes(object@problemInstance)$constraint_matrix
+  if (is.null(m)) {
+    m <- .gen_contraint_matrix(object)
+  }
 
   nr_vars <- ncol(m)
   nr_constraints <- nrow(m)
@@ -119,9 +122,13 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
 
   nr_cells <- length(to_attack)
   out <- vector("list", nr_cells)
-  pb <- progress::progress_bar$new(total = nr_cells)
+  if (verbose) {
+    pb <- progress::progress_bar$new(total = nr_cells)
+  }
   for (i in seq_len(nr_cells)) {
-    pb$tick(1)
+    if (verbose) {
+      pb$tick(1)
+    }
     primsupp_to_attack <- to_attack[i]
 
     glpkAPI::setObjCoefGLPK(prob, j = primsupp_to_attack, 1)
@@ -137,11 +144,17 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
     glpkAPI::setObjDirGLPK(prob, glpkAPI::GLP_MAX)
     #glpkAPI::writeLPGLPK(prob, paste0("prob-max-", primsupp_to_attack,".txt"))
     glpkAPI::solveSimplexGLPK(prob)
-    upper_bnd <- glpkAPI::getObjValGLPK(prob)
+
+    # unbounded solution: possible if entire (sub)table is suppressed
+    if (glpkAPI::getSolStatGLPK(prob) == glpkAPI::GLP_UNBND) {
+      upper_bnd <- max(ff)
+    } else {
+      upper_bnd <- glpkAPI::getObjValGLPK(prob)
+    }
 
     # reset obj
     glpkAPI::setObjCoefGLPK(prob, j = primsupp_to_attack, 0)
-    out[[i]] <-   data.frame(
+    out[[i]] <-  data.frame(
       "prim_supps" = primsupp_to_attack,
       "status" = sdc[primsupp_to_attack],
       "val" = ff[primsupp_to_attack],
@@ -149,6 +162,8 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
       "up" = upper_bnd,
       "protected" = upper_bnd > lower_bnd)
   }
-  pb$terminate()
+  if (verbose) {
+    pb$terminate()
+  }
   do.call("rbind", out)
 }
