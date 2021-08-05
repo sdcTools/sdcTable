@@ -5,29 +5,29 @@
 #' has finished, all common cells have the same anonymization state in both
 #' tables.
 #'
-#' @param objectA a [sdcProblem-class] object
-#' @param objectB a [sdcProblem-class] object
-#' @param commonCells a list object defining common cells in
-#' `objectA` and `objectB`. For each variable that has one or more common
+#' @param x a [sdcProblem-class] object
+#' @param y a [sdcProblem-class] object
+#' @param common_cells a list object defining common cells in
+#' `x` and `y`. For each variable that has one or more common
 #' codes in both tables, a list element needs to be specified.
-#' - List-elements of length 3: Variable has exact same levels and structure
+#' - List-elements of length `3`: Variable has exact same levels and structure
 #' in both input tables
 #'    * `first element`: scalar character vector specifying the variable
-#'    name in argument `objectA`
+#'    name in argument `x`
 #'    * `second element`: scalar character vector specifying the variable
-#'    name in argument `objectB`
+#'    name in argument `y`
 #'    * `third element`: scalar character vector being with keyword `"ALL"`
 #' - List-elements of length `4`: Variable has different codes and levels
-#' in tables `objectA` and `objectB`
+#' in inputs `x` and `y`
 #'    * `first element`: scalar character vector specifying the variable
-#'    name in argument `objectA`
+#'    name in argument `x`
 #'    * `second element`: scalar character vector specifying the variable
-#'    name in argument `objectB`
-#'    * `third element`: character vector defining codes within `objectA`
+#'    name in argument `y`
+#'    * `third element`: character vector defining codes within `x`
 #'    * `fourth element`: character vector with length that equals the length
 #'    of the third list-element. This vector defines codes of the dimensional
-#'    variable in `objectB` that match the codes given in the third list-element
-#'    for `objectA`.
+#'    variable in `y` that match the codes given in the third list-element
+#'    for `x`.
 #' @param method scalar character vector defining the algorithm
 #' that should be used to protect the primary sensitive table cells. In versions `>= 0.32`
 #' only the `SIMPLEHEURISTIC` procedure is supported; For details please see
@@ -35,8 +35,7 @@
 #' @param ... additional arguments to control the secondary cell suppression
 #' algorithm. For details, see [protectTable()].
 #'
-#' @return a list of length `2` with each list-element being an
-#' [safeObj-class] object
+#' @return a list elements `x` and `y` containing protected `sdcProblem` objects
 #' @md
 #' @examples
 #' \dontrun{
@@ -127,29 +126,26 @@
 #'
 #' # protect the linked data
 #' result <- protectLinkedTables(
-#'   objectA = p1,
-#'   objectB = p2,
-#'   commonCells = common_cells,
+#'   x = p1,
+#'   y = p2,
+#'   common_cells = common_cells,
 #'   verbose = TRUE)
 #'
 #' # having a look at the results
-#' result_tab1 <- result[[1]]
-#' result_tab2 <- result[[2]]
+#' result_tab1 <- result$x
+#' result_tab2 <- result$y
 #' summary(result_tab1)
 #' summary(result_tab2)
 #' }
-#' @rdname protectLinkedTables
-#' @export protectLinkedTables
+#' @export
 #' @seealso [protectTable()]
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
-protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEHEURISTIC", ...) {
-  . <- sdcStatus <- freq <- striD <- strID_x <- strID_y <- innercell <- NULL
+protectLinkedTables <- function(x, y, common_cells, method = "SIMPLEHEURISTIC", ...) {
+  . <- sdcStatus <- freq <- striD <- strID_x <- strID_y <- innercell <- chkdf <- NULL
 
-  x <- objectA
-  y <- objectB
-  common_cells <- commonCells
   stopifnot(inherits(x, "sdcProblem"))
   stopifnot(inherits(y, "sdcProblem"))
+
   method <- "SIMPLEHEURISTIC" # overwritten since 0.32 only SIMPLEHEURISTIC is supported
   params <- genParaObj(selection = "control.secondary", method = method, ...)
 
@@ -246,21 +242,31 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
     rownames(df_common) <- NULL
     df_common
   }
-  message("common cell indices are computed ... ", appendLF = FALSE)
+  if (params$verbose) {
+    message("computing common cell-indices")
+  }
+
   df_common <- .indices_common_cells(
     df_x = df_x,
     df_y = df_y,
     common_cells = common_cells
   )
-  message("[done]")
 
   # create a full "common" constraint-matrix
   .full_common_matrix <- function(x, y, df_common) {
     # returns a simple-triplet-matrices (from slam-pkg)
-    mx <- .gen_contraint_matrix(x)
+
+    # get/compute constraint matrix
+    mx <- attributes(x@problemInstance)$constraint_matrix
+    if (is.null(mx)) {
+      mx <- .gen_contraint_matrix(x)
+    }
     info_x <- attributes(mx)$infodf
 
-    my <- .gen_contraint_matrix(y)
+    my <- attributes(y@problemInstance)$constraint_matrix
+    if (is.null(my)) {
+      my <- .gen_contraint_matrix(y)
+    }
     info_y <- attributes(my)$infodf
 
     colnames(mx) <- paste0("px_", info_x$str_id)
@@ -289,9 +295,14 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
     unique(full_m)
   }
 
-  message("the full constraint-matrix is computed", appendLF = FALSE)
+  if (params$verbose) {
+    message("computing the full constraint-matrix: ", appendLF = FALSE)
+  }
+
   full_m <- .full_common_matrix(x = x, y = y, df_common = df_common)
-  message(" (", ncol(full_m), " variables and ", nrow(full_m), " constraints) [done]")
+  if (params$verbose) {
+    message(ncol(full_m), " variables; ", nrow(full_m), " constraints)")
+  }
 
   # cn: names of full_m (combined variable names)
   .create_full_df <- function(df_x, df_y, df_common, cn) {
@@ -314,88 +325,168 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
     df_full <- df_full[match(cn, df_full$strID)]
 
     df_full$is_common_cell <- substr(df_full$strID, 1, 2) == "c_"
+    df_full$id <- 1:nrow(df_full)
     df_full
   }
 
-  message("a (temp) full-dataset with cells from both problems is computed ... ", appendLF = FALSE)
+  if (params$verbose) {
+    message("compute a (temporary) full dataset with cells from both problems")
+  }
   full_df <- .create_full_df(
     df_x = df_x,
     df_y = df_y,
     df_common = df_common,
     cn = colnames(full_m)
   )
-  message("[done]")
 
-  # just for debugging
-  print_constraints <- function(df, mat) {
-    is_innercell <- sapply(df$strID, function(x) {
-      sum(as.matrix(mat[, x]) == -1) == 0
-    })
-    df[, innercell := "st"]
-    df[is_innercell, innercell := "i"]
-    for (i in 1:nrow(mat)) {
-      idx_tot <- which(as.matrix(mat[i, ]) == -1)
-      idx_contr <- which(as.matrix(mat[i, ]) == 1)
-      message("constraint ", i, ": ", paste0(shQuote(df$strID[idx_tot]), "(", df$innercell[idx_tot], ")"), " = ", paste0(shQuote(df$strID[idx_contr]), " (", df$innercell[idx_contr] ,")", collapse = " + "))
+  if (params$verbose) {
+    if (params$solve_attackerprobs == TRUE) {
+      message("note: attacker-problems are iteratively solved in this procedure")
+    } else {
+      message("note: attacker-problems are not solved; this might be unsafe.")
     }
   }
-  #print_constraints(full_df, full_m)
 
-  # anonymize the problem
-  message("the linked problem is anonymized ... ")
+  # we need to solve the problem in any case
+  # looping or not
+  finished <- FALSE
+  run <- 0
+  max_run <- 10
+  while (!finished) {
+    run <- run + 1
+    if (run > max_run) {
+      stop("no solution possible after ", max_run, " runs", call. = FALSE)
+    }
+    if (run > 1) {
+      do_singletons <- FALSE
+      threshold <- 0
+      cppverbose <- FALSE
+    } else {
+      do_singletons <- params$detectSingletons
+      threshold <- ifelse(is.na(params$threshold), 0, params$threshold)
+      cppverbose <- params$verbose
+    }
 
-  res <- suppConstraints(
-    dat = full_df,
-    m = full_m,
-    params = list(
-      check_constraints = TRUE, # possibly generate new constraints!
-      verbose = params$verbose,
-      do_singletons = params$detectSingletons,
-      threshold = ifelse(is.na(params$threshold), 0, params$threshold)
+    # anonymize and apply singleton-detection all in cpp
+    res <- suppConstraints(
+      dat = full_df,
+      m = full_m,
+      params = list(
+        check_constraints = FALSE, # just check the generated constraints
+        verbose = cppverbose,
+        do_singletons = do_singletons,
+        threshold = threshold
+      )
     )
-  )
-  message("[done]")
 
-  # split again
-  full_df$sdcStatus <- res$sdc_status
+    # update pattern
+    full_df$sdcStatus <- res$sdc_status
+
+    if (params$solve_attackerprobs == FALSE) {
+      finished <- TRUE
+    } else {
+      if (run == 1) {
+        primsupps <- which(res$sdc_status == c("u"))
+      } else {
+        primsupps <- chkdf$prim_supps
+      }
+
+      # checking attacker's problems for primary unsafe cells
+      if (params$verbose) {
+        message("solving attacker problems in run ", run)
+      }
+
+      attackdf <- data.frame(
+        to_attack = FALSE,
+        sdc = full_df$sdcStatus,
+        freq = full_df$freq
+      )
+      attackdf$to_attack[primsupps] <- TRUE
+      chkdf <- .attack_worker(
+        m = full_m,
+        df = attackdf,
+        verbose = FALSE
+      )
+      chkdf <- chkdf[chkdf$protected == FALSE, ]
+      if (nrow(chkdf) > 0) {
+        if (params$verbose) {
+          message("--> invalid solution found; additional suppressions are added")
+        }
+        for (cell in chkdf$prim_supps) {
+          # constraints to which the row contributes
+          rr <- full_m$i[full_m$j == cell]
+          added_supp <- FALSE
+          cnt <- 0
+          while (!added_supp) {
+            cnt <- cnt + 1
+            message("cell: ", cell, " | cnt: ", cnt)
+            if (cnt > length(rr)) {
+              stop("no additional suppression could be found!", call. = FALSE)
+            }
+            ids <- full_m$j[full_m$i == rr[cnt]]
+            strids <- colnames(full_m)[ids]
+            st <- full_df[ids, ]
+            st <- st[sdcStatus == "s"]
+            if (nrow(st) > 0) {
+              data.table::setorderv(st, .tmpweightname())
+              add_supp <- st$id[1]
+              full_df$sdcStatus[add_supp] <- "x"
+              added_supp <- TRUE
+            }
+          }
+        }
+      } else {
+        finished <- TRUE
+      }
+    }
+  }
+
+  # split the complete data.frame again into two problem-instances
+  .split_up <- function(x, y, full_df) {
+    strID <- NULL
+    full_df[, strID_x := NA_character_]
+    full_df[, strID_x := NA_character_]
+    full_df[grepl("px_", strID), strID_x := sub("px_", "", strID)]
+    full_df[grepl("py_", strID), strID_y := sub("py_", "", strID)]
+
+    idx_common <- grepl("c_", full_df$strID)
+
+    common_strids <- do.call("rbind", lapply(full_df$strID[idx_common], function(x) {
+      ll <- strsplit(x, "_")[[1]]
+      data.frame(x = ll[2], y = ll[3], stringsAsFactors = FALSE)
+    }))
+
+    full_df[idx_common, strID_x := common_strids$x]
+    full_df[idx_common, strID_y := common_strids$y]
+
+    res_x <- full_df[!is.na(strID_x), .(strID_x, sdcStatus, freq)]
+    data.table::setnames(res_x, old = c("strID_x", "sdcStatus"), new = c("strID", "sdcStatus_new"))
+
+    res_y <- full_df[!is.na(strID_y), .(strID_y, sdcStatus, freq)]
+    data.table::setnames(res_y, old = c("strID_y", "sdcStatus"), new = c("strID", "sdcStatus_new"))
+
+    data.table::setkey(res_x, strID)
+    data.table::setkey(res_y, strID)
+
+    # update sdcProblems
+    x@problemInstance@sdcStatus <- res_x$sdcStatus_new
+    y@problemInstance@sdcStatus <- res_y$sdcStatus_new
+
+    res_x <- c_finalize(object = x, input = params)
+    res_y <- c_finalize(object = y, input = params)
+    list(res_x = res_x, res_y = res_y)
+  }
 
   # split into two problems again
-  strID <- NULL
-  full_df[, strID_x := NA_character_]
-  full_df[, strID_x := NA_character_]
-  full_df[grepl("px_", strID), strID_x := sub("px_", "", strID)]
-  full_df[grepl("py_", strID), strID_y := sub("py_", "", strID)]
+  final_results <- .split_up(
+    x = x,
+    y = y,
+    full_df = full_df
+  )
 
-  idx_common <- grepl("c_", full_df$strID)
-
-  common_strids <- do.call("rbind", lapply(full_df$strID[idx_common], function(x) {
-    ll <- strsplit(x, "_")[[1]]
-    data.frame(x = ll[2], y = ll[3], stringsAsFactors = FALSE)
-  }))
-
-  full_df[idx_common, strID_x := common_strids$x]
-  full_df[idx_common, strID_y := common_strids$y]
-
-  res_x <- full_df[!is.na(strID_x), .(strID_x, sdcStatus, freq)]
-  data.table::setnames(res_x, old = c("strID_x", "sdcStatus"), new = c("strID", "sdcStatus_new"))
-
-  res_y <- full_df[!is.na(strID_y), .(strID_y, sdcStatus, freq)]
-  data.table::setnames(res_y, old = c("strID_y", "sdcStatus"), new = c("strID", "sdcStatus_new"))
-
-  data.table::setkey(res_x, strID)
-  data.table::setkey(res_y, strID)
-
-  # update sdcProblems
-  x@problemInstance@sdcStatus <- res_x$sdcStatus_new
-  y@problemInstance@sdcStatus <- res_y$sdcStatus_new
-
-  res_x <- c_finalize(object = x, input = params)
-  res_y <- c_finalize(object = y, input = params)
   return(list(
-      outObj1 = res_x,
-      outObj2 = res_y,
-      full_df = full_df,
-      full_m = res$constraints
+      x = final_results$res_x,
+      y = final_results$res_y
     )
   )
 }

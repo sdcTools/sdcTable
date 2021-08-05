@@ -31,27 +31,41 @@ p2 <- makeProblem(data = df, dimList = dl2, dimVarInd = 1, freqVarInd = 4)
 p1 <- primarySuppression(p1, type = "freq", maxN = 3)
 p2 <- primarySuppression(p2, type = "freq", maxN = 3)
 
+# check that if protected individually, both tables are safe
+p1_prot <- protectTable(p1, method = "SIMPLEHEURISTIC")
+p2_prot <- protectTable(p2, method = "SIMPLEHEURISTIC")
+
+# individually, these cells are safe and no additional suppressions are required
+expect_identical(getInfo(p1_prot, "nrPrimSupps"), 5L)
+expect_identical(getInfo(p2_prot, "nrPrimSupps"), 5L)
+expect_identical(getInfo(p1_prot, "nrSecondSupps"), 0L)
+expect_identical(getInfo(p2_prot, "nrSecondSupps"), 0L)
+expect_identical(all(attack(p1_prot)$protected), TRUE)
+expect_identical(all(attack(p2_prot)$protected), TRUE)
+
+# however: suppressed cells can be revealed
+# by looking at both tables. The difference between "county-1" and "small"
+# is two cells, K and N. The difference is 10 and N is 7.
+# -> B can be calculated as 10-7=3
+
 # Secondary suppression of linked tables
 out <- protectLinkedTables(
-  objectA = p1,
-  objectB = p2,
-  commonCells = common_cells,
+  x = p1,
+  y = p2,
+  common_cells = common_cells,
   doSingletons = TRUE
 )
 
-#  The result is that no secondary suppression is needed. Although the tables are safe
-#  individually, suppressed cells can be revealed by looking at both. The difference between
-#  "county-1" and "small" is two cells, K and N. The difference is 10 and N is 7.
-#  Thus B can be calculated as 10-7 = 3.
+# we check that an additional suppression was found
+expect_identical(getInfo(out$x, "nrPrimSupps"), 5L)
+expect_identical(getInfo(out$y, "nrPrimSupps"), 5L)
+expect_identical(getInfo(out$x, "nrSecondSupps"), 1L)
+expect_identical(getInfo(out$y, "nrSecondSupps"), 1L)
 
-# Look at output
-res_a <- out$outObj1@results
-res_b <- out$outObj2@results
-
-# without any additional secondary suppression, both tables would (individually be safe).
-# however: the difference between "county-1" and "small" is two cells, K and N and
-# the difference is 10 and N is 7. Thus B could be calculated as 10-7 = 3 if "N" was not suprpessed.
-# in suppConstraints() (c++), such cases are identified and additional constraints are added
-expect_equal(sum(res_a$sdcStatus == "x"), 1)
-expect_equal(subset(res_a, region == "N", select = "sdcStatus")[[1]], "x")
-expect_equal(subset(res_b, region == "N", select = "sdcStatus")[[1]], "x")
+region <- sdcStatus <- NULL
+fd1 <- getInfo(out$x, "finalData")
+fd2 <- getInfo(out$y, "finalData")
+expect_equal(fd1[region == "N", sdcStatus], "x")
+expect_equal(fd2[region == "N", sdcStatus], "x")
+expect_equal(fd1[region == "N", Freq], 7)
+expect_equal(fd2[region == "N", Freq], 7)

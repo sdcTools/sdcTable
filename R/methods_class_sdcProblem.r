@@ -1131,21 +1131,34 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
     # cells_to_check are all remaining primary suppressions that were
     # previously not safe
     chkdf <- attack(object, to_attack = primsupps)
+    print(chkdf)
     chkdf <- chkdf[chkdf$protected == FALSE, ]
     if (nrow(chkdf) > 0) {
       if (input$verbose) {
         message("--> invalid solution found in run ", run, ": additional suppressions are added")
       }
-      for (cell in chkdf$prim_supps) {
+      for (cell in chkdf$id) {
         # constraints to which the row contributes
         rr <- full_m$i[full_m$j == cell]
-        ids <- full_m$j[full_m$i == rr[1]]
-        strids <- colnames(full_m)[ids]
-        st <- df[ids, ]
-        st <- st[sdcStatus == "s"]
-        data.table::setorderv(st, .tmpweightname())
-        add_supp <- st$id[1]
-        df$sdcStatus[add_supp] <- "x"
+        added_supp <- FALSE
+        cnt <- 0
+        while (!added_supp) {
+          cnt <- cnt + 1
+          message("cell: ", cell, " | cnt: ", cnt)
+          if (cnt > length(rr)) {
+            stop("no additional suppression could be found!", call. = FALSE)
+          }
+          ids <- full_m$j[full_m$i == rr[cnt]]
+          strids <- colnames(full_m)[ids]
+          st <- df[ids, ]
+          st <- st[sdcStatus == "s"]
+          if (nrow(st) > 0) {
+            data.table::setorderv(st, .tmpweightname())
+            add_supp <- st$id[1]
+            df$sdcStatus[add_supp] <- "x"
+            added_supp <- TRUE
+          }
+        }
       }
     } else {
       finished <- TRUE

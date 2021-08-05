@@ -75,10 +75,10 @@ sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC", solve_attackerpro
 expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 0) # --> still a problem
 
 # we need to check that simpleheuristic adds at least one additional suppression
-sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC",  solve_attackerprobs = TRUE) # this is the default
+sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC", solve_attackerprobs = TRUE) # this is the default
 expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 1)
 
 bnds <- attack(sdc_protected, to_attack = 8)
-expect_equal(bnds$val, 47)
+expect_equal(bnds$freq, 47)
 expect_equal(bnds$low, 0)
 expect_equal(bnds$up, 141)
