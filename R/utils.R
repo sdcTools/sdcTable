@@ -237,7 +237,7 @@ domRule <- function(object, params, type) {
   "weight.for.suppression"
 }
 
-# returns a relevant row from a protecte dataset (slot "results") or
+# returns a relevant row from a protected dataset (slot "results") or
 # the current status (from "problemInstance") depending on the inputs
 # specs is a named vector and complete allows to return the entire row
 # or only the id
