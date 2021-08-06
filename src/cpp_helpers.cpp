@@ -39,28 +39,28 @@ CharacterVector cpp_myPaste(CharacterVector stringvec, int nrKeyVars, CharacterV
   CharacterVector stringVec(stringvec);
   int nrRows = stringVec.size();
   int by = nrRows / nrKeyVars;
-  CharacterVector outVec(by);
+  CharacterVector out(by);
   std::string str;
   LogicalVector na_sep=is_na(seperator);
-  bool have_sep=true;
-  if ( na_sep[0]==true ) {
-    have_sep=false;
+  bool have_sep = true;
+  if (na_sep[0] == true) {
+    have_sep = false;
   }
   std::string sep;
-  if ( have_sep ) {
-    sep=seperator[0];
+  if (have_sep) {
+    sep = seperator[0];
   }
-  for (int i=0; i<by; i++) {
+  for (int i = 0; i < by; i++) {
     str.clear() ;
-    for(int j=0; j<nrKeyVars; j++) {
-      str.append(stringVec[i+by*j]);
-      if ( j < (nrKeyVars-1) and (have_sep) ) {
+    for(int j = 0; j < nrKeyVars; j++) {
+      str.append(stringVec[i + by * j]);
+      if (j < (nrKeyVars - 1) and (have_sep)) {
         str.append(sep);
       }
     }
-    outVec[i]=str;
+    out[i] = str;
   }
-  return outVec;
+  return out;
 }
 
 /*

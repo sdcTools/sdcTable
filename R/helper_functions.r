@@ -1,11 +1,16 @@
 ## Wrapper function for pasting key-Variables
-pasteStrVec <- function(strVec, nrVars, coll=NULL) {
-  if(length(strVec) %% nrVars != 0)
-    stop("Wrong Dimensions!\n")
-  if ( is.null(coll) ) {
+pasteStrVec <- function(strVec, nrVars, coll = NULL) {
+  if (length(strVec) %% nrVars != 0) {
+    stop("Wrong Dimensions", call. = FALSE)
+  }
+  if (is.null(coll)) {
     return(cpp_myPaste(as.character(strVec), as.integer(nrVars)[1], NA))
   } else {
-    return(cpp_myPaste(as.character(strVec), as.integer(nrVars)[1], as.character(coll[1])))
+    return(cpp_myPaste(
+      as.character(strVec),
+      as.integer(nrVars)[1],
+      as.character(coll[1])
+    ))
   }
 }
 
