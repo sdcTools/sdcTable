@@ -1,20 +1,9 @@
-# sdcTable next
-- [todo] when creating @finalData; save linear constraints + indices for bogus cells!
-- [todo] get rid of old dim-objects (using old structure) and use sdcHierarchies functionality directly
-- [todo] get rid of simpleTriplet class (used eg. in `c_gen_mat()`)
-- [todo] check if we can get rid of empty constraints (sum of freqs/weights is zero -> only empty cells before computing anything to speed up computations?)
-- [todo] feature: consolidate functions that create constraint-matrices; we have already `c_gen_mat()`, `.gen_contraint_matrix()`
-- [todo] feature: create `contributing_cells()` that returns (for cell-ids) the table cells that contribute to it
-- [todo] check if `contributing_cells()` may be combined with `contributing_indices()`
-- [todo] use `sdcHierarchies::hier_grid()` for `data.frame` generation
-
 # sdcTable 0.32.0
 - rewrite of the `"SIMPLEHEURISTIC` approach
   * is based on (full) constraint matrix written using `rcpp`
   * rewritten the singleton-detection procedure with `rcpp`
   * by default attacker-problems are checked (in a loop) for primary sensitive cells and additional supps are added until all required cells are secure (fixes also issue #136, thx Øyvind Langsrud for reporting)
   * the previous (possible unsafe but faster) implemented method can be toggled using parameter `solve_attackerprobs` in `protectTable` and `protectLinkedTable`
-- change: `protectLinkedTables()` only allows the `SIMPLEHEURISTIC` algorithm
 - bugfix in internal method `c_gen_mat_m` with problems that have a single dimension
 - dominance rules:
   * bugfix when computing rules on weighted data
@@ -28,6 +17,9 @@
   * `c_quick_suppression()` and `attack()` compute linear deps (`.gen_contraint_matrix`) only once
   * improvements in computation of contributing units to a cell (`contributing_indices`)
 - new/updated functions/methods:
+  * new function `protect_linked_tables()` 
+    + will replace `protectLinkedTables()` in the future (currently calls new function internally)
+    + only allows the `SIMPLEHEURISTIC` algorithm
   * `cell_info()` replaces `cellInfo()` (defunct)
   * `change_cellstatus()` replaces `changeCellStatus()` (defunct)
   * new function `createRegSDCInput()` allows to compute input for e.g `RegSDC::SuppressDec`
