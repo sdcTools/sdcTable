@@ -286,76 +286,76 @@ IntegerVector find_additional_suppression(NumericVector weights, IntegerVector i
 }
 
 List constraint_info(CharacterVector sdc, IntegerVector freqs, NumericVector weights, IntegerVector indices) {
-  // returns various information about current sub-problem, relating to a specific constraint
-  IntegerVector v_nr = rep(0, 9);
-  v_nr.names() = CharacterVector({"s", "w", "z", "sz", "primsupps", "secondsupps", "non_w", "singletons", "supps"});
+  int nr_primsupps = 0;
+  int nr_secondsupps = 0;
+  int nr_singletons = 0;
 
-  IntegerVector v_amount = rep(0, 4);
-  v_amount.names() = CharacterVector({"avail_s", "avail_z", "avail_w", "supped"});
+  int avail_s = 0;
+  int avail_z = 0;
+  int avail_w = 0;
+  int amount_supped = 0;
 
   // "indices relevant to global, overall position */
-  IntegerVector ind_poss_s;
-  IntegerVector ind_poss_z;
-  IntegerVector ind_poss_w;
-  IntegerVector ind_poss_s_or_z;
-  IntegerVector ind_primsupps;
+  IntegerVector ind_poss_s, ind_poss_z, ind_poss_w, ind_poss_s_or_z, ind_primsupps;
 
   // possible indices relevant to local position */
-  IntegerVector local_poss_primsupps;
-  IntegerVector local_poss_s;
-  IntegerVector local_poss_s_or_z;
-  IntegerVector local_poss_z;
-  IntegerVector local_poss_w;
+  IntegerVector local_poss_primsupps, local_poss_s, local_poss_s_or_z, local_poss_z, local_poss_w;
 
   for (int i = 0; i < sdc.size(); i++) {
     if (sdc[i] == "u") {
-      v_amount["supped"] = v_amount["supped"] + freqs[i];
-      v_nr["primsupps"] = v_nr["primsupps"] + 1;
+      amount_supped = amount_supped + freqs[i];
+      nr_primsupps = nr_primsupps + 1;
       if (freqs[i] == 1) {
-        v_nr["singletons"] = v_nr["singletons"] + 1;
+        nr_singletons = nr_singletons + 1;
       }
       ind_primsupps.push_back(indices[i]);
       local_poss_primsupps.push_back(i);
     }
     if (sdc[i] == "x") {
-      v_amount["supped"] = v_amount["supped"] + freqs[i];
-      v_nr["secondsupps"] = v_nr["secondsupps"] + 1;
+      amount_supped = amount_supped + freqs[i];
+      nr_secondsupps = nr_secondsupps + 1;
       if (freqs[i] == 1) {
-        v_nr["singletons"] = v_nr["singletons"] + 1;
+        nr_singletons = nr_singletons + 1;
       }
     }
-
     if (sdc[i] == "s") {
       ind_poss_s.push_back(indices[i]);
       local_poss_s.push_back(i);
       ind_poss_s_or_z.push_back(indices[i]);
       local_poss_s_or_z.push_back(i);
-      v_amount["avail_s"] = v_amount["avail_s"] + freqs[i];
+      avail_s = avail_s + freqs[i];
     }
     if (sdc[i] == "z") {
       ind_poss_z.push_back(indices[i]);
       local_poss_z.push_back(i);
       ind_poss_s_or_z.push_back(indices[i]);
       local_poss_s_or_z.push_back(i);
-      v_amount["avail_z"] = v_amount["avail_z"] + freqs[i];
+      avail_z = avail_z + freqs[i];
     }
     if (sdc[i] == "w") {
       ind_poss_w.push_back(indices[i]);
       local_poss_w.push_back(i);
-      v_amount["supped"] = v_amount["supped"] + freqs[i];
-      v_amount["avail_w"] = v_amount["avail_w"] + freqs[i];
+      amount_supped = amount_supped + freqs[i];
+      avail_w = avail_w + freqs[i];
     }
   }
-  // cells that are not w
-  v_nr["supps"] = v_nr["primsupps"] + v_nr["secondsupps"];
 
+  // returns various information about current sub-problem, relating to a specific constraint
+  IntegerVector v_nr = rep(0, 9);
+  v_nr.names() = CharacterVector({"s", "w", "z", "sz", "primsupps", "secondsupps", "non_w", "singletons", "supps"});
   v_nr["s"] = ind_poss_s.size();
   v_nr["z"] = ind_poss_z.size();
   v_nr["w"] = ind_poss_w.size();
   v_nr["sz"] = ind_poss_s_or_z.size();
-
+  v_nr["primsupps"] = nr_primsupps;
+  v_nr["secondsupps"] = nr_secondsupps;
   int nr_non_w = indices.size() - v_nr["w"];
   v_nr["non_w"] = nr_non_w;
+  v_nr["singletons"] = nr_singletons;
+  v_nr["supps"] = nr_primsupps + nr_secondsupps;
+
+  IntegerVector v_amount = IntegerVector::create(avail_s, avail_z, avail_w, amount_supped);
+  v_amount.names() = CharacterVector({"avail_s", "avail_z", "avail_w", "supped"});
 
   List poss_ind = List::create(
     Named("primsupps") = ind_primsupps,
