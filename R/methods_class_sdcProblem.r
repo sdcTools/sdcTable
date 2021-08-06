@@ -1131,7 +1131,6 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
     # cells_to_check are all remaining primary suppressions that were
     # previously not safe
     chkdf <- attack(object, to_attack = primsupps)
-    print(chkdf)
     chkdf <- chkdf[chkdf$protected == FALSE, ]
     if (nrow(chkdf) > 0) {
       if (input$verbose) {
