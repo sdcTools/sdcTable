@@ -59,7 +59,7 @@
 #'    * `suppAdditionalQuader`: logical vector of length 1 specfifying if additional cubes should be
 #'    suppressed if any secondary suppressions in the 'optimal' cube are 'singletons'. Parameter
 #'    `suppAdditionalQuader` has a default value of `FALSE`
-#' - parameter(s) used for [protectLinkedTables()]:
+#' - parameter(s) used for [protect_linked_tables()]:
 #'    * `maxIter`: integerish number specifying the maximal number of interations that should be make
 #'    while trying to protect common cells of two different tables. The default value of parameter is `10`
 #'

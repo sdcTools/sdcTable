@@ -245,7 +245,7 @@ genParaObj <- function(selection, ...) {
     # solve attackerprobs in a loop when using simpleheuristic
     paraObj$solve_attackerprobs <- TRUE
 
-    # protectLinkedTables
+    # protect_linked_tables
     paraObj$maxIter <- 5
 
     newPara <- list(...)

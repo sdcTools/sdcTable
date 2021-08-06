@@ -1132,30 +1132,49 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
     # previously not safe
     chkdf <- attack(object, to_attack = primsupps)
     chkdf <- chkdf[chkdf$protected == FALSE, ]
+
+    added_supps <- c()
+
     if (nrow(chkdf) > 0) {
       if (input$verbose) {
         message("--> invalid solution found in run ", run, ": additional suppressions are added")
       }
+      df$added_supps <- FALSE # we keep track if additional cells have already been suppressed
+
       for (cell in chkdf$id) {
+        all_deps_supped <- TRUE # we compute if all cells in all constraints are suppressed
+
         # constraints to which the row contributes
         rr <- full_m$i[full_m$j == cell]
+        nr_deps <- length(rr)
         added_supp <- FALSE
         cnt <- 0
         while (!added_supp) {
           cnt <- cnt + 1
           message("cell: ", cell, " | cnt: ", cnt)
-          if (cnt > length(rr)) {
+          if (cnt > nr_deps) {
             stop("no additional suppression could be found!", call. = FALSE)
           }
           ids <- full_m$j[full_m$i == rr[cnt]]
           strids <- colnames(full_m)[ids]
           st <- df[ids, ]
-          st <- st[sdcStatus == "s"]
-          if (nrow(st) > 0) {
-            data.table::setorderv(st, .tmpweightname())
-            add_supp <- st$id[1]
-            df$sdcStatus[add_supp] <- "x"
+
+          all_deps_supped <- all_deps_supped && all(st$sdcStatus %in% c("u", "x", "w"))
+          if (any(st$added_supps)) {
             added_supp <- TRUE
+          } else {
+            st <- st[sdcStatus == "s"]
+            if (nrow(st) > 0) {
+              data.table::setorderv(st, .tmpweightname())
+              add_supp <- st$id[1]
+              df$added_supps[add_supp] <- TRUE
+              df$sdcStatus[add_supp] <- "x"
+              added_supp <- TRUE
+            } else
+              if (cnt == nr_deps && all_deps_supped) {
+                # edge case: if all cells are suppressed, we cannot supp more!
+                added_supp <- TRUE
+              }
           }
         }
       }

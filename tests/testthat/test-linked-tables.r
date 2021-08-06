@@ -49,7 +49,7 @@ expect_identical(all(attack(p2_prot)$protected), TRUE)
 # -> B can be calculated as 10-7=3
 
 # Secondary suppression of linked tables
-out <- protectLinkedTables(
+out <- protect_linked_tables(
   x = p1,
   y = p2,
   common_cells = common_cells,

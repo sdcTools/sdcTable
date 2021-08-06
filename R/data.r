@@ -13,7 +13,7 @@
 
 #' Synthetic Microdata (2)
 #'
-#' Example microdata used for example in [protectLinkedTables()].
+#' Example microdata used for example in [protect_linked_tables()].
 #'
 #' @format a `data.frame` with `100` observations containing variables `region`,
 #' `gender`,  `ecoOld`, `ecoNew` and `numVal`.
