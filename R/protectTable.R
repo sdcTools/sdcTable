@@ -10,7 +10,7 @@
 #' The implemented methods may have bugs that yield in not-fully protected tables. Especially
 #' the usage of `"OPT"`, `"HITAS"` and `"HYPERCUBE"` in production is not
 #' suggested as these methods may eventually be removed completely. In case you encounter any problems,
-#' please report it or use Tau-Argus (\url{http://research.cbs.nl/casc/tau.htm}).
+#' please report it or use Tau-Argus (\url{https://research.cbs.nl/casc/tau.htm}).
 #' @param method a character vector of length 1 specifying the algorithm that should be
 #' used to protect the primary sensitive table cells. Allowed values are:
 #' - `"OPT"`: protect the complete problem at once using a cut and branch algorithm. The optimal
