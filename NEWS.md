@@ -1,4 +1,14 @@
-# sdcTable 0.32
+# sdcTable next
+- [todo] when creating @finalData; save linear constraints + indices for bogus cells!
+- [todo] get rid of old dim-objects (using old structure) and use sdcHierarchies functionality directly
+- [todo] get rid of simpleTriplet class (used eg. in `c_gen_mat()`)
+- [todo] check if we can get rid of empty constraints (sum of freqs/weights is zero -> only empty cells before computing anything to speed up computations?)
+- [todo] feature: consolidate functions that create constraint-matrices; we have already `c_gen_mat()`, `.gen_contraint_matrix()`
+- [todo] feature: create `contributing_cells()` that returns (for cell-ids) the table cells that contribute to it
+- [todo] check if `contributing_cells()` may be combined with `contributing_indices()`
+- [todo] use `sdcHierarchies::hier_grid()` for `data.frame` generation
+
+# sdcTable 0.32.0
 - rewrite of the `"SIMPLEHEURISTIC` approach
   * is based on (full) constraint matrix written using `rcpp`
   * rewritten the singleton-detection procedure with `rcpp`
