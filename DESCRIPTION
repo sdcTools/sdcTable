@@ -1,6 +1,6 @@
 Package: sdcTable
 Version: 0.31.99
-Date: 2020-11-27
+Date: 2021-08-06
 Title: Methods for Statistical Disclosure Control in Tabular Data
 Description: Methods for statistical disclosure control in
     tabular data such as primary and secondary cell suppression as described for example
@@ -9,11 +9,26 @@ Author: Bernhard Meindl
 Maintainer: Bernhard Meindl <bernhard.meindl@gmail.com>
 URL: https://github.com/sdcTools/sdcTable
 BugReports: https://github.com/sdcTools/userSupport/issues
-Depends: Rcpp (>= 0.11.0), sdcHierarchies (>= 0.18)
-Imports: data.table, knitr, rlang, stringr, methods, Rglpk, slam, lpSolveAPI
+Depends: 
+    R (>= 3.5.0),
+    Rcpp (>= 0.11.0),
+    sdcHierarchies (>= 0.19.1)
+Imports: 
+    data.table,
+    knitr,
+    rlang,
+    stringr,
+    methods,
+    Rglpk,
+    slam,
+    lpSolveAPI,
+    glpkAPI,
+    progress,
+    utils
 Suggests: testthat (>= 0.3), rmarkdown, webshot, digest
 LinkingTo: Rcpp
 License: GPL (>= 2)
+LazyData: true
 SystemRequirements: GLPK library, including -dev or -devel part
 Encoding: UTF-8
 RoxygenNote: 7.1.1
