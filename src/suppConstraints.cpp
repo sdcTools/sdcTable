@@ -301,6 +301,8 @@ List constraint_info(CharacterVector sdc, IntegerVector freqs, NumericVector wei
   // possible indices relevant to local position */
   IntegerVector local_poss_primsupps, local_poss_s, local_poss_s_or_z, local_poss_z, local_poss_w;
 
+  double max_w = max(weights) + 1;
+
   for (int i = 0; i < sdc.size(); i++) {
     if (sdc[i] == "u") {
       amount_supped = amount_supped + freqs[i];
@@ -331,6 +333,7 @@ List constraint_info(CharacterVector sdc, IntegerVector freqs, NumericVector wei
       ind_poss_s_or_z.push_back(indices[i]);
       local_poss_s_or_z.push_back(i);
       avail_z = avail_z + freqs[i];
+      weights[i] = max_w;
     }
     if (sdc[i] == "w") {
       ind_poss_w.push_back(indices[i]);
@@ -467,7 +470,7 @@ List supp_constraint(List con, CharacterVector sdc, bool do_singletons, double t
       // first case: we have a constraint with 2 primary suppressions,
       // one of them being a singleton; we need an additional suppression
       if (nr_supps == 2 and nr_singletons >= 1) {
-        poss_s = poss_indices_local["s"];
+        poss_s = poss_indices_local["s_or_z"];
         poss_w = cur_w[poss_s];
         poss_idx = idx[poss_s];
 
@@ -534,7 +537,7 @@ List supp_constraint(List con, CharacterVector sdc, bool do_singletons, double t
       //Rcout << "--> threshold: " << threshold << " --> we suppress cells until threshold is reached " << std::endl;
       fully_supped = con["fully_supped"];
       while ((amount_supped < threshold) and (fully_supped == false)) {
-        poss_s = poss_indices_local["s"];
+        poss_s = poss_indices_local["s_or_z"];
         poss_w = cur_w[poss_s];
         poss_idx = idx[poss_s];
 
