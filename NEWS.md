@@ -1,22 +1,48 @@
 # sdcTable 0.32
-- `protectTable()` (method=`"SIMPLEHEURISTIC"`) and `protectLinkedTables()` are based on (full) constraint matrix written in c++
-- `"SIMPLEHEURISTIC"` uses c++ implementation of singleton-detection if required
-- bugfix: fixing issue #136 (thx Øyvind Langsrud for spotting and reporting) that would allow a differencing attack on linked tables
+- rewrite of the `"SIMPLEHEURISTIC` approach
+  * is based on (full) constraint matrix written using `rcpp`
+  * rewritten the singleton-detection procedure with `rcpp`
+  * by default attacker-problems are checked (in a loop) for primary sensitive cells and additional supps are added until all required cells are secure (fixes also issue #136, thx Øyvind Langsrud for reporting)
+  * the previous (possible unsafe but faster) implemented method can be toggled using parameter `solve_attackerprobs` in `protectTable` and `protectLinkedTable`
 - change: `protectLinkedTables()` only allows the `SIMPLEHEURISTIC` algorithm
-- bugfix in internal function `c_gen_mat_m` with problems that have a single dimension
-- bugfix when computing dominance-rules on weighted data
-- new exported function `createRegSDCInput()`
-- improved vignette; thx to @Krisselack for reporting
-- speedup and simplify computation of contributing units (from raw-data) to a table cell in `contributing_indices()` and removed internal helper-function `c_contributing_indices()`
-- allow nk-dominance rules with n=1 (thx @MaximeBeaute for reporting)
-- better document sdc-code `z` in `primarySuppression()`
+- bugfix in internal method `c_gen_mat_m` with problems that have a single dimension
+- dominance rules:
+  * bugfix when computing rules on weighted data
+  * allow nk-dominance rules with n=1 (thx @MaximeBeaute for reporting)
+  * increased performance as contributing-units to cells are computed only once
+- improved function `attack()`
+  * problem-formulation and solution using the `glpkAPI`-package
+  * can be used to attack all (suppressed) or specific cells
+  * can also be used after computing a solution for the cell suppression problem
+- performance improvements
+  * `c_quick_suppression()` and `attack()` compute linear deps (`.gen_contraint_matrix`) only once
+  * improvements in computation of contributing units to a cell (`contributing_indices`)
+- new/updated functions/methods:
+  * `cell_info()` replaces `cellInfo()` (defunct)
+  * `change_cellstatus()` replaces `changeCellStatus()` (defunct)
+  * new function `createRegSDCInput()` allows to compute input for e.g `RegSDC::SuppressDec`
+  * removed S4-class definition `safeObj` and related methods
+    + results are stored within `sdcProblem`-objects (in slot `results`)
+    + rewritten `getInfo()` using an internal helper-function `get_safeobj()`
+  * new function `contributing_indices()`
+    * returns contributing units (from raw input data) to a cell
+    * removed internal helper-function `c_contributing_indices()`
+  * replaced internal S4-method `c_cellID` with utility-function `cell_id()`
+- improved examples, documentation, test-data and unit-tests
+  * improved and updated documentation `getInfo()` and `setInfo()`
+  * replaced `microData1.RData` and `microData2.RData` 
+    + generation is reproducible in `data-raw`
+    + data can be loaded using `data(microdata1)` and `data(microdata2)`
+  * replaced `problem.RData` and `problemWithSupps.RData` with `sdc_testproblem()`
+  * better document sdc-code `z` in `primarySuppression()`
+  * improved and updated vignette (thx to @Krisselack for reporting)
 
 # sdcTable 0.31
 - remove debugging output
 - fixing typos in vignettes
 - bugfix in `protectLinkedTables()`
 - remove dependency on package `lpSolveAPI`
-- update singleton-detecton procedure by allowing to input a threshold value that must be respected for all simple table rows
+- update singleton-detection procedure by allowing to input a threshold value that must be respected for all simple table rows
 - check dominance rules (unweighted variables are used)
 
 # sdcTable 0.30
