@@ -1,3 +1,6 @@
+# sdcTable 0.32.1
+- allow invocation of exact previous implementation of `"SIMPLEHEURISTIC`
+
 # sdcTable 0.32.0
 - rewrite of the `"SIMPLEHEURISTIC` approach
   * is based on (full) constraint matrix written using `rcpp`

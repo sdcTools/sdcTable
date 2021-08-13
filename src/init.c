@@ -15,6 +15,7 @@ extern SEXP _sdcTable_cpp_myPaste(SEXP, SEXP, SEXP);
 extern SEXP _sdcTable_cpp_mySplit(SEXP, SEXP);
 extern SEXP _sdcTable_cpp_splitByIndices(SEXP, SEXP);
 extern SEXP _sdcTable_suppConstraints(SEXP, SEXP, SEXP);
+extern SEXP _sdcTable_greedyMultDimSuppression(SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CMethodDef CEntries[] = {
     {"csp", (DL_FUNC) &csp, 22},
@@ -26,6 +27,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_sdcTable_cpp_mySplit",              (DL_FUNC) &_sdcTable_cpp_mySplit,              2},
     {"_sdcTable_cpp_splitByIndices",       (DL_FUNC) &_sdcTable_cpp_splitByIndices,       2},
     {"_sdcTable_suppConstraints",          (DL_FUNC) &_sdcTable_suppConstraints,          3},
+    {"_sdcTable_greedyMultDimSuppression", (DL_FUNC) &_sdcTable_greedyMultDimSuppression, 5},
     {NULL, NULL, 0}
 };
 

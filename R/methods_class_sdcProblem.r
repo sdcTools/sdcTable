@@ -1059,11 +1059,118 @@ setMethod("c_hitas_cpp", signature=c("sdcProblem", "list"), definition=function(
 })
 
 setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=function(object, input) {
+  # this is the old-implementation that iterates through subtables;
+  # this is possibly unsafe but fast because constraint matrix needs not to be
+  # computed
+  old_implementation <- function(object, input) {
+    freq <- id <- sdcStatus <- weights <- NULL
+    verbose <- input$verbose
+    detectSingletons <- input$detectSingletons
+    pI <- g_problemInstance(object)
+    indices <- g_partition(object)$indices
+    dimInfo <- g_dimInfo(object)
+    strInfo <- g_str_info(dimInfo)
+    vNames <- g_varname(dimInfo)
+
+    if (verbose) {
+      message("calculating subIndices (this may take a while) ...", appendLF = FALSE)
+    }
+
+    dat <- as.data.table(cpp_splitByIndices(g_strID(pI), strInfo))
+    setnames(dat, vNames)
+    dat[, id := 1:nrow(dat)]
+    dat[, freq := g_freq(pI)]
+    dat[, weights := g_weight(pI)]
+    dat[, sdcStatus := g_sdcStatus(pI)]
+    dimVars <- match(vNames, names(dat))
+    nDims <- length(dimVars)
+    freqInd <- match("freq", colnames(dat))
+    if (length(vNames) == 1) {
+      combs <- combn(vNames, 1)
+    } else {
+      combs <- combn(vNames, length(vNames) - 1)
+    }
+
+    tmpIndices <- rep(NA, length(vNames))
+
+    nrGroups <- length(indices)
+    subIndices <- list()
+    length(subIndices) <- nrGroups
+
+    for (group in 1:nrGroups) {
+      nrTabs <- length(indices[[group]])
+      subIndices[[group]] <- list()
+      length(subIndices[[group]]) <- nrTabs
+      for (tab in 1:nrTabs) {
+        subDat <- dat[indices[[group]][[tab]], ]
+        # only one dimension!
+        if (ncol(combs) == 1) {
+          subDat$ind_1_tmp <- 1
+          tmpIndices[1] <- ncol(subDat)
+        } else {
+          for (i in 1:ncol(combs)) {
+            setkeyv(subDat, combs[, i])
+            cn <- paste0("ind_", i, "_tmp")
+            expr <- parse(text = paste0(cn, ":=.GRP"))
+            subDat[, eval(expr), by = key(subDat)]
+            tmpIndices[i] <- ncol(subDat)
+          }
+        }
+        setkeyv(subDat, vNames)
+        subIndices[[group]][[tab]] <- as.list(subDat[, tmpIndices, with = FALSE])
+      }
+    }
+    if (verbose) {
+      message("[done]")
+
+    }
+
+    if (detectSingletons | !is.na(input$threshold)) {
+      if (verbose) {
+        message("start singleton/threshold detection procedure")
+      }
+
+      res <- detect_singletons(
+        dat = dat,
+        indices = indices,
+        sub_indices = subIndices,
+        do_singletons = input$detectSingletons,
+        threshold = input$threshold
+      )
+
+      if (verbose) {
+        message(
+          "singleton/threshold detection procedure finished with ",
+          res$nr_added_supps, " additional suppressions."
+        )
+      }
+      dat <- res$dat; rm(res)
+    }
+
+    res <- greedyMultDimSuppression(
+      dat = dat,
+      indices = indices,
+      subIndices = subIndices,
+      dimVars = dimVars,
+      verbose = verbose
+    )
+    if (verbose) {
+      cat("finishing output...")
+    }
+    s_sdcStatus(pI) <- list(index=res$id, vals=res$sdcStatus)
+    s_problemInstance(object) <- pI
+    if (verbose) {
+      cat("[done]\n")
+    }
+    invisible(list(object=object, zstatus=res$status_z))
+  }
+
   if (input$verbose) {
     if (input$solve_attackerprobs == TRUE) {
       message("note: attacker-problems are iteratively solved in this procedure")
     } else {
       message("note: attacker-problems are not solved; this might be unsafe.")
+      return(old_implementation(object = object, input = input))
     }
   }
 

@@ -17,3 +17,7 @@ suppConstraints <- function(dat, m, params) {
     .Call(`_sdcTable_suppConstraints`, dat, m, params)
 }
 
+greedyMultDimSuppression <- function(dat, indices, subIndices, dimVars, verbose) {
+    .Call(`_sdcTable_greedyMultDimSuppression`, dat, indices, subIndices, dimVars, verbose)
+}
+
