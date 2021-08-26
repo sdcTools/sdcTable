@@ -1122,7 +1122,6 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
     }
     if (verbose) {
       message("[done]")
-
     }
 
     if (detectSingletons | !is.na(input$threshold)) {
@@ -1157,7 +1156,12 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
     if (verbose) {
       cat("finishing output...")
     }
-    s_sdcStatus(pI) <- list(index=res$id, vals=res$sdcStatus)
+
+    # set orig primsupps as "u"
+    status_new <- res$sdcStatus
+    status_new[status_new %in% c("u", "x")] <- "x"
+    status_new[pI@sdcStatus == "u"] <- "u"
+    s_sdcStatus(pI) <- list(index = res$id, vals = status_new)
     s_problemInstance(object) <- pI
     if (verbose) {
       cat("[done]\n")
