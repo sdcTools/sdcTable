@@ -1165,13 +1165,15 @@ setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=f
     invisible(list(object=object, zstatus=res$status_z))
   }
 
-  if (input$verbose) {
-    if (input$solve_attackerprobs == TRUE) {
-      message("note: attacker-problems are iteratively solved in this procedure")
-    } else {
+  if (input$solve_attackerprobs == FALSE) {
+    if (input$verbose == TRUE) {
       message("note: attacker-problems are not solved; this might be unsafe.")
-      return(old_implementation(object = object, input = input))
     }
+    return(old_implementation(object = object, input = input))
+  }
+
+  if (input$verbose) {
+    message("note: attacker-problems are iteratively solved in this procedure")
   }
 
   sdcStatus <- chkdf <- NULL
