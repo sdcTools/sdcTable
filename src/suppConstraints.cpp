@@ -595,7 +595,7 @@ List supp_constraint(List con, CharacterVector sdc, bool do_singletons, double t
   poss_indices_local = con["local_ind"];
 
   // this is the default case; we have a single suppression in the
-  // constraint which is not fully suppressed and the amount of noice
+  // constraint which is not fully suppressed and the amount of noise
   // suppressed by "w"-cells (not published) is also zero
   if ((nr_supps == 1) and (amount_w <= 0) and (fully_supped == false)) {
     //Rcout << "default case: find a single additional suppression" << std::endl;
