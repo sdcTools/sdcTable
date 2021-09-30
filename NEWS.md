@@ -1,5 +1,10 @@
 # sdcTable 0.32.1
-- allow invocation of exact previous implementation of `"SIMPLEHEURISTIC`
+- allow invocation of exact previous implementation of `"SIMPLEHEURISTIC` using `method = "SIMPLEHEURISTIC_OLD"` in `protectTable()`
+- fix for edge-cases in `"SIMPLEHEURISTIC"`: weights are temporarily changed for `"z"`-cells if no additional suppression
+can be detected
+- combined existing functionality to compute constraint-matrix of a problem instance into (much faster) `create_m_matrix()`
+  * replaced internal methods/functions `c_gen_mat_m()` and `.gen_constraint_matrix()` and `genMatMFull()`
+- re-parametrized internal method `c_make_att_prob`
 
 # sdcTable 0.32.0
 - rewrite of the `"SIMPLEHEURISTIC` approach
