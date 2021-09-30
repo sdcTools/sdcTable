@@ -71,7 +71,7 @@ expect_is(sdc, "sdcProblem")
 expect_equal(sum(sdc@problemInstance@sdcStatus == "u"), 9)
 expect_equal(sum(sdc@results$sdcStatus == "x"), 0)
 
-sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC", solve_attackerprobs = FALSE)
+sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC_OLD")
 expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 0) # --> still a problem
 
 # we need to check that simpleheuristic adds at least one additional suppression

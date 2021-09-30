@@ -20,8 +20,13 @@
 #' - `"HYPERCUBE"`: protect the complete problem by protecting sub-tables with a fast
 #' heuristic that is based on finding and suppressing geometric structures (n-dimensional cubes)
 #' that are required to protect primary sensitive table cells.
-#' - `"SIMPLEHEURISTIC"`: heuristic, quick procedure which might be applied to
-#' large problem instances
+#' - `"SIMPLEHEURISTIC"` and `"SIMPLEHEURISTIC_OLD"`: heuristic procedures which might be applied to
+#' large(r) problem instances;
+#'   * `"SIMPLEHEURISTIC"` is based on constraints; it also solves attacker problems to make sure
+#'   each primary sensitive cell cannot be recomputed;
+#'   * `"SIMPLEHEURISTIC_OLD"` was the implementation in `sdcTable` versions prior to `0.32`; this
+#'   implementation is possibly unsafe but very fast; it is advised to check results using [attack()]
+#'   afterwards.
 #' @param object a [sdcProblem-class] object that has created using [makeProblem()] and has
 #' been modified by [primarySuppression()]
 #' @param ... parameters used in the protection algorithm that has been selected. Parameters that
@@ -63,16 +68,12 @@
 #'    * `maxIter`: integerish number specifying the maximal number of interations that should be make
 #'    while trying to protect common cells of two different tables. The default value of parameter is `10`
 #'
-#' - parameters used for the **"SIMPLEHEURISTIC"** procedure:
+#' - parameters used for the **"SIMPLEHEURISTIC"** and **"SIMPLEHEURISTIC_OLD"** procedure:
 #'    * `detectSingletons`: logical, should a singleton-detection procedure be run before protecting the
 #'    data, defaults to `FALSE`.
 #'    * `threshold`: if not `NULL` (the default) an integerish number (> `0`). If specified, a procedure similar
 #'    to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
 #'    contains primary sensitive cells the suppressed number of contributors is `>=` the specified threshold.
-#'    * `solve_attackerprobs`: logical value; if `TRUE` (default), attacker problems are solved for
-#'    each primary sensitive cells and possibly additional suppressions are added until
-#'    these cells are adequately protected; if this parameter is `FALSE`, attacker-problems
-#'    are not checked (which is potentially unsafe)
 #' @return an [safeObj-class] object
 #' @md
 #' @examples
@@ -81,21 +82,24 @@
 #' p <- sdc_testproblem(with_supps = TRUE)
 #'
 #' # protect the table using the 'HITAS' algorithm with verbose output
-#' p_protected <- protectTable(p, method = "HITAS", verbose = TRUE, useC = TRUE)
+#' res1 <- protectTable(p, method = "HITAS", verbose = TRUE, useC = TRUE)
+#' res1
 #'
-#' # showing a summary
-#' summary(p_protected)
+#' # protect using the heuristic algorithm
+#' res2 <- protectTable(p, method = "SIMPLEHEURISTIC")
+#' res2
+#'
+#' # protect using the old implmentation of the heuristic algorithm
+#' # used in sdcTable versions <0.32
+#' res3 <- protectTable(p, method = "SIMPLEHEURISTIC_OLD")
+#' res3
 #'
 #' # looking at the final table with result suppression pattern
-#' print(getInfo(p_protected, type= "finalData"))
+#' print(getInfo(res1, type = "finalData"))
 #' @rdname protectTable
 #' @export protectTable
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 protectTable <- function(object, method, ...) {
-  if (!method %in% c("HITAS", "OPT", "HYPERCUBE", "SIMPLEHEURISTIC")) {
-    stop("valid methods are 'SIMPLEHEURISTIC', 'HITAS', 'HYPERCUBE' or 'OPT'!\n")
-  }
-
   paraList <- genParaObj(
     selection = "control.secondary",
     method = method, ...
@@ -107,8 +111,9 @@ protectTable <- function(object, method, ...) {
   }
 
   if (method == "SIMPLEHEURISTIC") {
-    out <- c_quick_suppression(object, input = paraList)
-    out <- out$object
+    out <- .protect_simpleheuristic(object, input = paraList)$object
+  } else if (method == "SIMPLEHEURISTIC_OLD") {
+    out <- .protect_simpleheuristic_old(object, input = paraList)$object
   } else {
     if (paraList$useC) {
       if (method == "OPT") {

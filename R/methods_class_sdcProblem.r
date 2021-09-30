@@ -408,7 +408,7 @@ setMethod("c_heuristic_solution", signature=c("sdcProblem", "list"), definition=
   LB <- LBdefault <- weights - lb
   UB <- UBdefault <- ub - weights
 
-  m1 <- c_gen_mat_m(input=list(objectA=pI, objectB=dimInfoObj))
+  m1 <- create_m_matrix(obj = object, convert = TRUE)
   m2 <- m1
   m2@v <- -1* m2@v
   AInc <- c_bind(object=m1, input=list(m2, bindRow=FALSE))
@@ -518,7 +518,6 @@ setMethod("c_heuristic_solution", signature=c("sdcProblem", "list"), definition=
   ### cleanup: remove redundant suppressions....
   # FIXME: use constraint pool to search for violations in the constraint pool
   # aProb has already been calculated and is an input parameter of this method!
-  # aProb <- c_make_att_prob(input=list(objectA=pI, objectB=dimInfoObj))
   nrConstraints <- length(g_objective(aProb)) - 2*length(weights)
   addedSupps <- setdiff(SUP, primSupps)
   orderAddedSupps <- order(weights[addedSupps], decreasing=TRUE)
@@ -1058,246 +1057,6 @@ setMethod("c_hitas_cpp", signature=c("sdcProblem", "list"), definition=function(
   invisible(object)
 })
 
-setMethod("c_quick_suppression", signature=c("sdcProblem", "list"), definition=function(object, input) {
-  # this is the old-implementation that iterates through subtables;
-  # this is possibly unsafe but fast because constraint matrix needs not to be
-  # computed
-  old_implementation <- function(object, input) {
-    freq <- id <- sdcStatus <- weights <- NULL
-    verbose <- input$verbose
-    detectSingletons <- input$detectSingletons
-    pI <- g_problemInstance(object)
-    indices <- g_partition(object)$indices
-    dimInfo <- g_dimInfo(object)
-    strInfo <- g_str_info(dimInfo)
-    vNames <- g_varname(dimInfo)
-
-    if (verbose) {
-      message("calculating subIndices (this may take a while) ...", appendLF = FALSE)
-    }
-
-    dat <- as.data.table(cpp_splitByIndices(g_strID(pI), strInfo))
-    setnames(dat, vNames)
-    dat[, id := 1:nrow(dat)]
-    dat[, freq := g_freq(pI)]
-    dat[, weights := g_weight(pI)]
-    dat[, sdcStatus := g_sdcStatus(pI)]
-    dimVars <- match(vNames, names(dat))
-    nDims <- length(dimVars)
-    freqInd <- match("freq", colnames(dat))
-    if (length(vNames) == 1) {
-      combs <- combn(vNames, 1)
-    } else {
-      combs <- combn(vNames, length(vNames) - 1)
-    }
-
-    tmpIndices <- rep(NA, length(vNames))
-
-    nrGroups <- length(indices)
-    subIndices <- list()
-    length(subIndices) <- nrGroups
-
-    for (group in 1:nrGroups) {
-      nrTabs <- length(indices[[group]])
-      subIndices[[group]] <- list()
-      length(subIndices[[group]]) <- nrTabs
-      for (tab in 1:nrTabs) {
-        subDat <- dat[indices[[group]][[tab]], ]
-        # only one dimension!
-        if (ncol(combs) == 1) {
-          subDat$ind_1_tmp <- 1
-          tmpIndices[1] <- ncol(subDat)
-        } else {
-          for (i in 1:ncol(combs)) {
-            setkeyv(subDat, combs[, i])
-            cn <- paste0("ind_", i, "_tmp")
-            expr <- parse(text = paste0(cn, ":=.GRP"))
-            subDat[, eval(expr), by = key(subDat)]
-            tmpIndices[i] <- ncol(subDat)
-          }
-        }
-        setkeyv(subDat, vNames)
-        subIndices[[group]][[tab]] <- as.list(subDat[, tmpIndices, with = FALSE])
-      }
-    }
-    if (verbose) {
-      message("[done]")
-    }
-
-    if (detectSingletons | !is.na(input$threshold)) {
-      if (verbose) {
-        message("start singleton/threshold detection procedure")
-      }
-
-      res <- detect_singletons(
-        dat = dat,
-        indices = indices,
-        sub_indices = subIndices,
-        do_singletons = input$detectSingletons,
-        threshold = input$threshold
-      )
-
-      if (verbose) {
-        message(
-          "singleton/threshold detection procedure finished with ",
-          res$nr_added_supps, " additional suppressions."
-        )
-      }
-      dat <- res$dat; rm(res)
-    }
-
-    res <- greedyMultDimSuppression(
-      dat = dat,
-      indices = indices,
-      subIndices = subIndices,
-      dimVars = dimVars,
-      verbose = verbose
-    )
-    if (verbose) {
-      cat("finishing output...")
-    }
-
-    # set orig primsupps as "u"
-    status_new <- res$sdcStatus
-    status_new[status_new %in% c("u", "x")] <- "x"
-    status_new[pI@sdcStatus == "u"] <- "u"
-    s_sdcStatus(pI) <- list(index = res$id, vals = status_new)
-    s_problemInstance(object) <- pI
-    if (verbose) {
-      cat("[done]\n")
-    }
-    invisible(list(object=object, zstatus=res$status_z))
-  }
-
-  if (input$solve_attackerprobs == FALSE) {
-    if (input$verbose == TRUE) {
-      message("note: attacker-problems are not solved; this might be unsafe.")
-    }
-    return(old_implementation(object = object, input = input))
-  }
-
-  if (input$verbose) {
-    message("note: attacker-problems are iteratively solved in this procedure")
-  }
-
-  sdcStatus <- chkdf <- NULL
-  full_m <- .gen_contraint_matrix(object)
-
-  # store the constraint matrix as attribute; in this case it can be
-  # reused by attack()
-  attr(object@problemInstance, "constraint_matrix") <- full_m
-  info_df <- attributes(full_m)$infodf
-
-  pi <- slot(object, "problemInstance")
-
-  df <- sdcProb2df(object, addDups = FALSE, dimCodes = "original")
-  df[[.tmpweightname()]] <- g_weight(pi)
-  df$is_common_cell <- FALSE # required for suppConstraints()
-
-  df$id <- 1:nrow(df)
-
-  # we need to solve the problem in any case
-  # looping or not
-  finished <- FALSE
-  run <- 0
-  max_run <- 10
-  while(!finished) {
-    run <- run + 1
-    if (run > max_run) {
-      stop("no solution possible after ", max_run, " runs", call. = FALSE)
-    }
-    if (run > 1) {
-      do_singletons <- FALSE
-      threshold <- 0
-      cppverbose <- FALSE
-    } else {
-      do_singletons <- input$detectSingletons
-      threshold <- ifelse(is.na(input$threshold), 0, input$threshold)
-      cppverbose <- input$verbose
-   }
-
-    # anonymize and apply singleton-detection all in cpp
-    res <- suppConstraints(
-      dat = df,
-      m = full_m,
-      params = list(
-        check_constraints = FALSE, # just check the generated constraints
-        verbose = cppverbose,
-        do_singletons = do_singletons,
-        threshold = threshold
-      )
-    )
-
-    if (input$solve_attackerprobs == FALSE) {
-      object@problemInstance@sdcStatus <- res$sdc_status
-      return(invisible(list(object = object, zstatus = NA)))
-    }
-
-    if (run == 1) {
-      primsupps <- which(res$sdc_status == c("u"))
-    } else {
-      primsupps <- chkdf$prim_supps
-    }
-
-    # checking attacker's problems for primary unsafe cells
-    object@problemInstance@sdcStatus <- res$sdc_status
-    # cells_to_check are all remaining primary suppressions that were
-    # previously not safe
-    chkdf <- attack(object, to_attack = primsupps)
-    chkdf <- chkdf[chkdf$protected == FALSE, ]
-
-    added_supps <- c()
-
-    if (nrow(chkdf) > 0) {
-      if (input$verbose) {
-        message("--> invalid solution found in run ", run, ": additional suppressions are added")
-      }
-      df$added_supps <- FALSE # we keep track if additional cells have already been suppressed
-
-      for (cell in chkdf$id) {
-        all_deps_supped <- TRUE # we compute if all cells in all constraints are suppressed
-
-        # constraints to which the row contributes
-        rr <- full_m$i[full_m$j == cell]
-        nr_deps <- length(rr)
-        added_supp <- FALSE
-        cnt <- 0
-        while (!added_supp) {
-          cnt <- cnt + 1
-          message("cell: ", cell, " | cnt: ", cnt)
-          if (cnt > nr_deps) {
-            stop("no additional suppression could be found!", call. = FALSE)
-          }
-          ids <- full_m$j[full_m$i == rr[cnt]]
-          strids <- colnames(full_m)[ids]
-          st <- df[ids, ]
-
-          all_deps_supped <- all_deps_supped && all(st$sdcStatus %in% c("u", "x", "w"))
-          if (any(st$added_supps)) {
-            added_supp <- TRUE
-          } else {
-            st <- st[sdcStatus == "s"]
-            if (nrow(st) > 0) {
-              data.table::setorderv(st, .tmpweightname())
-              add_supp <- st$id[1]
-              df$added_supps[add_supp] <- TRUE
-              df$sdcStatus[add_supp] <- "x"
-              added_supp <- TRUE
-            } else
-              if (cnt == nr_deps && all_deps_supped) {
-                # edge case: if all cells are suppressed, we cannot supp more!
-                added_supp <- TRUE
-              }
-          }
-        }
-      }
-    } else {
-      finished <- TRUE
-    }
-  }
-  invisible(list(object=object, zstatus=NA))
-})
-
 setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=function(object, input) {
   timeLimit <- input$timeLimit
   fixVariables <- input$fixVariables
@@ -1312,96 +1071,101 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
   nrVars <- g_nrVars(problemInstance)
   freqs <- g_freq(problemInstance)
   primSupps <- g_primSupps(problemInstance)
-  publishVars <- which(g_sdcStatus(problemInstance)=="z")
+  publishVars <- which(g_sdcStatus(problemInstance) == "z")
   noBranchVars <- unique(c(primSupps, publishVars))
 
   # Nothing to protect here
-  if ( !g_hasPrimSupps(problemInstance) ) {
+  if (!g_hasPrimSupps(problemInstance)) {
     return(object)
   }
 
   # returning heuristic solution
   # only if problem size is too large
-  if ( is.null(maxVars) ) {
+  if (is.null(maxVars)) {
     maxVars <- nrVars + 1
   }
-  if ( fastSolution ) {
+  if (fastSolution) {
     maxVars <- 0
   }
 
   approx <- ifelse(is.null(approxPerc), FALSE, TRUE)
 
-  if ( nrVars >= maxVars ) {
-    res <- c_make_att_prob(input=list(objectA=problemInstance, objectB=dimInfo))
+  if (nrVars >= maxVars) {
+    res <- c_make_att_prob(input=list(objectA=object))
     aProb <- res$aProb
     validCuts <- res$newCutsMaster
 
-    heuristicSolution <- c_heuristic_solution(object, input=list(aProb, validCuts, input))
+    heuristicSolution <- c_heuristic_solution(object, input = list(aProb, validCuts, input))
 
-    secondSupps <- setdiff(which(heuristicSolution==1), primSupps)
+    secondSupps <- setdiff(which(heuristicSolution == 1), primSupps)
     if (verbose) {
-      cat("Result: we are returning a possibly non-optimal solution with",length(secondSupps),"secondary suppressions because of parameter 'fastSolution' or 'maxVars'!\n")
+      cat(
+        "Result: we are returning a possibly non-optimal solution with",
+        length(secondSupps),
+        "secondary suppressions because of parameter 'fastSolution' or 'maxVars'!\n"
+      )
     }
-    if ( length(secondSupps) > 0 ) {
-      s_sdcStatus(problemInstance) <- list(index=secondSupps,vals=rep("x", length(secondSupps)))
+    if (length(secondSupps) > 0) {
+      s_sdcStatus(problemInstance) <- list(index = secondSupps, vals = rep("x", length(secondSupps)))
     }
     out <- new("sdcProblem",
-               dataObj=g_dataObj(object),
-               dimInfo=dimInfo,
-               problemInstance=problemInstance,
-               partition=g_partition(object),
-               startI=g_startI(object),
-               startJ=g_startJ(object),
-               indicesDealtWith=g_indicesDealtWith(object)
+      dataObj = g_dataObj(object),
+      dimInfo = dimInfo,
+      problemInstance = problemInstance,
+      partition = g_partition(object),
+      startI = g_startI(object),
+      startJ = g_startJ(object),
+      indicesDealtWith = g_indicesDealtWith(object)
     )
     return(out)
   }
 
-  if ( verbose ) {
+  if (verbose) {
     cat("running pre-process procedure...\n")
   }
 
-  resultPreProcess <- c_preprocess(object, input=input)
+  resultPreProcess <- c_preprocess(object, input = input)
 
   object <- resultPreProcess$sdcProblem
   validCuts <- resultPreProcess$validCuts
   aProb <- resultPreProcess$aProb
 
   # no valid cuts have been generated in preprocessing!
-  if ( g_nr_rows(g_constraints(validCuts)) == 0 ) {
+  if (g_nr_rows(g_constraints(validCuts)) == 0) {
     return(object)
   }
 
-  if ( verbose ) {
+  if (verbose) {
     cat("calculating a heuristic solution...\n")
   }
 
-  heuristicSolution <- c_heuristic_solution(object, input=list(aProb, validCuts, input))
+  heuristicSolution <- c_heuristic_solution(object, input = list(aProb, validCuts, input))
   ### all solutions found and current best solution
-  solutions <- list(); bestSolution <- heuristicSolution
+  solutions <- list()
+  bestSolution <- heuristicSolution
   solutions[[1]] <- heuristicSolution
 
   startTime <- Sys.time()
   timeStop <- FALSE
 
   ### cuts due to hierarchical structure
-  if ( verbose ) {
+  if (verbose) {
     cat("calculating structural cuts...\n")
   }
 
-  structureCuts <- c_gen_structcuts(object, input=list())
+  structureCuts <- c_gen_structcuts(object, input = list())
   # does heuristicSolution violates any cuts from structure-cuts??
   #c_check_violation(structureCuts, input=list(heuristicSolution, g_weight(problemInstance)))
-  validCuts <- c_bind_together(validCuts, input=list(structureCuts))
+  validCuts <- c_bind_together(validCuts, input = list(structureCuts))
   #######
 
   ### create master problem and add constraints derived in pre-processing
-  mProb <- c_make_masterproblem(problemInstance, input=list())
+  mProb <- c_make_masterproblem(problemInstance, input = list())
   s_add_complete_constraint(mProb) <- list(validCuts)
-  if ( verbose ) {
+  if (verbose) {
     cat("solving the original master problem (no additional constraints)...\n")
   }
-  masterSolution <- c_solve_problem(mProb, input=list(solver))
+  masterSolution <- c_solve_problem(mProb, input = list(solver))
   masterObj <- masterSolution$optimum
   xi <- masterSolution$solution
   xi[is.zero(xi)] <- 0
@@ -1414,18 +1178,18 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
 
   ### check if we have already the optimum solution (without rounding errors)
   runInd <- TRUE
-  if ( abs(masterObj-currentBestBoundUp) < 0.1 ) {
+  if (abs(masterObj - currentBestBoundUp) < 0.1) {
     runInd <- FALSE
   } else {
     ### fixing variables
-    if ( fixVariables == TRUE & currentBestBoundUp >= currentBestBoundDown ) {
-      if ( verbose ) {
+    if (fixVariables == TRUE & currentBestBoundUp >= currentBestBoundDown) {
+      if (verbose) {
         cat("fixing variables...\n")
       }
       fixedVars <- c_fix_variables(mProb, input=list(currentBestBoundDown, currentBestBoundUp, primSupps))
-      if (length(fixedVars) > 0 ) {
-        if ( verbose ) {
-          cat("--> setting",length(fixedVars),"variables to 0!\n")
+      if (length(fixedVars) > 0) {
+        if (verbose) {
+          cat("--> setting", length(fixedVars), "variables to 0!\n")
         }
         bounds <- g_bounds(mProb)
         bounds$upper$val[fixedVars] <- 0
@@ -1435,7 +1199,7 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
 
     ### constraint pool initialization
     problemPool <- list()
-    problemPool[[1]] <- init.cutList(type='empty', input=list(nrCols=nrVars))
+    problemPool[[1]] <- init.cutList(type = 'empty', input = list(nrCols = nrVars))
 
     ### solving
     selectFirst <- TRUE
@@ -1446,7 +1210,7 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     weights <- g_weight(problemInstance)
     LB <- weights - g_lb(problemInstance)
     UB <- g_ub(problemInstance) - weights
-    nrConstraints <- length(g_objective(aProb)) - 2*length(weights)
+    nrConstraints <- length(g_objective(aProb)) - 2 * length(weights)
 
     ### initialize constants (probably function-parameters later)
     selectFirst <- FALSE
@@ -1455,13 +1219,13 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     iter <- 0
   }
 
-  while( runInd ) {
+  while (runInd) {
     iter <- iter + 1
-    selectInd <- ifelse(selectFirst==TRUE, 1, length(problemPool))
-    newCuts <- init.cutList(type='empty', input=list(nrCols=nrVars))
+    selectInd <- ifelse(selectFirst == TRUE, 1, length(problemPool))
+    newCuts <- init.cutList(type = 'empty', input = list(nrCols = nrVars))
     AttProbDown <- AttProbUp <- rep(NA, length(primSupps))
     status <- NULL
-    for ( i in 1:length(primSupps) ) {
+    for (i in 1:length(primSupps)) {
       cellInd <- primSupps[i]
       limits <- c(LPL[cellInd], UPL[cellInd], SPL[cellInd])
 
@@ -1600,26 +1364,27 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
 
     mProbWorking <- mProb
     # eventually update the lower bound...
-    tmpSolution <- c_solve_problem(mProbWorking, input=list(solver))
+    tmpSolution <- c_solve_problem(mProbWorking, input = list(solver))
     tmpObj <- tmpSolution$optimum
-    if ( tmpObj > currentBestBoundDown & tmpObj <= currentBestBoundUp ) {
+    if (tmpObj > currentBestBoundDown &
+        tmpObj <= currentBestBoundUp) {
       currentBestBoundDown <- tmpObj
     }
-    if ( abs(currentBestBoundUp - currentBestBoundDown) < 1 ) {
+    if (abs(currentBestBoundUp - currentBestBoundDown) < 1) {
       # optimal solution found!
       break
     }
 
-    if ( g_nr_constraints(problemPool[[selectInd]]) > 0 ) {
-      if ( verbose ) {
-        cat("adding",g_nr_constraints(problemPool[[selectInd]]),"constraints to the master problem...\n")
+    if (g_nr_constraints(problemPool[[selectInd]]) > 0) {
+      if (verbose) {
+        cat("adding", g_nr_constraints(problemPool[[selectInd]]), "constraints to the master problem...\n")
       }
       mProbWorking <- mProb
       s_add_complete_constraint(mProbWorking) <- list(problemPool[[selectInd]])
     }
 
     if ( verbose ) {
-      cat("solving the master problem with",length(g_rhs(mProbWorking)),"constraints...\n")
+      cat("solving the master problem with", length(g_rhs(mProbWorking)), "constraints...\n")
     }
     masterSolution <- c_solve_problem(mProbWorking, input=list(solver))
     masterObj <- masterSolution$optimum
@@ -1627,7 +1392,7 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     xi[is.zero(xi)] <- 0
     xi[is.one(xi)] <- 1
 
-    if ( verbose ) {
+    if (verbose) {
       cat("best-bounds: [",currentBestBoundDown,":",currentBestBoundUp,"] and objVal =",masterObj,"with sum(xi)=",sum(xi),"\n")
     }
     #cat("current boundUp =",currentBestBoundUp,"and objVal =",masterObj,"with sum(xi)=",sum(xi),"\n")
@@ -1647,70 +1412,69 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     prune <- FALSE
     pruneReason <- NULL
     # a) valid (protected) integer solution
-    if ( all(is.wholenumber(xi)) && c_is_protected_solution(problemInstance, input=list(input1=AttProbDown, input2=AttProbUp)) ) {
+    if (all(is.wholenumber(xi)) && c_is_protected_solution(problemInstance, input=list(input1=AttProbDown, input2=AttProbUp))) {
       prune <- TRUE
       pruneReason <- c(pruneReason, "V") # valid
     }
     # b) infeasibility
-    if ( sum(status) != 0 ) {
+    if (sum(status) != 0) {
       prune <- TRUE
       pruneReason <- c(pruneReason, "I") # infeasible
     }
     # c) bounds
-    if ( approx == TRUE ) {
-      if ( currentBestBoundUp - masterObj <= currentBestBoundUp * (approxPerc/100) ) {
+    if (approx == TRUE) {
+      if (currentBestBoundUp - masterObj <= currentBestBoundUp * (approxPerc / 100)) {
         prune <- TRUE
         pruneReason <- c(pruneReason, "B") # bounds
       }
-      if ( masterObj - currentBestBoundDown < 0 ) {
+      if (masterObj - currentBestBoundDown < 0) {
         prune <- TRUE
         pruneReason <- c(pruneReason, "B") # bounds
       }
-
     } else {
-      if ( abs(masterObj - currentBestBoundUp) <= 0.01 ) {
+      if (abs(masterObj - currentBestBoundUp) <= 0.01) {
         prune <- TRUE
         pruneReason <- c(pruneReason, "B") # bounds
       }
-      if ( masterObj - currentBestBoundDown < 0 ) {
+      if (masterObj - currentBestBoundDown < 0) {
         prune <- TRUE
         pruneReason <- c(pruneReason, "B") # bounds
       }
     }
 
-    if ( prune == TRUE ) {
+    if (prune == TRUE) {
       pruneReason <- unique(pruneReason) # remove eventually 2-'Bs'
-      if ( length(pruneReason) == 2 ) {
-        if ( pruneReason[1] == "V" & pruneReason[2]=="B" ) {
+      if (length(pruneReason) == 2) {
+        if (pruneReason[1] == "V" & pruneReason[2] == "B") {
           #cat("found worse-than optimal integer-solution -> pruning by bounds!\n")
-          if ( masterObj < currentBestBoundUp ) {
+          if (masterObj < currentBestBoundUp) {
             pruneReason <- "V"
           } else {
             pruneReason <- "B"
           }
         }
       }
-      if ( length(pruneReason) > 1 ) {
+      if (length(pruneReason) > 1) {
         stop("Error: only one pruning reason possible!\n")
       }
-      if ( pruneReason == "V") {
-        solutions[[length(solutions)+1]] <- as.integer(xi)
-        if ( masterObj < currentBestBoundUp ) {
-          if ( verbose ) {
-            cat("new best integer solution (objval=",masterObj,") found!:\n")
+      if (pruneReason == "V") {
+        solutions[[length(solutions) + 1]] <- as.integer(xi)
+        if (masterObj < currentBestBoundUp) {
+          if (verbose) {
+            cat("new best integer solution (objval=", masterObj, ") found!:\n")
           }
           currentBestBoundUp <- masterObj
           bestSolution <- as.integer(xi)
         }
       }
-      #if ( pruneReason == "I") {
+      #if (pruneReason == "I") {
       # cat("pruning because of infeasibility!\n")
       #}
-      #if ( pruneReason == "B") {
+      #if (pruneReason == "B") {
       # cat("pruning because of known bounds!\n")
       #}
       problemPool[[selectInd]] <- NULL
-      if ( verbose ) {
+      if (verbose) {
         cat("pruning the current node: reason=",pruneReason,"!. Still",length(problemPool),"nodes in the pool!\n")
       }
     } else {
@@ -1718,43 +1482,58 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
       branchedVars <- g_col_ind(g_constraints(problemPool[[selectInd]]))
       branchVar <- getBranchingVariable(xi, branchedVars, noBranchVars)
 
-      if ( length(branchVar) == 1 ) {
+      if (length(branchVar) == 1) {
         cl <- problemPool[[selectInd]]
         v <- rep(0, nrVars)
         v[branchVar] <- 1
         c1 <- c2 <- cl
-        s_add_complete_constraint(c1) <- list(init.cutList(type='singleCut', input=list(vals=v, dir="==", rhs=0)))
-        s_add_complete_constraint(c2) <- list(init.cutList(type='singleCut', input=list(vals=v, dir="==", rhs=1)))
+        s_add_complete_constraint(c1) <- list(
+          init.cutList(
+            type = 'singleCut',
+            input = list(
+              vals = v, dir = "==", rhs = 0
+            )
+          )
+        )
+        s_add_complete_constraint(c2) <- list(
+          init.cutList(
+            type = 'singleCut',
+            input = list(
+              vals = v, dir = "==", rhs = 1
+            )
+          )
+        )
 
-        problemPool[[length(problemPool)+1]] <- c1
-        problemPool[[length(problemPool)+1]] <- c2; rm(cl)
+        problemPool[[length(problemPool) + 1]] <- c1
+        problemPool[[length(problemPool) + 1]] <- c2
+        rm(cl)
 
         # now we can prune the current node
         problemPool[[selectInd]] <- NULL
         rm(c1,c2)
-        if ( verbose ) {
-          cat("branching was required. Problem pool has now",length(problemPool),"nodes!\n")
+        if (verbose) {
+          cat("branching was required. Problem pool has now", length(problemPool), "nodes!\n")
         }
       } else {
-        if ( verbose ) {
+        if (verbose) {
           cat("no further branching possible! all branching variables tried!\n")
         }
         problemPool[[selectInd]] <- NULL
       }
     }
 
-    timeSpent <- as.numeric(floor(difftime(Sys.time(), startTime, units="mins")))
+    timeSpent <- as.numeric(floor(difftime(Sys.time(), startTime, units = "mins")))
     #cat("timeSpent:"); print(timeSpent)
 
-    if ( length(problemPool)==0 ) {
+    if (length(problemPool) == 0) {
       runInd <- FALSE
     } else {
-      if ( !is.null(timeLimit) && timeSpent > timeLimit && length(solutions) > 0 ) {
+      if (!is.null(timeLimit) && timeSpent > timeLimit && length(solutions) > 0) {
         runInd <- FALSE
         timeStop <- TRUE
       }
-      if ( !is.null(timeLimit) && timeSpent > timeLimit && length(solutions) == 0 ) {
-        if ( verbose ) {
+      if (!is.null(timeLimit) && timeSpent > timeLimit && length(solutions) == 0) {
+        if (verbose) {
           cat("Result: the time-limit was reached and no (heuristic) solution could be generated!\n")
         }
         return(object)
@@ -1762,35 +1541,43 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     }
   }
 
-  secondSupps <- setdiff(which(bestSolution==1), primSupps)
+  secondSupps <- setdiff(which(bestSolution == 1), primSupps)
   objVarHeuristic <- sum(g_objective(mProb) * heuristicSolution)
-  if ( timeStop==FALSE ) {
-    if ( currentBestBoundUp == objVarHeuristic ) {
-      if ( verbose ) {
-        cat('Result: the heuristic solution was already optimal and has',length(secondSupps),'secondary suppressions!\n')
+  if (timeStop == FALSE) {
+    if (currentBestBoundUp == objVarHeuristic) {
+      if (verbose) {
+        cat('Result: the heuristic solution was already optimal and has', length(secondSupps), 'secondary suppressions!\n')
       }
     } else {
-      improvement <- 100 - (100 / objVarHeuristic ) * currentBestBoundUp
-      if ( verbose ) {
-        cat('Result: the heuristic solution was improved by',format(improvement, digits=2, nsmall=2),'% and has',length(secondSupps),'secondary suppressions!!\n ')
+      improvement <- 100 - (100 / objVarHeuristic) * currentBestBoundUp
+      if (verbose) {
+        cat('Result: the heuristic solution was improved by', format(improvement, digits = 2, nsmall = 2), '% and has', length(secondSupps), 'secondary suppressions!!\n '
+        )
       }
     }
   } else {
-    if ( verbose ) {
-      cat("Result: we are returning a possibly non-optimal solution with",length(secondSupps),"secondary suppressions because of argument 'timeLimit'!\n")
+    if (verbose) {
+      cat(
+        "Result: we are returning a possibly non-optimal solution with",
+        length(secondSupps),
+        "secondary suppressions because of argument 'timeLimit'!\n"
+      )
     }
   }
   if ( length(secondSupps) > 0 ) {
-    s_sdcStatus(problemInstance) <- list(index=secondSupps,vals=rep("x", length(secondSupps)))
+    s_sdcStatus(problemInstance) <- list(
+      index = secondSupps,
+      vals = rep("x", length(secondSupps))
+    )
   }
   out <- new("sdcProblem",
-    dataObj=g_dataObj(object),
-    dimInfo=dimInfo,
-    problemInstance=problemInstance,
-    partition=g_partition(object),
-    startI=g_startI(object),
-    startJ=g_startJ(object),
-    indicesDealtWith=g_indicesDealtWith(object)
+    dataObj = g_dataObj(object),
+    dimInfo = dimInfo,
+    problemInstance = problemInstance,
+    partition = g_partition(object),
+    startI = g_startI(object),
+    startJ = g_startJ(object),
+    indicesDealtWith = g_indicesDealtWith(object)
   )
   return(out)
 })
@@ -1881,7 +1668,7 @@ setMethod("c_preprocess", signature=c("sdcProblem", "list"), definition=function
   UB <- g_ub(problemInstance) - weights
 
   xi <- g_suppPattern(problemInstance)
-  res <- c_make_att_prob(input=list(objectA=problemInstance, objectB=dimInfo))
+  res <- c_make_att_prob(input = list(objectA = object))
   aProb <- res$aProb
   validCuts <- res$newCutsMaster
 
@@ -2323,12 +2110,13 @@ setMethod("c_reduce_problem", signature=c("sdcProblem", "list"), definition=func
   pI <- g_problemInstance(x)
   dimInfo <- g_dimInfo(x)
   strInfo <- strInfoOrig <- g_str_info(dimInfo)
+  dim_names <- slot(dimInfo, "vNames")
 
-  if ( length(y) < 1 ) {
-    stop("c_reduce_problem:: length of argument 'y' < 1!\n")
+  if (length(y) < 1) {
+    stop("c_reduce_problem:: length of argument 'y' < 1!", call. = FALSE)
   }
-  if ( !all(y %in% 1:g_nrVars(pI)) ) {
-    stop("c_reduce_problem:: elements of indices y does not match with problem size!\n")
+  if (!all(y %in% 1:g_nrVars(pI))) {
+    stop("c_reduce_problem:: elements of indices y does not match with problem size!", call. = FALSE)
   }
 
   newDims <- lapply(1:length(strInfo), function(x) {
@@ -2338,19 +2126,23 @@ setMethod("c_reduce_problem", signature=c("sdcProblem", "list"), definition=func
     sort(unique(newDims[[x]]))
   })
   newDimsOrigCodes <- lapply(1:length(newDims), function(k) {
-    c_match_orig_codes(object=dimInfo@dimInfo[[k]], input=newDims2[[k]])
+    c_match_orig_codes(object = dimInfo@dimInfo[[k]], input = newDims2[[k]])
   })
 
-  lenNewDims <- sapply(newDims2, length)-1
+  lenNewDims <- sapply(newDims2, length) - 1
   codesNew <- lapply(1:length(newDims), function(x) {
     c("@", rep("@@", lenNewDims[x]))
   })
 
   dimInfoOld <- lapply(1:length(newDims2), function(x) {
-    init.dimVar(input=list(input=data.frame(codesNew[[x]], newDims2[[x]]), vName=paste('V',x,sep="")) )
+    init.dimVar(input = list(
+      input = data.frame(codesNew[[x]], newDims2[[x]]), vName = dim_names[x])
+    )
   })
   dimInfoNew <- lapply(1:length(newDims2), function(x) {
-    init.dimVar(input=list(input=data.frame(codesNew[[x]], newDimsOrigCodes[[x]]), vName=paste('V',x,sep="")) )
+    init.dimVar(input = list(
+      input = data.frame(codesNew[[x]], newDimsOrigCodes[[x]]), vName = dim_names[x])
+    )
   })
 
   new.codes <- lapply(1:length(newDims), function(x) {
@@ -2358,12 +2150,12 @@ setMethod("c_reduce_problem", signature=c("sdcProblem", "list"), definition=func
   })
   pI@strID <- pasteStrVec(unlist(new.codes), length(newDims))
   pI@Freq <- g_freq(pI)[y]
-  if ( !is.null(g_w(pI)) ) {
+  if (!is.null(g_w(pI))) {
     pI@w <- g_w(pI)[y]
   }
   numVars <- as.list(g_numVars(pI))
-  if ( length(numVars) > 0 ) {
-    for ( j in 1:length(numVars) ) {
+  if (length(numVars) > 0) {
+    for (j in 1:length(numVars)) {
       pI@numVars[[j]] <- numVars[[j]][y]
     }
   }
@@ -2376,12 +2168,13 @@ setMethod("c_reduce_problem", signature=c("sdcProblem", "list"), definition=func
   x@dimInfo@dimInfo <- dimInfoNew
 
   # strInfo
-  info <- c(0, cumsum(sapply(1:length(codesNew), function(x) { sum(sapply(table(codesNew[[x]]), nchar)) } )))
-  for ( i in 2:length(info) ) {
-    strInfo[[i-1]] <- c(info[i-1]+1, info[i] )
+  info <- c(0, cumsum(sapply(1:length(codesNew), function(x) {
+    sum(sapply(table(codesNew[[x]]), nchar))
+  })))
+  for (i in 2:length(info)) {
+    strInfo[[i - 1]] <- c(info[i - 1] + 1, info[i])
   }
   x@dimInfo@strInfo <- strInfo
-
   s_problemInstance(x) <- pI
   validObject(x)
   return(x)

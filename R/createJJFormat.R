@@ -22,7 +22,7 @@ createJJFormat <- function(x) {
   pi <- get.sdcProblem(x, type = "problemInstance")
 
   nr_cells <- get.problemInstance(pi, "nrVars")
-  numvars <- as.data.table(get.problemInstance(pi, "numVars"))
+  numvars <- data.table::as.data.table(get.problemInstance(pi, "numVars"))
 
   # prepare output
   jj <- vector("list", 5)
@@ -32,9 +32,9 @@ createJJFormat <- function(x) {
 
   # matrix part containing data values and bounds
   if (ncol(numvars) > 0) {
-    m <- data.table(ind = (1:nr_cells) - 1, numvars)
+    m <- data.table::data.table(ind = (1:nr_cells) - 1, numvars)
   } else {
-    m <- data.table(ind = (1:nr_cells) - 1)
+    m <- data.table::data.table(ind = (1:nr_cells) - 1)
   }
 
   m$freqs <- get.problemInstance(pi, "freq")
@@ -49,34 +49,29 @@ createJJFormat <- function(x) {
 
   # number of linear dependencies
   # all deps as sparse matrix
-  st <- c_gen_mat_m(
-    input = list(
-      objectA = pi,
-      objectB = get.sdcProblem(x, type = "dimInfo")
-    )
-  )
+  st <- create_m_matrix(obj = x, convert = TRUE)
 
-  nr_constraints <- slot(st, "nrRows")
+  nr_constraints <- as.numeric(slot(st, "nrRows"))
   jj[[4]] <- nr_constraints
 
   # the fifth element of the list are the
-  # linear dependences as vector
-  mm <- data.table(v1 = rep("0.0", nr_constraints))
+  # linear dependencies as vector
+  mm <- data.table::data.table(v1 = rep("0.0", nr_constraints))
   mm$v2 <- as.character(table(slot(st, "i")))
   mm$v3 <- rep(":", nr_constraints)
 
-  dt <- data.table(
+  dt <- data.table::data.table(
     i = slot(st, "i"),
     j = slot(st, "j") - 1,
     v = slot(st, "v")
   )
-  setkey(dt, i)
+  data.table::setkey(dt, i)
   con <- dt[, paste0(j, " (", v, ")", collapse = " ") , by = key(dt)]
 
   mm$v4 <- con[["V1"]]
   jj[[5]] <- mm
 
-  setattr(jj, "numvars", names(numvars))
+  data.table::setattr(jj, "numvars", names(numvars))
   class(jj) <- "jjformat"
   return(invisible(jj))
 }

@@ -28,6 +28,8 @@
 #'    of the third list-element. This vector defines codes of the dimensional
 #'    variable in `y` that match the codes given in the third list-element
 #'    for `x`.
+#' @param method which protection algorithm should be used; choices are
+#' `"SIMPLEHEURISTIC"` and `"SIMPLEHEURISTIC_OLD"`
 #' @param ... additional arguments to control the secondary cell suppression
 #' algorithm. For details, see [protectTable()].
 #'
@@ -136,13 +138,16 @@
 #' @export
 #' @seealso [protectTable()]
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
-protect_linked_tables <- function(x, y, common_cells, ...) {
+protect_linked_tables <- function(x, y, common_cells, method = "SIMPLEHEURISTIC", ...) {
   . <- sdcStatus <- freq <- striD <- strID_x <- strID_y <- innercell <- chkdf <- NULL
 
   stopifnot(inherits(x, "sdcProblem"))
   stopifnot(inherits(y, "sdcProblem"))
 
-  method <- "SIMPLEHEURISTIC" # overwritten since 0.32 only SIMPLEHEURISTIC is supported
+  # overwritten since 0.32 only SIMPLEHEURISTIC is supported
+  methods_ok <- c("SIMPLEHEURISTIC", "SIMPLEHEURISTIC_OLD")
+  stopifnot(method %in% methods_ok)
+
   params <- genParaObj(selection = "control.secondary", method = method, ...)
 
   df_x <- sdcProb2df(x, addDups = FALSE, dimCodes = "original")
@@ -255,13 +260,13 @@ protect_linked_tables <- function(x, y, common_cells, ...) {
     # get/compute constraint matrix
     mx <- attributes(x@problemInstance)$constraint_matrix
     if (is.null(mx)) {
-      mx <- .gen_contraint_matrix(x)
+      mx <- create_m_matrix(obj = x, convert = FALSE, add_info_df = TRUE)
     }
     info_x <- attributes(mx)$infodf
 
     my <- attributes(y@problemInstance)$constraint_matrix
     if (is.null(my)) {
-      my <- .gen_contraint_matrix(y)
+      my <- create_m_matrix(obj = y, convert = FALSE, add_info_df = TRUE)
     }
     info_y <- attributes(my)$infodf
 
@@ -336,7 +341,7 @@ protect_linked_tables <- function(x, y, common_cells, ...) {
   )
 
   if (params$verbose) {
-    if (params$solve_attackerprobs == TRUE) {
+    if (method == "SIMPLEHEURISTIC") {
       message("note: attacker-problems are iteratively solved in this procedure")
     } else {
       message("note: attacker-problems are not solved; this might be unsafe.")
@@ -378,7 +383,7 @@ protect_linked_tables <- function(x, y, common_cells, ...) {
     # update pattern
     full_df$sdcStatus <- res$sdc_status
 
-    if (params$solve_attackerprobs == FALSE) {
+    if (method == "SIMPLEHEURISTIC_OLD") {
       finished <- TRUE
     } else {
       if (run == 1) {

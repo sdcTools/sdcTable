@@ -59,7 +59,7 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
   pi <- slot(object, "problemInstance")
   m <- attributes(pi)$constraint_matrix
   if (is.null(m)) {
-    m <- .gen_contraint_matrix(object)
+    m <- create_m_matrix(obj = object, convert = FALSE, add_info_df = TRUE)
   }
 
   all_primsupps <- g_primSupps(pi)

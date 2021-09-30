@@ -202,37 +202,6 @@ domRule <- function(object, params, type) {
   all_contr_codes
 }
 
-# returns a slam::simple_triplet_matrix containing all
-# linear constraints of a given sdcProblem-instance `x`
-# additionally, as attribute `infodf` a data.frame is
-# returned that has for each cell (identified by cell_id)
-# the information if it is an inner cell or not
-.gen_contraint_matrix <- function(x) {
-  stopifnot(inherits(x, "sdcProblem"))
-  pi <- get.sdcProblem(x, type = "problemInstance")
-  str_ids <- pi@strID
-  m <- c_gen_mat_m(
-    input = list(
-      objectA = pi,
-      objectB = get.sdcProblem(x, type = "dimInfo")
-    )
-  )
-
-  # convert to simple-triplet from slam-pkg because
-  # we can use indexing without converting to full-matrix
-  m <- slam::simple_triplet_matrix(i = m@i, j = m@j, v = m@v)
-  colnames(m) <- str_ids
-
-  index_subtots <- unique(m$j[m$v == -1])
-  infodf <- data.frame(
-    str_id = slot(pi, "strID"),
-    is_inner = TRUE
-  )
-  infodf$is_inner[index_subtots] <- FALSE
-  attr(m, "infodf") <- infodf
-  m
-}
-
 .tmpweightname <- function() {
   "weight.for.suppression"
 }
@@ -288,4 +257,89 @@ cell_id <- function(x, specs, complete = TRUE, addDups = FALSE) {
   } else {
     return(df$id)
   }
+}
+
+# computes the constraint-matrix (m) for a given problem instance;
+# this replaces the old method `c_gen_m` available in versions <= 0.32
+# convert: if TRUE; a (internal) simpleTripet matrix is returned;
+# else a simple-triplet matrix in the format from the slam pkg
+# add_info_df: if true, an attribute "infodf" is added containing
+# a data.frame with all cell ids and TRUE|FALSE depending on wheather
+# the cell is an internal cell or not
+create_m_matrix <- function(obj, convert = TRUE, add_info_df = FALSE) {
+  stopifnot(inherits(obj, "sdcProblem"))
+  stopifnot(rlang::is_scalar_logical(convert))
+  stopifnot(rlang::is_scalar_logical(add_info_df))
+
+  .constraints_for_single_dim <- function(full_dt, dn, current_dim) {
+    dl <- slot(current_dim, "dims")
+    dname <- slot(current_dim, "vName")
+
+    kv <- c(setdiff(dn, dname), dname)
+    setkeyv(full_dt, kv)
+
+    m <- slam::simple_triplet_zero_matrix(nrow = 0, ncol = nrow(full_dt))
+    for (i in seq_len(length(dl))) {
+      tmp <- full_dt[get(dname) %in% dl[[i]]]
+
+      nr_elements <- length(dl[[i]])
+      nr_constraints <- nrow(tmp) / nr_elements
+
+      # rows
+      v1 <- rep(1, nr_elements)
+      v2 <- c(-1, rep(1, (nr_elements - 1)))
+      m <- rbind(m, slam::simple_triplet_matrix(
+        i = rep(seq_len(nr_constraints), each = nr_elements),
+        j = tmp$id,
+        v = rep(v2, times = nr_constraints),
+        nrow = nr_constraints,
+        ncol = nrow(full_dt)
+      ))
+    }
+    m
+  }
+
+  full_dt <- sdcProb2df(obj, addDups = FALSE)
+  full_dt$id <- 1:nrow(full_dt)
+  str_ids <- full_dt$strID
+
+  dim_info <- slot(obj, "dimInfo")
+  dim_names <- slot(dim_info, "vNames")
+  dims <- slot(dim_info, "dimInfo")
+
+  res <- lapply(seq_len(length(dims)), function(x) {
+    .constraints_for_single_dim(
+      full_dt = full_dt,
+      dn = dim_names,
+      current_dim = dims[[x]]
+    )
+  })
+  mat <- do.call("rbind", res)
+
+
+  if (add_info_df) {
+    colnames(mat) <- str_ids
+    index_subtots <- unique(mat$j[mat$v == -1])
+    infodf <- data.frame(
+      str_id = colnames(mat),
+      is_inner = TRUE
+    )
+    infodf$is_inner[index_subtots] <- FALSE
+    attr(mat, "infodf") <- infodf
+  }
+
+  if (!convert) {
+    return(mat)
+  }
+
+  st <- new("simpleTriplet")
+  st@i <- mat$i
+  st@j <- mat$j
+  st@v <- mat$v
+  st@nrRows <- mat$nrow
+  st@nrCols <- mat$ncol
+  if (add_info_df) {
+    attr(st, "infodf") <- infodf
+  }
+  return(st)
 }

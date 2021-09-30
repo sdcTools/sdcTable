@@ -228,9 +228,6 @@ setGeneric("c_opt_cpp", function(object, input) {
 setGeneric("c_hitas_cpp", function(object, input) {
   standardGeneric("c_hitas_cpp")
 })
-setGeneric("c_quick_suppression", function(object, input) {
-  standardGeneric("c_quick_suppression")
-})
 setGeneric("c_cut_and_branch", function(object, input) {
   standardGeneric("c_cut_and_branch")
 })

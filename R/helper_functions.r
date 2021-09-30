@@ -242,8 +242,6 @@ genParaObj <- function(selection, ...) {
     # SIMPLEHEURISTIC - parameter
     paraObj$detectSingletons <- FALSE
     paraObj$threshold <- NA
-    # solve attackerprobs in a loop when using simpleheuristic
-    paraObj$solve_attackerprobs <- TRUE
 
     # protect_linked_tables
     paraObj$maxIter <- 5
@@ -290,8 +288,10 @@ genParaObj <- function(selection, ...) {
         !paraObj$approxPerc %in% 1:100) {
       stop("argument `approxPerc` must be >= 1 and <= 100!\n", call. = FALSE)
     }
-    if (!paraObj$method %in% c("SIMPLEHEURISTIC", "HITAS", "HYPERCUBE", "OPT")) {
-      stop("`method` must be either `SIMPLEHEURISTIC`, `HITAS`, `HYPERCUBE` or `OPT`!", call. = FALSE)
+
+    methods_ok <- c("SIMPLEHEURISTIC", "SIMPLEHEURISTIC_OLD", "HITAS", "HYPERCUBE", "OPT")
+    if (!paraObj$method %in% methods_ok) {
+      stop(paste("valid methods:", paste(shQuote(methods_ok), collapse = ", ")), call. = FALSE)
     }
     if (!paraObj$suppMethod %in% c('minSupps', 'minSum', 'minSumLogs')) {
       stop("`suppMethod` must be either `minSupps`, `minSum` or `minSumLogs`", call. = FALSE)
@@ -304,9 +304,6 @@ genParaObj <- function(selection, ...) {
       if (paraObj$threshold < 1) {
         stop("argument `threshold` must be >= 1.", call. = FALSE)
       }
-    }
-    if (!rlang::is_scalar_logical(paraObj$solve_attackerprobs)) {
-      stop("argument `solve_attackerprobs` is not a logical value", call. = FALSE)
     }
     return(paraObj)
   }
@@ -343,7 +340,7 @@ st_to_mat <- function(x) {
 csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
   pI <- g_problemInstance(sdcProblem)
   dimInfo <- g_dimInfo(sdcProblem)
-  aProb <- c_make_att_prob(input=list(objectA=pI, objectB=dimInfo))$aProb
+  aProb <- c_make_att_prob(input = list(objectA = sdcProblem))$aProb
 
   # already suppressed cells
   ind_prim <- as.integer(sort(c(g_primSupps(pI), g_secondSupps(pI))))
@@ -353,7 +350,6 @@ csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
   ind_fixed <- as.integer(g_forcedCells(pI))
   len_fixed <- as.integer(length(ind_fixed))
 
-  aProb <- c_make_att_prob(input=list(objectA=pI, objectB=dimInfo))$aProb
   attProbM <- init.simpleTriplet("simpleTriplet", input=list(mat=st_to_mat(aProb@constraints)))
 
   ia <- as.integer(c(0, g_row_ind(attProbM)))

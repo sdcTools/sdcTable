@@ -17,6 +17,7 @@ protectLinkedTables <- function(objectA, objectB, commonCells, method = "SIMPLEH
     x = objectA,
     y = objectB,
     common_cells = commonCells,
+    method = method,
     ...
   )
 }
