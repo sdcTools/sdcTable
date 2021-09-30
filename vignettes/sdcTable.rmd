@@ -94,17 +94,18 @@ lev.V3 <- as.character(sort(unique(microData$V3)))
 ```
 
 - Variable `V1`: this variable has a total of ``r length(lev.V1)`` codes without subtotals which are listed below:
-```{r, echo=FALSE}
-print(lev.V1)
+```{r, echo=FALSE, comment=""}
+cat(paste(shQuote(lev.V1), collapse = ", "))
 ```
 
 - Variable `V2`: this variable has a total of ``r length(lev.V2)`` codes without subtotals which are listed below:
-```{r, echo=FALSE}
-print(lev.V2)
+```{r, echo=FALSE, comment=""}
+cat(paste(shQuote(lev.V2), collapse = ", "))
 ```
+
 - Variable `V3`: this variable has a total of ``r length(lev.V3)`` codes without subtotals which are listed below:
-```{r, echo=FALSE}
-print(lev.V3)
+```{r, echo=FALSE, comment=""}
+cat(paste(shQuote(lev.V3), collapse = ", "))
 ```
 
 The step on how to define level-hierarchies that have to include all possible (sub)totals is explained [below](#ex1:hier).
@@ -117,24 +118,26 @@ print(tail(completeData))
 ```
 
 ```{r, echo=FALSE}
-levComp.V1 <- as.character(dimList$V1[, 2])
-levComp.V2 <- as.character(dimList$V2[, 2])
-levComp.V3 <- as.character(dimList$V3[, 2])
+levComp.V1 <- dimList$V1$name
+levComp.V2 <- dimList$V2$name
+levComp.V3 <- dimList$V3$name
 ```
 
 Even though we only show a small subset of the data it is immediately clear that in object `completeData` (sub)totals are listed. These combinations can be calculated from the microdata by summation over several codes in one or more dimensional variables. As in section [Starting from microdata](#ex1:microDat) it is of interest which codes were specified for each dimensional variable. This information is given below:
 
 - Variable `V1`: this variable has a total of ``r length(levComp.V1)`` codes including all possible subtotals which are listed below:
-```{r, echo=FALSE}
-print(levComp.V1)
+```{r, echo=FALSE, comment=""}
+cat(paste(shQuote(levComp.V1), collapse = ", "))
 ```
+
 - Variable `V2`: this variable has a total of ``r length(levComp.V2)`` codes including all possible subtotals which are listed below:
-```{r, echo=FALSE}
-print(levComp.V2)
+```{r, echo=FALSE, comment=""}
+cat(paste(shQuote(levComp.V2), collapse = ", "))
 ```
+
 - Variable `V3`: this variable has a total of ``r length(levComp.V3)`` codes including all possible subtotals which are listed below:
-```{r, echo=FALSE}
-print(levComp.V3)
+```{r, echo=FALSE, comment=""}
+cat(paste(shQuote(levComp.V3), collapse = ", "))
 ```
 
 ```{r, echo=FALSE}
@@ -155,21 +158,22 @@ In this example the hierarchies we want to define are quite basic. We start by s
 
 - (sub)totals of variable `V1`:
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, comment=""}
 subTots.V1 <- setdiff(levComp.V1, lev.V1)
-print(subTots.V1)
+cat(paste(shQuote(subTots.V1), collapse = ", "))
 ```
 
 - (sub)totals of variable `V2`:
-```{r, echo=FALSE}
+```{r, echo=FALSE, comment=""}
 subTots.V2 <- setdiff(levComp.V2, lev.V2)
-print(subTots.V2)
+cat(paste(shQuote(subTots.V2), collapse = ", "))
 ```
 
 - (sub)totals of variable `V3`:
-```{r, echo=FALSE}
+```{r, echo=FALSE, comment=""}
 subTots.V3 <- setdiff(levComp.V3, lev.V3)
-print(subTots.V3)
+cat(paste(shQuote(subTots.V3), collapse = ", "))
+
 ```
 
 We observe that variable `V1` has two codes (``r subTots.V1[1]`` and ``r subTots.V1[2]``) that can be calculated from the codes of `V1` available in the micro data set `microData`. For variables `V2` and `V3` only one total value (``r subTots.V2[1]``) exists which means the summation over all characteristics of variables `V2` and `V3` is the (only) total value. 
@@ -374,7 +378,8 @@ go on to use function `protectTable()` as explained in the next section.
 - **"OPT"**: protect the complete hierarchical, multidimensional table at once. This algorithm is however only suitable for small problem instances.
 - **"HITAS"**: solving the secondary cell suppression problem by applying a cut and branch algorithm to sub-tables that are protected in specific order 
 - **"HYPERCUBE"**: solving the problem using a heuristic that is based on finding geometric hyper-cubes that are required to protect primary sensitive table cells. This algorithm is not extensively tested. It is a better idea to create a batch-file usable for [tau-argus](https://github.com/sdcTools/tauargus) using `createArgusInput()` (`?createArgusInput`) and solve the problem using Argus.
-- **"SIMPLEHEURISTIC"**: solving the problem using a fast heuristic approach that aims to only protect against exact recalculation of values
+- **"SIMPLEHEURISTIC"**: solving the problem using a heuristic approach that aims to only protect against exact recalculation of values. Internally, attacker-problems are iteratively solved until all primary sensitive cells are protected.
+- **"SIMPLEHEURISTIC_OLD"**: the heuristic procedure implemented in sdcTable versions `< 0.32`. 
 
 We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function `protectTable()`.
 
