@@ -1,6 +1,6 @@
 #' Change anonymization status of a specific cell
 #'
-#' Function [changeCellStatus()] allows to change|modify the anonymization state
+#' Function [change_cellstatus()] allows to change|modify the anonymization state
 #' of single table cells for objects of class [sdcProblem-class].
 #'
 #' @inheritParams cell_info
