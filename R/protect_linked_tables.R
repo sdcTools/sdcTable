@@ -83,19 +83,17 @@
 #'
 #' # the cell specified by gender == "Tot" and ecoOld == "A"
 #' # is one of the common cells! -> we mark it as primary suppression
-#' p1 <- changeCellStatus(
+#' p1 <- change_cellstatus(
 #'   object = p1,
-#'   characteristics = c("Tot", "A"),
-#'   varNames = c("gender", "ecoOld"),
+#'   specs = data.frame(gender = "Tot", ecoOld = "A"),
 #'   rule = "u",
 #'   verbose = FALSE)
 #'
 #' # the cell specified by region == "Tot" and gender == "f" and ecoNew == "C"
 #' # is one of the common cells! -> we mark it as primary suppression
-#' p2 <- changeCellStatus(
+#' p2 <- change_cellstatus(
 #'   object = p2,
-#'   characteristics = c("Tot", "f", "C"),
-#'   varNames = c("region", "gender", "ecoNew"),
+#'   specs = data.frame(region = "Tot", gender = "f", ecoNew = "C"),
 #'   rule = "u",
 #'   verbose = FALSE)
 #'
