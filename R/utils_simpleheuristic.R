@@ -133,7 +133,6 @@
 # old implementation < 0.32 (fast but possibly unsafe)
 # in this case; no attacker problems are solved
 .protect_simpleheuristic_old <- function(object, input) {
-  message("old")
   freq <- id <- sdcStatus <- weights <- NULL
   verbose <- input$verbose
   detectSingletons <- input$detectSingletons
