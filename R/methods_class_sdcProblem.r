@@ -366,18 +366,24 @@ setReplaceMethod("s_indicesDealtWith", signature=c("sdcProblem"), definition=fun
 
 setMethod("c_rule_freq", signature=c("sdcProblem", "list"), definition=function(object, input) {
   pI <- g_problemInstance(object)
-  if (input$allowZeros == TRUE ) {
+  if (input$allowZeros == TRUE) {
     suppInd <- which(g_freq(pI) <= input$maxN)
   } else {
     f <- g_freq(pI)
     suppInd <- which(f > 0 & f <= input$maxN)
-    zeroInd <- which(g_freq(pI) == 0 )
-    if ( length(zeroInd) > 0 ) {
-      s_sdcStatus(pI) <- list(index=zeroInd, vals=rep("z", length(zeroInd)))
+    zeroInd <- which(g_freq(pI) == 0 & !g_sdcStatus(pI) %in% c("u", "x"))
+    if (length(zeroInd) > 0) {
+      s_sdcStatus(pI) <- list(
+        index = zeroInd,
+        vals = rep("z", length(zeroInd))
+      )
     }
   }
-  if ( length(suppInd) > 0 ) {
-    s_sdcStatus(pI) <- list(index=suppInd, vals=rep("u", length(suppInd)))
+  if (length(suppInd) > 0) {
+    s_sdcStatus(pI) <- list(
+      index = suppInd,
+      vals = rep("u", length(suppInd))
+    )
   }
   s_problemInstance(object) <- pI
   validObject(object)
@@ -1366,8 +1372,7 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
     # eventually update the lower bound...
     tmpSolution <- c_solve_problem(mProbWorking, input = list(solver))
     tmpObj <- tmpSolution$optimum
-    if (tmpObj > currentBestBoundDown &
-        tmpObj <= currentBestBoundUp) {
+    if (tmpObj > currentBestBoundDown & tmpObj <= currentBestBoundUp) {
       currentBestBoundDown <- tmpObj
     }
     if (abs(currentBestBoundUp - currentBestBoundDown) < 1) {
@@ -1455,7 +1460,7 @@ setMethod("c_cut_and_branch", signature=c("sdcProblem", "list"), definition=func
         }
       }
       if (length(pruneReason) > 1) {
-        stop("Error: only one pruning reason possible!\n")
+        stop("Error: only one pruning reason possible!", call. = FALSE)
       }
       if (pruneReason == "V") {
         solutions[[length(solutions) + 1]] <- as.integer(xi)

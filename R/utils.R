@@ -151,28 +151,14 @@ domRule <- function(object, params, type) {
     }
   })
 
-  supp_index <- which(supp_state == TRUE)
+  # in case of dominance rules; empty cells (frequency = 0)
+  # are never marked as sensitive
+  supp_index <- which(supp_state == TRUE & g_freq(pI) > 0)
   if (length(supp_index) > 0) {
     s_sdcStatus(pI) <- list(
       index = supp_index,
       vals = rep("u", length(supp_index))
     )
-  }
-
-  if (isFALSE(params$allowZeros)) {
-    if (type %in% c("p", "pq")) {
-      ind_zero <- which(g_freq(pI) == 0)
-    }
-    if (type == "nk") {
-      cell_totals <- unlist(lapply(inp, function(x) x$celltot))
-      ind_zero <- which(cell_totals == 0 & g_freq(pI) >= 0)
-    }
-    if (length(ind_zero) > 0) {
-      s_sdcStatus(pI) <- list(
-        index = ind_zero,
-        vals = rep("u", length(ind_zero))
-      )
-    }
   }
   s_problemInstance(object) <- pI
   validObject(object)

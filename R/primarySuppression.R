@@ -22,9 +22,10 @@
 #' - `maxN`: numeric vector of length 1 used when applying the frequency rule.
 #' All cells having counts <= `maxN` are set as primary suppressed. The default
 #' value of `maxN` is `3`.
-#' - `allowZeros`: logical vector of length 1 specifying if empty cells
-#' (count==0) should be considered sensitive when using the frequency rule.
-#' The default value of `allowZeros` is `FALSE` so that empty cells are not
+#' - `allowZeros`: logical value defining if empty cells (with frequency = 0)
+#' should be considered sensitive when using the frequency rule. Empty cells are
+#' never considered as sensitive when applying dominance rules; The default
+#' value of `allowZeros` is `FALSE` so that empty cells are not
 #' considered primary sensitive by default. Such cells (frequency 0) are then
 #' flagged as `z` which indicates such a cell may be published but should (internally)
 #' not be used for (secondary) suppression in the heuristic algorithms.
