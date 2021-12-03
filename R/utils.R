@@ -52,11 +52,14 @@ domRule <- function(object, params, type) {
     }
 
     # replicate by weights: what to do with non-integerish weights?
-    # randomly round upwards and downwards?
+    # consistently round up (1, 3, ...) and downwards (2, 4, ...)
     if (!is_integerish(w)) {
-      dir <- sample(c(-1, 1), length(vals), replace = TRUE)
-      w[dir == -1] <- floor(w[dir == -1])
-      w[dir == 1] <- ceiling(w[dir == 1])
+      idx <- seq(1, length(w), by = 2)
+      w[idx] <- ceiling(w[idx])
+      if (length(w) > 1) {
+        idx <- seq(2, length(w), by = 2)
+        w[idx] <- floor(w[idx])
+      }
     }
     # division is required here because in makeProblem()
     # all numVars-variables are aggregated on cell-level

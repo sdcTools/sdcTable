@@ -1,3 +1,8 @@
+# sdcTable 0.32.2
+- when applying dominance rules, empty cells (with frequency `0`) are never marked primary sensitive
+- do not overwrite pre-existing sensitive cells when applying a threshold rule after a dominance rule with `allowZeros = FALSE`
+- when computing dominance rules using sampling weights it is ensured that weights are consistently rounded
+
 # sdcTable 0.32.1
 - allow invocation of exact previous implementation of `"SIMPLEHEURISTIC` using `method = "SIMPLEHEURISTIC_OLD"` in `protectTable()`
 - fix for edge-cases in `"SIMPLEHEURISTIC"`: weights are temporarily changed for `"z"`-cells if no additional suppression
