@@ -63,10 +63,6 @@ dimList <- list(
   V2 = sdcHierarchies::hier_convert(h2, as = "df"),
   V3 = sdcHierarchies::hier_convert(h3, as = "df")
 )
-
-#resOPT <- workDat$resOPT
-#completeData <- workDat$resOPT@finalData
-#completeData <- completeData[, -ncol(completeData)]
 ```
 
 We now walk through the steps that are required to protect tabular data using **sdcTable**. In the first example we are going to protect table cells given a three-dimensional tabular structure with some sub-totals. 
@@ -375,6 +371,7 @@ go on to use function `protectTable()` as explained in the next section.
 ### Secondary cell suppression using **sdcTable** {#ex1:secondSupp}
 **sdcTable** provides algorithms to protect primary sensitive table cells defined in objects of class `sdcProblem`. The algorithms that may be selected are shown below:
 
+- **"GAUSS"**: secondary suppression algorithm based on Gaussian elimination implemented in `SSBtools::GaussSuppression()`. 
 - **"OPT"**: protect the complete hierarchical, multidimensional table at once. This algorithm is however only suitable for small problem instances.
 - **"HITAS"**: solving the secondary cell suppression problem by applying a cut and branch algorithm to sub-tables that are protected in specific order 
 - **"HYPERCUBE"**: solving the problem using a heuristic that is based on finding geometric hyper-cubes that are required to protect primary sensitive table cells. This algorithm is not extensively tested. It is a better idea to create a batch-file usable for [tau-argus](https://github.com/sdcTools/tauargus) using `createArgusInput()` (`?createArgusInput`) and solve the problem using Argus.
@@ -384,21 +381,21 @@ go on to use function `protectTable()` as explained in the next section.
 We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function `protectTable()`.
 
 ```{r, cache=TRUE}
+resGAUSS <- protectTable(prob.completeDat, method = "GAUSS")
 resHITAS <- protectTable(prob.completeDat, method = "HITAS")
 resOPT <- protectTable(prob.completeDat, method = "OPT")
 resHYPER <- protectTable(prob.completeDat, method = "HYPERCUBE")
 resSIMPLE <- protectTable(prob.completeDat, method = "SIMPLEHEURISTIC")
 ```
 
-
-Having a look at the Output objects we can observe that the number of secondary suppressions required to protect the `r nrPrimSupps` primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.
+Having a look at the resulting objects we can observe that the number of secondary suppressions required to protect the `r nrPrimSupps` primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.
 
 Using the *"OPT"*-algorithm, a total of ``r getInfo(resOPT, 'nrSecondSupps')``
 cells have been marked as secondary suppressions. When using *"HITAS"*-algorithm, it
 was required to additionally suppress  ``r getInfo(resHITAS, 'nrSecondSupps')``
 cells. A total of  ``r getInfo(resHYPER, 'nrSecondSupps')`` cells was
 selected and marked as secondary suppressions when the *"HYPERCUBE"* algorithm was
-used while ``r getInfo(resSIMPLE, 'nrSecondSupps')`` additional suppressions were required for the fast heuristic simple procedure *"SIMPLEHEURISTIC"*.
+used while ``r getInfo(resSIMPLE, 'nrSecondSupps')`` additional suppressions were required for the fast heuristic simple procedure *"SIMPLEHEURISTIC"* and ``r getInfo(resGAUSS, 'nrSecondSupps')`` supps for the Gaussian elimination method.
 
 One now easily get information from the resulting output objects that are instances of class `safeObj` by using function `getInfo()` or applying the `summary`-method. For the former we show how to extract the final data set which can be achieved as follows:
 
