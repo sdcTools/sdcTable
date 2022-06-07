@@ -75,7 +75,7 @@ getInfo <- function(object, type) {
     if (!type %in% ok) {
       stop("getInfo:: type must be one of", paste(shQuote(ok), collapse = ", "), call. = FALSE)
     }
-    if (class(object) == "sdcProblem") {
+    if (inherits(object, "sdcProblem")) {
       pI <- g_problemInstance(object)
     } else {
       pI <- object

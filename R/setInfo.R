@@ -49,7 +49,7 @@
 #' @export
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 setInfo <- function(object, type, index, input) {
-  if (!class(object) %in% c("sdcProblem", "problemInstance")) {
+  if (!(inherits(object, "sdcProblem") | inherits(object, "problemInstance"))) {
     stop("setInfo:: argument `object` must be of class `sdcProblem` or `problemInstance`.", call. = FALSE)
   }
 
@@ -58,7 +58,7 @@ setInfo <- function(object, type, index, input) {
     stop("setInfo:: type must be one of", paste(shQuote(ok), collapse = ", "), call. = FALSE)
   }
 
-  if (class(object) == "sdcProblem") {
+  if (inherits(object, "sdcProblem")) {
     pI <- g_problemInstance(object)
   } else {
     pI <- object
@@ -70,7 +70,7 @@ setInfo <- function(object, type, index, input) {
     input = list(index = index, values = input)
   )
 
-  if (class(object) == "sdcProblem") {
+  if (inherits(object, "sdcProblem")) {
     s_problemInstance(object) <- pI
   } else {
     object <- pI
