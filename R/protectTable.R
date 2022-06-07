@@ -82,7 +82,7 @@
 #'   (default) does not apply any function
 #'   * `whenEmptyUnsuppressed`: a function to be called when empty candidate cells aredevto problematic; `NULL`
 #'   (default) does not apply any function
-#'   * `singletonMethod`: parameter `singletonMethod` in [SSBtools::GaussSuppression()]; default `"anySum`
+#'   * `singletonMethod`: parameter `singletonMethod` in [SSBtools::GaussSuppression()]; default `"anySum"`
 #' @return an [safeObj-class] object
 #' @md
 #' @examples
