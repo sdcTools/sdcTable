@@ -243,6 +243,12 @@ genParaObj <- function(selection, ...) {
     paraObj$detectSingletons <- FALSE
     paraObj$threshold <- NA
 
+    # GAUSS
+    paraObj$removeDuplicated <- TRUE
+    paraObj$whenEmptySuppressed	<- NULL
+    paraObj$whenEmptyUnsuppressed	<- NULL
+    paraObj$singletonMethod <- "anySum"
+
     # protect_linked_tables
     paraObj$maxIter <- 5
 
@@ -289,7 +295,7 @@ genParaObj <- function(selection, ...) {
       stop("argument `approxPerc` must be >= 1 and <= 100!\n", call. = FALSE)
     }
 
-    methods_ok <- c("SIMPLEHEURISTIC", "SIMPLEHEURISTIC_OLD", "HITAS", "HYPERCUBE", "OPT")
+    methods_ok <- c("GAUSS", "SIMPLEHEURISTIC", "SIMPLEHEURISTIC_OLD", "HITAS", "HYPERCUBE", "OPT")
     if (!paraObj$method %in% methods_ok) {
       stop(paste("valid methods:", paste(shQuote(methods_ok), collapse = ", ")), call. = FALSE)
     }

@@ -74,6 +74,15 @@
 #'    * `threshold`: if not `NULL` (the default) an integerish number (> `0`). If specified, a procedure similar
 #'    to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
 #'    contains primary sensitive cells the suppressed number of contributors is `>=` the specified threshold.
+#'
+#' - parameters used for the **"GAUSS"** procedure; for details please see `?SSBtools::GaussSuppression` as
+#' the default values are the same as in this function:
+#'   * `removeDuplicated`: should duplicated columns be removed before running the protection algorithm
+#'   * `whenEmptySuppressed`: a function to be called when primary suppressed input is problematic; `NULL`
+#'   (default) does not apply any function
+#'   * `whenEmptyUnsuppressed`: a function to be called when empty candidate cells aredevto problematic; `NULL`
+#'   (default) does not apply any function
+#'   * `singletonMethod`: parameter `singletonMethod` in [SSBtools::GaussSuppression()]; default `"anySum`
 #' @return an [safeObj-class] object
 #' @md
 #' @examples
@@ -81,18 +90,22 @@
 #' # (same as example from ?primarySuppression)
 #' p <- sdc_testproblem(with_supps = TRUE)
 #'
-#' # protect the table using the 'HITAS' algorithm with verbose output
-#' res1 <- protectTable(p, method = "HITAS", verbose = TRUE, useC = TRUE)
+#' # protect the table using the 'GAUSS' algorithm with verbose output
+#' res1 <- protectTable(p, method = "GAUSS", verbose = TRUE)
 #' res1
 #'
-#' # protect using the heuristic algorithm
-#' res2 <- protectTable(p, method = "SIMPLEHEURISTIC")
+#' # protect the table using the 'HITAS' algorithm with verbose output
+#' res2 <- protectTable(p, method = "HITAS", verbose = TRUE, useC = TRUE)
 #' res2
+#'
+#' # protect using the heuristic algorithm
+#' res3 <- protectTable(p, method = "SIMPLEHEURISTIC")
+#' res3
 #'
 #' # protect using the old implmentation of the heuristic algorithm
 #' # used in sdcTable versions <0.32
-#' res3 <- protectTable(p, method = "SIMPLEHEURISTIC_OLD")
-#' res3
+#' res4 <- protectTable(p, method = "SIMPLEHEURISTIC_OLD")
+#' res4
 #'
 #' # looking at the final table with result suppression pattern
 #' print(getInfo(res1, type = "finalData"))
@@ -114,6 +127,8 @@ protectTable <- function(object, method, ...) {
     out <- .protect_simpleheuristic(object, input = paraList)$object
   } else if (method == "SIMPLEHEURISTIC_OLD") {
     out <- .protect_simpleheuristic_old(object, input = paraList)$object
+  } else if (method == "GAUSS") {
+    out <- .protect_gauss(object, input = paraList)
   } else {
     if (paraList$useC) {
       if (method == "OPT") {

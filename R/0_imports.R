@@ -11,4 +11,6 @@
 #' @importFrom rlang is_scalar_character is_character is_integerish
 #' @importFrom rlang is_scalar_double is_scalar_integerish is_scalar_logical
 #' @importFrom knitr knit
+#' @importFrom Matrix sparseMatrix
+#' @importFrom SSBtools GaussSuppression
 NULL

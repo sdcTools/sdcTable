@@ -1,3 +1,7 @@
+# [todo] sdcTable 0.32.3
+- fix some Check-Notes
+- make `SSBtools::GaussSuppression` as `method = "GAUSS"` available in `protectTable()`
+
 # sdcTable 0.32.2
 - when applying dominance rules, empty cells (with frequency `0`) are never marked primary sensitive
 - do not overwrite pre-existing sensitive cells when applying a threshold rule after a dominance rule with `allowZeros = FALSE`

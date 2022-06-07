@@ -25,6 +25,7 @@ p_opt <- protectTable(object = p, method = "OPT", useC = FALSE, verbose = FALSE)
 p_opt_c <- protectTable(object = p, method = "OPT", useC = TRUE, verbose = FALSE)
 p_hyper <- protectTable(object = p, method = "HYPERCUBE", verbose = FALSE)
 p_hitas <- protectTable(object = p, method = "HITAS", useC = TRUE, verbose = FALSE)
+p_gauss <- protectTable(object = p, method = "GAUSS", verbose = FALSE)
 
 expect_equivalent(p_opt@results, p_opt_c@results)
 expect_is(p_opt@results, "data.frame")
@@ -34,6 +35,7 @@ expect_equal(sum(p_opt@results$sdcStatus == c("x")), 3) # second_supps
 expect_equal(which(p_opt@results$sdcStatus != "s"), c(5, 6, 11, 12))
 expect_equal(which(p_hyper@results$sdcStatus != "s"), c(5, 6, 11, 12))
 expect_equal(which(p_hitas@results$sdcStatus != "s"), c(5, 6, 11, 12))
+expect_equal(which(p_gauss@results$sdcStatus != "s"), c(5, 6, 14, 15))
 
 # test SIMPLEHEURISTIC
 p_simple <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE)
@@ -79,3 +81,17 @@ expect_is(p_opt, "sdcProblem")
 expect_is(p_opt@results, "data.frame")
 expect_equal(sum(p_opt@results$sdcStatus == "s"), 15)
 expect_equal(sum(p_opt@results$sdcStatus != "s"), 0)
+
+# test gauss-pattern (changes if a cell is set to "z")
+p <- change_cellstatus(
+  object = p,
+  specs = c(region = "A", gender = "female"),
+  rule = "u"
+)
+p <- change_cellstatus(
+  object = p,
+  specs = c(region = "D", gender = "male"),
+  rule = "z"
+)
+p_gauss <- protectTable(object = p, method = "GAUSS", verbose = FALSE)
+expect_equal(which(p_gauss@results$sdcStatus != "s"), c(5, 6, 11, 12))
