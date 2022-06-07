@@ -34,7 +34,7 @@ check_pos_number <- function(inp, v_min=1, v_max=100, default=1) {
 
 # check variable input for batch-file
 check_varinput <- function(obj, type, responsevar, shadowvar, costvar, requestvar, holdingvar) {
-  if (!class(obj)=="sdcProblem") {
+  if (!inherits(obj, "sdcProblem")) {
     stop("argument 'obj' must be of class 'sdcProblem'!\n")
   }
   stopifnot(type %in% c("microdata", "tabular"))
@@ -128,8 +128,8 @@ check_suppmethod <- function(method) {
 ## create required inputs
 hrc <- function(obj) {
   convert_dim <- function(dim) {
-    if (!class(dim)=="dimVar") {
-      stop("convert_dim(): wrong input!\n")
+    if (!inherits(dim, "dimVar")) {
+      stop("convert_dim(): wrong input!", call. = FALSE)
     }
     codes <- get.dimVar(dim, "codesOriginal")
     levs <- get.dimVar(dim, "levels")-1
@@ -605,8 +605,8 @@ check_primrules <- function(primSuppRules, responsevar, contains_holdings = FALS
   }
 
   for (i in 1:length(primSuppRules)) {
-    res <- try(do.call(srule, primSuppRules[[i]]), silent=TRUE)
-    if ("try-error" %in% class(res)) {
+    res <- try(do.call(srule, primSuppRules[[i]]), silent = TRUE)
+    if (inherits(res, "try-error")) {
       stop("invalid safety-rule specification detected", call. = FALSE)
     }
     out[[i]] <- res

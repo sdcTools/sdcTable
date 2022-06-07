@@ -36,7 +36,7 @@ runArgusBatchFile <- function(obj=NULL, batchF, exe="C:\\Tau\\TauArgus.exe", bat
 
   ## checks
   if (!is.null(obj)) {
-    if(!class(obj)=="sdcProblem") {
+    if (!inherits(obj, "sdcProblem")) {
       stop("argument 'obj' must be of class 'sdcProblem'!\n")
     }
     ## check if it was written by sdcTable

@@ -118,7 +118,8 @@ makeProblem <- function(data,
     if (any(sapply(inputDims, class) != "dimVar")) {
       stop("Not all elements of `inputDims` are of class `dimVar`.", call. = FALSE)
     }
-    if (class(inputData) != "dataObj") {
+
+    if (!inherits(inputData, "dataObj")) {
       stop("`inputData` is not of class `dataObj`.", call. = FALSE)
     }
 

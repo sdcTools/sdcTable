@@ -133,7 +133,7 @@ createArgusInput <- function(
   primSuppRules=NULL, responsevar=NULL, shadowvar=NULL, costvar=NULL,
   requestvar=NULL, holdingvar=NULL, ...) {
 
-  if (class(obj) != "sdcProblem") {
+  if (!inherits(obj, "sdcProblem")) {
     stop("argument 'obj' must be of class 'sdcProblem'.\n")
   }
   if (!typ %in% c("microdata", "tabular")) {

@@ -89,7 +89,8 @@ my.Rglpk_solve_LP <- function(obj, mat, dir, rhs, types=NULL, max=FALSE,
   if (!identical(verbose, TRUE) && !identical(verbose, FALSE)) {
     stop("'Argument 'verbose' must be either TRUE or FALSE.", call. = FALSE)
   }
-  if (!class(mat) == "simpleTriplet") {
+
+  if (!inherits(mat, "simpleTriplet")) {
     stop("argument 'mat' must be of class 'simpleTriplet'", call. = FALSE)
   }
 
