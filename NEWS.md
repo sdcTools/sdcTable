@@ -1,6 +1,8 @@
-# [todo] sdcTable 0.32.3
-- fix some Check-Notes
+# sdcTable 0.32.3
 - make `SSBtools::GaussSuppression` as `method = "GAUSS"` available in `protectTable()`
+- updated vignette
+- small overall fixes
+- fix argus-batchfile creation (`typ = "microdata")`) in case aggregate codes are available in raw input data
 
 # sdcTable 0.32.2
 - when applying dominance rules, empty cells (with frequency `0`) are never marked primary sensitive
