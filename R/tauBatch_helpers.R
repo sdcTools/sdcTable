@@ -199,6 +199,13 @@ create_microdata_and_metadata <- function(obj, verbose, digits=2, path=getwd(), 
     stop("using complete tables (isMicroData==FALSE) is currently unsupported!\n")
   }
 
+  # restrict to minimal codes
+  di <- get.sdcProblem(obj, "dimInfo")
+  for (v in slot(di, "vNames")) {
+    mincodes <- di@dimInfo[[v]]@codesOriginal[di@dimInfo[[v]]@codesMinimal]
+    mdat <- mdat[mdat[[v]] %in% mincodes]
+  }
+
   bl <- "  "
   cmds <- list()
   cmds <- append(cmds, paste("<SEPARATOR>", dQuote(",")))
@@ -208,7 +215,7 @@ create_microdata_and_metadata <- function(obj, verbose, digits=2, path=getwd(), 
   # define output-matrix (required for fixed-file format)
   mat <- matrix("", nrow=nrow(mdat), ncol=1)
 
-  # calculate hierarchiy-files
+  # calculate hierarchy-files
   hiercodes <- hrc(obj)
 
   # write microdata
