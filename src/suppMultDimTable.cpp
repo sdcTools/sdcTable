@@ -151,7 +151,7 @@ List greedyMultDimSuppression(DataFrame dat, List indices, List subIndices, Inte
                   if (cur_sdcstatus[kk] == 4) {
                     nr_dummycells = nr_dummycells + 1;
                   }
-                  if ((cur_sdcstatus[kk] == 0) & (cur_freq[kk] > 0)) {
+                  if ((cur_sdcstatus[kk] == 0) && (cur_freq[kk] > 0)) {
                     is_candidate[kk] = true;
                   }
                 }
