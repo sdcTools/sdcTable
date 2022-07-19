@@ -52,7 +52,7 @@
 
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.32.3" id="sdctable-0323">sdcTable 0.32.3<small>2022-07-16</small><a class="anchor" aria-label="anchor" href="#sdctable-0323"></a></h2>
-<ul><li>make <code><a href="https://rdrr.io/pkg/SSBtools/man/GaussSuppression.html" class="external-link">SSBtools::GaussSuppression</a></code> as <code>method = "GAUSS"</code> available in <code>protectTable()</code>
+<ul><li>make <code><a href="https://rdrr.io/pkg/SSBtools/man/GaussSuppression.html" class="external-link">SSBtools::GaussSuppression</a></code> as <code>method = "GAUSS"</code> available in <code><a href="../reference/protectTable.html">protectTable()</a></code>
 </li>
 <li>updated vignette</li>
 <li>small overall fixes</li>
@@ -67,7 +67,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.32.1" id="sdctable-0321">sdcTable 0.32.1<small>2021-09-30</small><a class="anchor" aria-label="anchor" href="#sdctable-0321"></a></h2>
-<ul><li>allow invocation of exact previous implementation of <code>"SIMPLEHEURISTIC</code> using <code>method = "SIMPLEHEURISTIC_OLD"</code> in <code>protectTable()</code>
+<ul><li>allow invocation of exact previous implementation of <code>"SIMPLEHEURISTIC</code> using <code>method = "SIMPLEHEURISTIC_OLD"</code> in <code><a href="../reference/protectTable.html">protectTable()</a></code>
 </li>
 <li>fix for edge-cases in <code>"SIMPLEHEURISTIC"</code>: weights are temporarily changed for <code>"z"</code>-cells if no additional suppression can be detected</li>
 <li>combined existing functionality to compute constraint-matrix of a problem instance into (much faster) <code>create_m_matrix()</code><ul><li>replaced internal methods/functions <code>c_gen_mat_m()</code> and <code>.gen_constraint_matrix()</code> and <code>genMatMFull()</code>
@@ -90,44 +90,44 @@
 <li>allow nk-dominance rules with n=1 (thx <a href="https://github.com/MaximeBeaute" class="external-link">@MaximeBeaute</a> for reporting)</li>
 <li>increased performance as contributing-units to cells are computed only once</li>
 </ul></li>
-<li>improved function <code>attack()</code><ul><li>problem-formulation and solution using the <code>glpkAPI</code>-package</li>
+<li>improved function <code><a href="../reference/attack.html">attack()</a></code><ul><li>problem-formulation and solution using the <code>glpkAPI</code>-package</li>
 <li>can be used to attack all (suppressed) or specific cells</li>
 <li>can also be used after computing a solution for the cell suppression problem</li>
 </ul></li>
 <li>performance improvements<ul><li>
-<code>c_quick_suppression()</code> and <code>attack()</code> compute linear deps (<code>.gen_contraint_matrix</code>) only once</li>
+<code>c_quick_suppression()</code> and <code><a href="../reference/attack.html">attack()</a></code> compute linear deps (<code>.gen_contraint_matrix</code>) only once</li>
 <li>improvements in computation of contributing units to a cell (<code>contributing_indices</code>)</li>
 </ul></li>
-<li>new/updated functions/methods:<ul><li>new function <code>protect_linked_tables()</code><ul><li>will replace <code>protectLinkedTables()</code> in the future (currently calls new function internally)</li>
+<li>new/updated functions/methods:<ul><li>new function <code><a href="../reference/protect_linked_tables.html">protect_linked_tables()</a></code><ul><li>will replace <code><a href="../reference/protect_linked_tables.html">protectLinkedTables()</a></code> in the future (currently calls new function internally)</li>
 <li>only allows the <code>SIMPLEHEURISTIC</code> algorithm</li>
 </ul></li>
 <li>
-<code>cell_info()</code> replaces <code>cellInfo()</code> (defunct)</li>
+<code><a href="../reference/cell_info.html">cell_info()</a></code> replaces <code><a href="../reference/defunct-sdcTable.html">cellInfo()</a></code> (defunct)</li>
 <li>
-<code>change_cellstatus()</code> replaces <code>changeCellStatus()</code> (defunct)</li>
-<li>new function <code>createRegSDCInput()</code> allows to compute input for e.g <code>RegSDC::SuppressDec</code>
+<code><a href="../reference/change_cellstatus.html">change_cellstatus()</a></code> replaces <code><a href="../reference/defunct-sdcTable.html">changeCellStatus()</a></code> (defunct)</li>
+<li>new function <code><a href="../reference/createRegSDCInput.html">createRegSDCInput()</a></code> allows to compute input for e.g <code>RegSDC::SuppressDec</code>
 </li>
 <li>removed S4-class definition <code>safeObj</code> and related methods<ul><li>results are stored within <code>sdcProblem</code>-objects (in slot <code>results</code>)</li>
-<li>rewritten <code>getInfo()</code> using an internal helper-function <code>get_safeobj()</code>
+<li>rewritten <code><a href="../reference/getInfo.html">getInfo()</a></code> using an internal helper-function <code><a href="../reference/get_safeobj.html">get_safeobj()</a></code>
 </li>
 </ul></li>
-<li>new function <code>contributing_indices()</code><ul><li>returns contributing units (from raw input data) to a cell</li>
+<li>new function <code><a href="../reference/contributing_indices.html">contributing_indices()</a></code><ul><li>returns contributing units (from raw input data) to a cell</li>
 <li>removed internal helper-function <code>c_contributing_indices()</code>
 </li>
 </ul></li>
 <li>replaced internal S4-method <code>c_cellID</code> with utility-function <code>cell_id()</code>
 </li>
 </ul></li>
-<li>improved examples, documentation, test-data and unit-tests<ul><li>improved and updated documentation <code>getInfo()</code> and <code>setInfo()</code>
+<li>improved examples, documentation, test-data and unit-tests<ul><li>improved and updated documentation <code><a href="../reference/getInfo.html">getInfo()</a></code> and <code><a href="../reference/setInfo.html">setInfo()</a></code>
 </li>
 <li>replaced <code>microData1.RData</code> and <code>microData2.RData</code><ul><li>generation is reproducible in <code>data-raw</code>
 </li>
 <li>data can be loaded using <code>data(microdata1)</code> and <code>data(microdata2)</code>
 </li>
 </ul></li>
-<li>replaced <code>problem.RData</code> and <code>problemWithSupps.RData</code> with <code>sdc_testproblem()</code>
+<li>replaced <code>problem.RData</code> and <code>problemWithSupps.RData</code> with <code><a href="../reference/sdc_testproblem.html">sdc_testproblem()</a></code>
 </li>
-<li>better document sdc-code <code>z</code> in <code>primarySuppression()</code>
+<li>better document sdc-code <code>z</code> in <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>
 </li>
 <li>improved and updated vignette (thx to <a href="https://github.com/Krisselack" class="external-link">@Krisselack</a> for reporting)</li>
 </ul></li>
@@ -136,7 +136,7 @@
 <h2 class="page-header" data-toc-text="0.31" id="sdctable-031">sdcTable 0.31<small>2020-03-10</small><a class="anchor" aria-label="anchor" href="#sdctable-031"></a></h2>
 <ul><li>remove debugging output</li>
 <li>fixing typos in vignettes</li>
-<li>bugfix in <code>protectLinkedTables()</code>
+<li>bugfix in <code><a href="../reference/protect_linked_tables.html">protectLinkedTables()</a></code>
 </li>
 <li>remove dependency on package <code>lpSolveAPI</code>
 </li>
@@ -145,22 +145,22 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.30" id="sdctable-030">sdcTable 0.30<small>2019-09-19</small><a class="anchor" aria-label="anchor" href="#sdctable-030"></a></h2>
-<ul><li>various fixes and improvements in <code>createJJFormat()</code>
+<ul><li>various fixes and improvements in <code><a href="../reference/createJJFormat.html">createJJFormat()</a></code>
 </li>
-<li>ignore sampling weights in case the input in <code>makeProblem()</code> is a complete table and not microdata</li>
+<li>ignore sampling weights in case the input in <code><a href="../reference/makeProblem.html">makeProblem()</a></code> is a complete table and not microdata</li>
 <li>
 <code>sdcProb2df():</code> if numeric variables are shown; display their weighted values (in case) sampling weights have been specified in <code>makeProblem</code>
 </li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.29" id="sdctable-029">sdcTable 0.29<small>2019-08-31</small><a class="anchor" aria-label="anchor" href="#sdctable-029"></a></h2>
-<ul><li>change in <code>primarySuppression()</code>: for dominance rule it is now only possible to specify underlying variables by name (using argument <code>numVarName</code>) and no longer by index to avoid errors</li>
+<ul><li>change in <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>: for dominance rule it is now only possible to specify underlying variables by name (using argument <code>numVarName</code>) and no longer by index to avoid errors</li>
 <li>fixes in primary suppression for dominance rules</li>
 <li>create files from examples in tempdir()</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.28" id="sdctable-028">sdcTable 0.28<small>2019-06-04</small><a class="anchor" aria-label="anchor" href="#sdctable-028"></a></h2>
-<ul><li>new function <code>contributing_indices()</code>
+<ul><li>new function <code><a href="../reference/contributing_indices.html">contributing_indices()</a></code>
 </li>
 <li>call <code>.Defunct</code> for old exported functions</li>
 <li>make default bounds (<code>ub</code>, <code>lb</code>) depend on costs</li>
@@ -168,14 +168,14 @@
 <li>make use of sampling weights (by replicating) values for dominance rules.</li>
 <li>don’t export unused functionality</li>
 <li>
-<code>createJJFormat()</code> and <code>writeJJFormat()</code> can be used to create text files with sdcProblems in “JJs Format”</li>
+<code><a href="../reference/createJJFormat.html">createJJFormat()</a></code> and <code><a href="../reference/writeJJFormat.html">writeJJFormat()</a></code> can be used to create text files with sdcProblems in “JJs Format”</li>
 <li>allow to specify variable names too in <code>makeProblem</code>
 </li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.27" id="sdctable-027">sdcTable 0.27<small>2019-02-28</small><a class="anchor" aria-label="anchor" href="#sdctable-027"></a></h2>
-<ul><li>use functionality from <a href="https://cran.r-project.org/package=sdcHierarchies" class="external-link"><code>sdcHierarchies</code></a> to build hierarchies. - removed <code>create_node()</code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create()</a></code> instead<ul><li>removed <code>add_nodes()</code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add()</a></code> instead</li>
-<li>removed <code>delete_nodes()</code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_delete.html" class="external-link">hier_delete()</a></code> instead</li>
+<ul><li>use functionality from <a href="https://cran.r-project.org/package=sdcHierarchies" class="external-link"><code>sdcHierarchies</code></a> to build hierarchies. - removed <code><a href="../reference/defunct-sdcTable.html">create_node()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create()</a></code> instead<ul><li>removed <code><a href="../reference/defunct-sdcTable.html">add_nodes()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add()</a></code> instead</li>
+<li>removed <code><a href="../reference/defunct-sdcTable.html">delete_nodes()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_delete.html" class="external-link">hier_delete()</a></code> instead</li>
 <li>removed <code>rename_nodes()</code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_rename.html" class="external-link">hier_rename()</a></code> instead</li>
 </ul></li></ul></div>
     <div class="section level2">
@@ -192,7 +192,7 @@
 <ul><li>bugfix in SIMPLEHEURISTIC-algorithm</li>
 <li>code cleanup</li>
 <li>updated package vignette</li>
-<li>new functions <code>create_node()</code>, <code>add_nodes()</code> and <code>delete_nodes()</code> that allow a dynamic generation of hierarchies. For an example have a look at <code>?makeProblem</code>
+<li>new functions <code><a href="../reference/defunct-sdcTable.html">create_node()</a></code>, <code><a href="../reference/defunct-sdcTable.html">add_nodes()</a></code> and <code><a href="../reference/defunct-sdcTable.html">delete_nodes()</a></code> that allow a dynamic generation of hierarchies. For an example have a look at <code><a href="../reference/makeProblem.html">?makeProblem</a></code>
 </li>
 </ul></div>
     <div class="section level2">

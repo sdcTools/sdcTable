@@ -91,19 +91,19 @@
 <p>The purpose of the <strong>sdcTable</strong> vignette is to show how to get up and running with <strong>sdcTable</strong>; for details, including a complete list of options, consult the help pages or the manual for the following main functions of the package:</p>
 <ul>
 <li>
-<code>makeProblem</code> using e.g: <code>help('makeProblem')</code> or <code>?makeProblem</code>
+<code>makeProblem</code> using e.g: <code><a href="../reference/makeProblem.html">help('makeProblem')</a></code> or <code><a href="../reference/makeProblem.html">?makeProblem</a></code>
 </li>
 <li>
-<code>primarySuppression</code> using e.g: <code>help('primarySuppression')</code> or <code>?primarySuppression</code>
+<code>primarySuppression</code> using e.g: <code><a href="../reference/primarySuppression.html">help('primarySuppression')</a></code> or <code><a href="../reference/primarySuppression.html">?primarySuppression</a></code>
 </li>
 <li>
-<code>protectTable</code> using e.g: <code>help('protectTable')</code> or <code>?protectTable</code>
+<code>protectTable</code> using e.g: <code><a href="../reference/protectTable.html">help('protectTable')</a></code> or <code><a href="../reference/protectTable.html">?protectTable</a></code>
 </li>
 <li>
-<code>setInfo</code> using e.g: <code>help('setInfo')</code> or <code>?setInfo</code>
+<code>setInfo</code> using e.g: <code><a href="../reference/setInfo.html">help('setInfo')</a></code> or <code><a href="../reference/setInfo.html">?setInfo</a></code>
 </li>
 <li>
-<code>getInfo</code> using e.g: <code>help('getInfo')</code> or <code>?getInfo</code>
+<code>getInfo</code> using e.g: <code><a href="../reference/getInfo.html">help('getInfo')</a></code> or <code><a href="../reference/getInfo.html">?getInfo</a></code>
 </li>
 </ul>
 </div>
@@ -114,9 +114,9 @@
 <img src="overview.png" id="fig:overview" alt=""><p class="caption">Figure 1: <strong>sdcTable</strong> - an overview of exported functions</p>
 </div>
 <p>The main functions that are exported to users are shown in <a href="#fig:overview">Figure 1</a>.</p>
-<p>Function <code>makeProblem()</code> is used to create objects of class <code>sdcProblem</code>. Instances of class <code>sdcProblem</code> hold the entire information that is required to perform primary or secondary cell suppression such as assumed to be known upper and lower cell bounds or upper-, lower- or sliding protection levels that are required to fulfill when solving the secondary cell suppression problem. All this information can be modified using function <code>setInfo()</code>.</p>
-<p><code>primarySuppression()</code> is applied to objects of class <code>sdcProblem</code>. By setting function parameters users can choose and apply a pre-defined primary suppression rule. Using <code>setInfo()</code>, one can easily implement a custom primary suppression rule, too.</p>
-<p>Function <code>protectTable()</code> is used to protect primary sensitive table cells in objects of class <code>sdcProblem</code>. A successful run of function <code>protectTable()</code> results in an object of class <code>safeObj</code>. Using <code>getInfo()</code> one can extract information from objects of such class, most importantly of course a data set containing all table cells along with the suppression pattern.</p>
+<p>Function <code><a href="../reference/makeProblem.html">makeProblem()</a></code> is used to create objects of class <code>sdcProblem</code>. Instances of class <code>sdcProblem</code> hold the entire information that is required to perform primary or secondary cell suppression such as assumed to be known upper and lower cell bounds or upper-, lower- or sliding protection levels that are required to fulfill when solving the secondary cell suppression problem. All this information can be modified using function <code><a href="../reference/setInfo.html">setInfo()</a></code>.</p>
+<p><code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> is applied to objects of class <code>sdcProblem</code>. By setting function parameters users can choose and apply a pre-defined primary suppression rule. Using <code><a href="../reference/setInfo.html">setInfo()</a></code>, one can easily implement a custom primary suppression rule, too.</p>
+<p>Function <code><a href="../reference/protectTable.html">protectTable()</a></code> is used to protect primary sensitive table cells in objects of class <code>sdcProblem</code>. A successful run of function <code><a href="../reference/protectTable.html">protectTable()</a></code> results in an object of class <code>safeObj</code>. Using <code><a href="../reference/getInfo.html">getInfo()</a></code> one can extract information from objects of such class, most importantly of course a data set containing all table cells along with the suppression pattern.</p>
 <p>More detailed information on all the possibilities is available in the help-files, additional information is given in the corresponding sections of this vignette that deal with specific functions. The first step however to get started is to load the package, which can easily be done as shown below:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sdcTools/sdcTable" class="external-link">sdcTable</a></span><span class="op">)</span></span>
@@ -129,7 +129,7 @@
 </h2>
 <p>We now walk through the steps that are required to protect tabular data using <strong>sdcTable</strong>. In the first example we are going to protect table cells given a three-dimensional tabular structure with some sub-totals.</p>
 <p>We will start by discussing input data sets in sections <a href="#ex1:microDat">“Starting from microdata”</a> and <a href="#ex1:aggDat">“Using aggregated data”</a>. Then we continue by discussing how to define and describe dimensional variables in <span id="ex1:hier">“Defining hierarchies”</span> which is a crucial step in the entire procedure. Once the hierarchies are defined it is necessary to create suitable objects as described (<a href="#ex1:makeProb">here</a>) that can be used to identify and suppress primary sensitive cells. This is shown in section <a href="#ex1:primSupp">“Identifying sensitive cells”</a>. Finally we discuss how to <a href="#ex1:secondSupp">“protect primary sensitive table cells”</a>.</p>
-<p>Throughout it is also shown how to set and extract information from the objects we are working with using functions <code>getInfo()</code> and <code>setInfo()</code>.</p>
+<p>Throughout it is also shown how to set and extract information from the objects we are working with using functions <code><a href="../reference/getInfo.html">getInfo()</a></code> and <code><a href="../reference/setInfo.html">setInfo()</a></code>.</p>
 <div class="section level4">
 <h4 id="ex1:microDat">Starting from microdata<a class="anchor" aria-label="anchor" href="#ex1:microDat"></a>
 </h4>
@@ -323,11 +323,11 @@
 <h4 id="ex1:makeProb">Creating objects of class <code>sdcProblem</code> for further processing<a class="anchor" aria-label="anchor" href="#ex1:makeProb"></a>
 </h4>
 <p>We now show how to create objects of class <code>sdcProblem</code> which can further be used to identify, suppress and protect sensitive table cells.</p>
-<p>It was discussed <a href="#ex1:microDat">here</a> and <a href="#ex1:aggDat">here</a> how micro data and pre-aggregated data can be used as data-input objects. We will now explain how to create instances of class <code>sdcProblem</code> from both <code>microData</code> and <code>completeData</code> and describe the required and optional parameters of function <code>makeProblem()</code>.</p>
+<p>It was discussed <a href="#ex1:microDat">here</a> and <a href="#ex1:aggDat">here</a> how micro data and pre-aggregated data can be used as data-input objects. We will now explain how to create instances of class <code>sdcProblem</code> from both <code>microData</code> and <code>completeData</code> and describe the required and optional parameters of function <code><a href="../reference/makeProblem.html">makeProblem()</a></code>.</p>
 <p>We start building a suitable object of class <code>sdcProblem</code> starting with the data on individual level available from object <code>microData</code>.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dimList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V1 <span class="op">=</span> <span class="va">dimV1</span>, V2 <span class="op">=</span> <span class="va">dimV2</span>, V3 <span class="op">=</span> <span class="va">dimV3</span><span class="op">)</span></span>
-<span><span class="va">prob.microDat</span> <span class="op">&lt;-</span> <span class="fu">makeProblem</span><span class="op">(</span></span>
+<span><span class="va">prob.microDat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeProblem.html">makeProblem</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">microData</span>,</span>
 <span>    dimList <span class="op">=</span> <span class="va">dimList</span>,</span>
 <span>    dimVarInd <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
@@ -335,7 +335,7 @@
 <span>    numVarInd <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">5</span>,</span>
 <span>    weightInd <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    sampWeightInd <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<p>First we have to combine the objects describing the hierarchical variables <code>V1</code>, <code>V2</code> and <code>V3</code> into a list-object named <code>dimList</code>. Each list element is one of the objects created in section <a href="#ex1:hier">“Defining hierarchies”</a>. The names of the list-elements must correspond to the variable name that the corresponding list-element refers to. In this case, the first list-element - <code>dimV1</code> - should describe variable <code>V1</code> in the input data set <code>microData</code> when calling <code>makeProblem()</code> while the second list element - <code>dimV2</code> - defines the hierarchy of variable <code>V2</code> and <code>dimV3</code> - the third list element - describes the structure of variable <code>V3</code>.</p>
+<p>First we have to combine the objects describing the hierarchical variables <code>V1</code>, <code>V2</code> and <code>V3</code> into a list-object named <code>dimList</code>. Each list element is one of the objects created in section <a href="#ex1:hier">“Defining hierarchies”</a>. The names of the list-elements must correspond to the variable name that the corresponding list-element refers to. In this case, the first list-element - <code>dimV1</code> - should describe variable <code>V1</code> in the input data set <code>microData</code> when calling <code><a href="../reference/makeProblem.html">makeProblem()</a></code> while the second list element - <code>dimV2</code> - defines the hierarchy of variable <code>V2</code> and <code>dimV3</code> - the third list element - describes the structure of variable <code>V3</code>.</p>
 <p>The remaining parameters are quite self-explanatory and shorty described below:</p>
 <ul>
 <li>
@@ -358,7 +358,7 @@
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">### problem from complete data ###</span></span>
 <span><span class="va">dimList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V1 <span class="op">=</span> <span class="va">dimV1</span>, V2 <span class="op">=</span> <span class="va">dimV2</span>, V3 <span class="op">=</span> <span class="va">dimV3</span><span class="op">)</span></span>
-<span><span class="va">prob.completeDat</span> <span class="op">&lt;-</span> <span class="fu">makeProblem</span><span class="op">(</span></span>
+<span><span class="va">prob.completeDat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeProblem.html">makeProblem</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">completeData</span>,</span>
 <span>    dimList <span class="op">=</span> <span class="va">dimList</span>,</span>
 <span>    dimVarInd <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
@@ -371,10 +371,10 @@
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">prob.microDat</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">prob.completeDat</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="st">"sdcProblem"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
-<p>We now can check if the cell counts of both objects are equal. Function <code>getInfo()</code> can be used to extract information from objects of class <code>sdcProblem</code>. Specifying argument <code>type</code> as <code>freq</code>, <code>getInfo()</code> returns cell counts which are indeed equal independently if micro-data or pre-aggregated data have been used as input to create the complete tabular structure.</p>
+<p>We now can check if the cell counts of both objects are equal. Function <code><a href="../reference/getInfo.html">getInfo()</a></code> can be used to extract information from objects of class <code>sdcProblem</code>. Specifying argument <code>type</code> as <code>freq</code>, <code><a href="../reference/getInfo.html">getInfo()</a></code> returns cell counts which are indeed equal independently if micro-data or pre-aggregated data have been used as input to create the complete tabular structure.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts1</span> <span class="op">&lt;-</span> <span class="fu">getInfo</span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span>
-<span><span class="va">counts2</span> <span class="op">&lt;-</span> <span class="fu">getInfo</span><span class="op">(</span><span class="va">prob.microDat</span>, type <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">counts1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span>
+<span><span class="va">counts2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span><span class="op">(</span><span class="va">prob.microDat</span>, type <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">counts1</span> <span class="op">==</span> <span class="va">counts2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
 <p>Once the problem has been set up and an instance of class {} is available, it is possible to identify and suppress sensitive table cells as we demonstrate in the next section using object <code>prob.completeDat</code>.</p>
@@ -382,7 +382,7 @@
 <div class="section level4">
 <h4 id="ex1:primSupp">Identifying sensitive cells<a class="anchor" aria-label="anchor" href="#ex1:primSupp"></a>
 </h4>
-<p>Identifying and suppressing primary sensitive cells is usually done by applying function <code>primarySuppression()</code>.</p>
+<p>Identifying and suppressing primary sensitive cells is usually done by applying function <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>.</p>
 <p>Having a look at the cell counts in table <code>prob.completeDat</code> shows that a total of <code>15</code> cells have less than 10 individuals contributing to it. We think that these cells should be considered as primary sensitive and we want to have them protected.</p>
 <p>When creating an object of class <code>sdcProblem</code>, all cells are assigned an anonymization state. The possible codes are listed below:</p>
 <ul>
@@ -395,13 +395,13 @@
 <li>
 <code>"z"</code>: cell must not be suppressed</li>
 </ul>
-<p>The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of <code>s</code> to <code>u</code>. The easiest way is to use function <code>primarySuppression()</code> directly:</p>
+<p>The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of <code>s</code> to <code>u</code>. The easiest way is to use function <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> directly:</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prob.completeDat</span> <span class="op">&lt;-</span> <span class="fu">primarySuppression</span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"freq"</span>, maxN <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>Argument <code>type</code> specifies the primary suppression rule we want to apply. In this case we want to use the frequency threshold rule that allows to suppress all table cells having cell counts less or equal than the threshold specified using argument <code>maxN</code>. <code>primarySuppression()</code> also allows to apply the nk-dominance rule or the p-percent rule directly, in case micro data have been used as input data. For all possible parameters and their explanation the interested reader may consult the manual or the help-page of <code>primarySuppression()</code>.</p>
+<code class="sourceCode R"><span><span class="va">prob.completeDat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primarySuppression.html">primarySuppression</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"freq"</span>, maxN <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p>Argument <code>type</code> specifies the primary suppression rule we want to apply. In this case we want to use the frequency threshold rule that allows to suppress all table cells having cell counts less or equal than the threshold specified using argument <code>maxN</code>. <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> also allows to apply the nk-dominance rule or the p-percent rule directly, in case micro data have been used as input data. For all possible parameters and their explanation the interested reader may consult the manual or the help-page of <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>.</p>
 <p>After performing the suppression, we can have a look at the distribution of the anonymization states:</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu">getInfo</span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"sdcStatus"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="../reference/getInfo.html">getInfo</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"sdcStatus"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">##   s   u </span></span>
 <span><span class="co">## 153  15</span></span></code></pre>
@@ -420,8 +420,8 @@
 <span><span class="co">## 153  15 </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## If this table is protected with heuristic methods, a total of 12 has (sub)tables must be considered!</span></span></code></pre>
-<p>One can see that the <code>15</code> cells having counts less or equal than 10 have been identified and marked as primary suppressed. However, we should note that it is very easy to implement custom suppression rules by manually changing the anonymization state of cells using functions <code>setInfo()</code> or <code>changeCellStatus()</code>. Information on how to use these functions is of course provided in the manual and the corresponding help-pages.</p>
-<p>To protect these cells by solving the secondary cell suppression problem one can go on to use function <code>protectTable()</code> as explained in the next section.</p>
+<p>One can see that the <code>15</code> cells having counts less or equal than 10 have been identified and marked as primary suppressed. However, we should note that it is very easy to implement custom suppression rules by manually changing the anonymization state of cells using functions <code><a href="../reference/setInfo.html">setInfo()</a></code> or <code><a href="../reference/defunct-sdcTable.html">changeCellStatus()</a></code>. Information on how to use these functions is of course provided in the manual and the corresponding help-pages.</p>
+<p>To protect these cells by solving the secondary cell suppression problem one can go on to use function <code><a href="../reference/protectTable.html">protectTable()</a></code> as explained in the next section.</p>
 </div>
 <div class="section level4">
 <h4 id="ex1:secondSupp">Secondary cell suppression using <strong>sdcTable</strong><a class="anchor" aria-label="anchor" href="#ex1:secondSupp"></a>
@@ -435,24 +435,24 @@
 <li>
 <strong>“HITAS”</strong>: solving the secondary cell suppression problem by applying a cut and branch algorithm to sub-tables that are protected in specific order</li>
 <li>
-<strong>“HYPERCUBE”</strong>: solving the problem using a heuristic that is based on finding geometric hyper-cubes that are required to protect primary sensitive table cells. This algorithm is not extensively tested. It is a better idea to create a batch-file usable for <a href="https://github.com/sdcTools/tauargus" class="external-link">tau-argus</a> using <code>createArgusInput()</code> (<code>?createArgusInput</code>) and solve the problem using Argus.</li>
+<strong>“HYPERCUBE”</strong>: solving the problem using a heuristic that is based on finding geometric hyper-cubes that are required to protect primary sensitive table cells. This algorithm is not extensively tested. It is a better idea to create a batch-file usable for <a href="https://github.com/sdcTools/tauargus" class="external-link">tau-argus</a> using <code><a href="../reference/createArgusInput.html">createArgusInput()</a></code> (<code><a href="../reference/createArgusInput.html">?createArgusInput</a></code>) and solve the problem using Argus.</li>
 <li>
 <strong>“SIMPLEHEURISTIC”</strong>: solving the problem using a heuristic approach that aims to only protect against exact recalculation of values. Internally, attacker-problems are iteratively solved until all primary sensitive cells are protected.</li>
 <li>
 <strong>“SIMPLEHEURISTIC_OLD”</strong>: the heuristic procedure implemented in sdcTable versions <code>&lt; 0.32</code>.</li>
 </ul>
-<p>We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function <code>protectTable()</code>.</p>
+<p>We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function <code><a href="../reference/protectTable.html">protectTable()</a></code>.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">resGAUSS</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"GAUSS"</span><span class="op">)</span></span>
-<span><span class="va">resHITAS</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"HITAS"</span><span class="op">)</span></span>
-<span><span class="va">resOPT</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"OPT"</span><span class="op">)</span></span>
-<span><span class="va">resHYPER</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"HYPERCUBE"</span><span class="op">)</span></span>
-<span><span class="va">resSIMPLE</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"SIMPLEHEURISTIC"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">resGAUSS</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"GAUSS"</span><span class="op">)</span></span>
+<span><span class="va">resHITAS</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"HITAS"</span><span class="op">)</span></span>
+<span><span class="va">resOPT</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"OPT"</span><span class="op">)</span></span>
+<span><span class="va">resHYPER</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"HYPERCUBE"</span><span class="op">)</span></span>
+<span><span class="va">resSIMPLE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"SIMPLEHEURISTIC"</span><span class="op">)</span></span></code></pre></div>
 <p>Having a look at the resulting objects we can observe that the number of secondary suppressions required to protect the 15 primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.</p>
 <p>Using the <em>“OPT”</em>-algorithm, a total of <code>23</code> cells have been marked as secondary suppressions. When using <em>“HITAS”</em>-algorithm, it was required to additionally suppress <code>25</code> cells. A total of <code>27</code> cells was selected and marked as secondary suppressions when the <em>“HYPERCUBE”</em> algorithm was used while <code>27</code> additional suppressions were required for the fast heuristic simple procedure <em>“SIMPLEHEURISTIC”</em> and <code>23</code> supps for the Gaussian elimination method.</p>
-<p>One now easily get information from the resulting output objects that are instances of class <code>safeObj</code> by using function <code>getInfo()</code> or applying the <code>summary</code>-method. For the former we show how to extract the final data set which can be achieved as follows:</p>
+<p>One now easily get information from the resulting output objects that are instances of class <code>safeObj</code> by using function <code><a href="../reference/getInfo.html">getInfo()</a></code> or applying the <code>summary</code>-method. For the former we show how to extract the final data set which can be achieved as follows:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">finalData</span> <span class="op">&lt;-</span> <span class="fu">getInfo</span><span class="op">(</span><span class="va">resOPT</span>, type <span class="op">=</span> <span class="st">"finalData"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">finalData</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span><span class="op">(</span><span class="va">resOPT</span>, type <span class="op">=</span> <span class="st">"finalData"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">finalData</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##     V1  V2  V3 Freq   numVal1   numVal2 sdcStatus</span></span>
 <span><span class="co">## 1: Tot Tot Tot 1000 294693.72 298707.90         s</span></span>
@@ -487,7 +487,7 @@
 <span><span class="co">##  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span></span>
 <span><span class="co">## NULL</span></span></code></pre>
 <p>We see that the summary provides all kind of useful information such as the algorithm that has been used to protect primary sensitive cells, the time it has been taken to solve the problem, the number of primary sensitive and secondary suppressed cells as well as the number of cells that may be published. Also, a excerpt of the final data set is shown.</p>
-<p>I would also like to mention that an iterative algorithm is available in function <code>protectLinkedTables()</code> that allows to protect two tables that have common table cells. The function takes two objects of class <code>sdcProblem</code> as input and a list defining the common cells in both tables. Details on how to construct this a list-element are given in the manual and help-page of <code>protectLinkedTables()</code>.</p>
+<p>I would also like to mention that an iterative algorithm is available in function <code><a href="../reference/protect_linked_tables.html">protectLinkedTables()</a></code> that allows to protect two tables that have common table cells. The function takes two objects of class <code>sdcProblem</code> as input and a list defining the common cells in both tables. Details on how to construct this a list-element are given in the manual and help-page of <code><a href="../reference/protect_linked_tables.html">protectLinkedTables()</a></code>.</p>
 </div>
 </div>
 <div class="section level2">
