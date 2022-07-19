@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.31.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/sdcTable.html">Get started</a>
 </li>
@@ -55,8 +51,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/sdcTools/userSupport/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/sdcTools/userSupport/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -74,138 +70,141 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>sdcTable</h1>
-                        <h4 class="author">Bernhard Meindl</h4>
+                        <h4 data-toc-skip class="author">Bernhard Meindl</h4>
             
-            <h4 class="date">2020-06-08</h4>
+            <h4 data-toc-skip class="date">2022-07-19</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/sdcTools/userSupport/blob/master/vignettes/sdcTable.rmd"><code>vignettes/sdcTable.rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/sdcTools/userSupport/blob/HEAD/vignettes/sdcTable.rmd" class="external-link"><code>vignettes/sdcTable.rmd</code></a></small>
       <div class="hidden name"><code>sdcTable.rmd</code></div>
 
     </div>
 
     
     
-<div id="sdctable-vignette" class="section level1">
-<h1 class="hasAnchor">
-<a href="#sdctable-vignette" class="anchor"></a><strong>sdcTable</strong> Vignette</h1>
-<div id="about-this-vignette" class="section level2">
-<h2 class="hasAnchor">
-<a href="#about-this-vignette" class="anchor"></a>About this vignette</h2>
+<div class="section level2">
+<h2 id="sdctable-vignette">
+<strong>sdcTable</strong> Vignette<a class="anchor" aria-label="anchor" href="#sdctable-vignette"></a>
+</h2>
+<div class="section level3">
+<h3 id="about-this-vignette">About this vignette<a class="anchor" aria-label="anchor" href="#about-this-vignette"></a>
+</h3>
 <p>The purpose of the <strong>sdcTable</strong> vignette is to show how to get up and running with <strong>sdcTable</strong>; for details, including a complete list of options, consult the help pages or the manual for the following main functions of the package:</p>
 <ul>
 <li>
-<code>makeProblem</code> using e.g: <code><a href="../reference/makeProblem.html">help('makeProblem')</a></code> or <code><a href="../reference/makeProblem.html">?makeProblem</a></code>
+<code>makeProblem</code> using e.g: <code>help('makeProblem')</code> or <code>?makeProblem</code>
 </li>
 <li>
-<code>primarySuppression</code> using e.g: <code><a href="../reference/primarySuppression.html">help('primarySuppression')</a></code> or <code><a href="../reference/primarySuppression.html">?primarySuppression</a></code>
+<code>primarySuppression</code> using e.g: <code>help('primarySuppression')</code> or <code>?primarySuppression</code>
 </li>
 <li>
-<code>protectTable</code> using e.g: <code><a href="../reference/protectTable.html">help('protectTable')</a></code> or <code><a href="../reference/protectTable.html">?protectTable</a></code>
+<code>protectTable</code> using e.g: <code>help('protectTable')</code> or <code>?protectTable</code>
 </li>
 <li>
-<code>setInfo</code> using e.g: <code><a href="../reference/setInfo.html">help('setInfo')</a></code> or <code><a href="../reference/setInfo.html">?setInfo</a></code>
+<code>setInfo</code> using e.g: <code>help('setInfo')</code> or <code>?setInfo</code>
 </li>
 <li>
-<code>getInfo</code> using e.g: <code><a href="../reference/getInfo.html">help('getInfo')</a></code> or <code><a href="../reference/getInfo.html">?getInfo</a></code>
+<code>getInfo</code> using e.g: <code>help('getInfo')</code> or <code>?getInfo</code>
 </li>
 </ul>
 </div>
-<div id="how-to-protect-data---an-overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#how-to-protect-data---an-overview" class="anchor"></a>How to protect data - An overview</h2>
+<div class="section level3">
+<h3 id="how-to-protect-data---an-overview">How to protect data - An overview<a class="anchor" aria-label="anchor" href="#how-to-protect-data---an-overview"></a>
+</h3>
 <div class="figure">
-<img src="overview.png" alt="Figure 1: sdcTable - an overview of exported functions" id="fig:overview"><p class="caption">Figure 1: <strong>sdcTable</strong> - an overview of exported functions</p>
+<img src="overview.png" id="fig:overview" alt=""><p class="caption">Figure 1: <strong>sdcTable</strong> - an overview of exported functions</p>
 </div>
 <p>The main functions that are exported to users are shown in <a href="#fig:overview">Figure 1</a>.</p>
-<p>Function <code><a href="../reference/makeProblem.html">makeProblem()</a></code> is used to create objects of class <code>sdcProblem</code>. Instances of class <code>sdcProblem</code> hold the entire information that is required to perform primary or secondary cell suppression such as assumed to be known upper and lower cell bounds or upper-, lower- or sliding protection levels that are required to fulfill when solving the secondary cell suppression problem. All this information can be modified using function <code><a href="../reference/setInfo.html">setInfo()</a></code>.</p>
-<p><code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> is applied to objects of class <code>sdcProblem</code>. By setting function parameters users can choose and apply a pre-defined primary suppression rule. Using <code><a href="../reference/setInfo.html">setInfo()</a></code>, one can easily implement a custom primary suppression rule, too.</p>
-<p>Function <code><a href="../reference/protectTable.html">protectTable()</a></code> is used to protect primary sensitive table cells in objects of class <code>sdcProblem</code>. A successful run of function <code><a href="../reference/protectTable.html">protectTable()</a></code> results in an object of class <code>safeObj</code>. Using <code><a href="../reference/getInfo.html">getInfo()</a></code> one can extract information from objects of such class, most importantly of course a data set containing all table cells along with the suppression pattern.</p>
+<p>Function <code>makeProblem()</code> is used to create objects of class <code>sdcProblem</code>. Instances of class <code>sdcProblem</code> hold the entire information that is required to perform primary or secondary cell suppression such as assumed to be known upper and lower cell bounds or upper-, lower- or sliding protection levels that are required to fulfill when solving the secondary cell suppression problem. All this information can be modified using function <code>setInfo()</code>.</p>
+<p><code>primarySuppression()</code> is applied to objects of class <code>sdcProblem</code>. By setting function parameters users can choose and apply a pre-defined primary suppression rule. Using <code>setInfo()</code>, one can easily implement a custom primary suppression rule, too.</p>
+<p>Function <code>protectTable()</code> is used to protect primary sensitive table cells in objects of class <code>sdcProblem</code>. A successful run of function <code>protectTable()</code> results in an object of class <code>safeObj</code>. Using <code>getInfo()</code> one can extract information from objects of such class, most importantly of course a data set containing all table cells along with the suppression pattern.</p>
 <p>More detailed information on all the possibilities is available in the help-files, additional information is given in the corresponding sections of this vignette that deal with specific functions. The first step however to get started is to load the package, which can easily be done as shown below:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">sdcTable</span>)
-<span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span>(<span class="st">"sdcTable"</span>)</pre></body></html></div>
-<pre><code>## [1] '0.31.1'</code></pre>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sdcTools/sdcTable" class="external-link">sdcTable</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"sdcTable"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] '0.32.3'</span></span></code></pre>
 </div>
 </div>
-<div id="a-simple-example" class="section level1">
-<h1 class="hasAnchor">
-<a href="#a-simple-example" class="anchor"></a>A simple example</h1>
+<div class="section level2">
+<h2 id="a-simple-example">A simple example<a class="anchor" aria-label="anchor" href="#a-simple-example"></a>
+</h2>
 <p>We now walk through the steps that are required to protect tabular data using <strong>sdcTable</strong>. In the first example we are going to protect table cells given a three-dimensional tabular structure with some sub-totals.</p>
 <p>We will start by discussing input data sets in sections <a href="#ex1:microDat">“Starting from microdata”</a> and <a href="#ex1:aggDat">“Using aggregated data”</a>. Then we continue by discussing how to define and describe dimensional variables in <span id="ex1:hier">“Defining hierarchies”</span> which is a crucial step in the entire procedure. Once the hierarchies are defined it is necessary to create suitable objects as described (<a href="#ex1:makeProb">here</a>) that can be used to identify and suppress primary sensitive cells. This is shown in section <a href="#ex1:primSupp">“Identifying sensitive cells”</a>. Finally we discuss how to <a href="#ex1:secondSupp">“protect primary sensitive table cells”</a>.</p>
-<p>Throughout it is also shown how to set and extract information from the objects we are working with using functions <code><a href="../reference/getInfo.html">getInfo()</a></code> and <code><a href="../reference/setInfo.html">setInfo()</a></code>.</p>
-<div id="ex1:microDat" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ex1:microDat" class="anchor"></a>Starting from microdata</h3>
+<p>Throughout it is also shown how to set and extract information from the objects we are working with using functions <code>getInfo()</code> and <code>setInfo()</code>.</p>
+<div class="section level4">
+<h4 id="ex1:microDat">Starting from microdata<a class="anchor" aria-label="anchor" href="#ex1:microDat"></a>
+</h4>
 <p>In this example we suppose we have collected data from <code>1000</code> individuals. A subset of the available data is shown below:</p>
-<pre><code>##  V1 V2 V3 numVal2 numVal1
-##   A  w  d   49.93   71.72
-##   C  m  f   48.44   55.96
-##  Ba  m  a   43.20   64.69
-##  Bc  w  d   31.38   30.72
-##  Bc  w  a   49.46   54.93
-##  Ba  m  d   42.02   22.23</code></pre>
+<pre><code><span><span class="co">##  V1 V2 V3 numVal2 numVal1</span></span>
+<span><span class="co">##   A  w  d   49.93   71.72</span></span>
+<span><span class="co">##   C  m  f   48.44   55.96</span></span>
+<span><span class="co">##  Ba  m  a   43.20   64.69</span></span>
+<span><span class="co">##  Bc  w  d   31.38   30.72</span></span>
+<span><span class="co">##  Bc  w  a   49.46   54.93</span></span>
+<span><span class="co">##  Ba  m  d   42.02   22.23</span></span></code></pre>
 <p>We note that the information we have obtained for any individual corresponds to exactly one row in the input data.frame. That is supposed to be available in <strong>R</strong>.</p>
 <p>The micro data consist of <code>5</code> variables. The first 3 variables (<code>V1</code>, <code>V2</code> and <code>V3</code>) are categorical variables that will later define the table that needs to be protected. Variables ‘numVal1’ and ‘numVal2’ correspond to arbitrary variables containing some kind of information measured for each individual.</p>
 <p>To create the tabular structure that is required to protect any table cells within the table it is of course of interest to have a look at possible values or characteristics of the categorical variables that define the table.</p>
 <ul>
 <li>Variable <code>V1</code>: this variable has a total of <code>6</code> codes without subtotals which are listed below:</li>
 </ul>
-<pre><code>## [1] "A"  "Ba" "Bb" "Bc" "C"  "D"</code></pre>
+<pre><code>'A', 'Ba', 'Bb', 'Bc', 'C', 'D'</code></pre>
 <ul>
 <li>Variable <code>V2</code>: this variable has a total of <code>2</code> codes without subtotals which are listed below:</li>
 </ul>
-<pre><code>## [1] "m" "w"</code></pre>
+<pre><code>'m', 'w'</code></pre>
 <ul>
 <li>Variable <code>V3</code>: this variable has a total of <code>6</code> codes without subtotals which are listed below:</li>
 </ul>
-<pre><code>## [1] "a" "b" "c" "d" "e" "f"</code></pre>
+<pre><code>'a', 'b', 'c', 'd', 'e', 'f'</code></pre>
 <p>The step on how to define level-hierarchies that have to include all possible (sub)totals is explained <a href="#ex1:hier">below</a>.</p>
 </div>
-<div id="ex1:aggDat" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ex1:aggDat" class="anchor"></a>Using aggregated data</h3>
+<div class="section level4">
+<h4 id="ex1:aggDat">Using aggregated data<a class="anchor" aria-label="anchor" href="#ex1:aggDat"></a>
+</h4>
 <p>Using <strong>sdcTable</strong> it is also possible to start with a <em>‘complete’</em> dataset. This means that the input dataset already contains rows with all possible level-combinations that can occur. This also includes combinations with (sub)totals. In this case it is required that the input data contain a column holding cell counts. Using the example data already discussed in section <a href="#ex1:microDat">“Starting from microdata”</a>, the complete dataset could be specified as shown below:</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span>(<span class="no">completeData</span>))</pre></body></html></div>
-<pre><code>##      V1  V2 V3 Freq  numVal1  numVal2
-## 163   C Tot  f   24  7523.30  7305.85
-## 164   D Tot  f   31  7723.40  7698.75
-## 165 Tot   m  f  107 24033.37 24325.32
-## 166   B   m  f   55 12797.11 13372.83
-## 167 Tot   w  f   85 25082.25 25459.33
-## 168   B   w  f   50 12600.68 12861.13</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail</a></span><span class="op">(</span><span class="va">completeData</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##      V1  V2 V3 Freq  numVal1  numVal2</span></span>
+<span><span class="co">## 163   C Tot  f   24  7523.30  7305.85</span></span>
+<span><span class="co">## 164   D Tot  f   31  7723.40  7698.75</span></span>
+<span><span class="co">## 165 Tot   m  f  107 24033.37 24325.32</span></span>
+<span><span class="co">## 166   B   m  f   55 12797.11 13372.83</span></span>
+<span><span class="co">## 167 Tot   w  f   85 25082.25 25459.33</span></span>
+<span><span class="co">## 168   B   w  f   50 12600.68 12861.13</span></span></code></pre>
 <p>Even though we only show a small subset of the data it is immediately clear that in object <code>completeData</code> (sub)totals are listed. These combinations can be calculated from the microdata by summation over several codes in one or more dimensional variables. As in section <a href="#ex1:microDat">Starting from microdata</a> it is of interest which codes were specified for each dimensional variable. This information is given below:</p>
 <ul>
 <li>Variable <code>V1</code>: this variable has a total of <code>8</code> codes including all possible subtotals which are listed below:</li>
 </ul>
-<pre><code>## [1] "Tot" "A"   "B"   "Ba"  "Bb"  "Bc"  "C"   "D"</code></pre>
+<pre><code>'Tot', 'A', 'B', 'Ba', 'Bb', 'Bc', 'C', 'D'</code></pre>
 <ul>
 <li>Variable <code>V2</code>: this variable has a total of <code>3</code> codes including all possible subtotals which are listed below:</li>
 </ul>
-<pre><code>## [1] "Tot" "m"   "w"</code></pre>
+<pre><code>'Tot', 'm', 'w'</code></pre>
 <ul>
 <li>Variable <code>V3</code>: this variable has a total of <code>7</code> codes including all possible subtotals which are listed below:</li>
 </ul>
-<pre><code>## [1] "Tot" "a"   "b"   "c"   "d"   "e"   "f"</code></pre>
+<pre><code>'Tot', 'a', 'b', 'c', 'd', 'e', 'f'</code></pre>
 <p>We also note that in <code>completeData</code> a variable <code>Freq</code> is available which gives information on the corresponding cell counts. This means that for example a total of <code>50</code> individuals contribute to the table cell where variable <code>V1</code> equals <code>B</code>, variable <code>V2</code> is <code>w</code> and variable <code>V3</code> is equal to <code>f</code>.</p>
 <p>Whether or not one starts to work with micro data or already with a complete, pre-aggregated dataset the next step is always the definition of the hierarchies defining the tabular structure.</p>
 </div>
-<div id="ex1:hier" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ex1:hier" class="anchor"></a>Defining hierarchies</h3>
+<div class="section level4">
+<h4 id="ex1:hier">Defining hierarchies<a class="anchor" aria-label="anchor" href="#ex1:hier"></a>
+</h4>
 <p>We could see <a href="#ex1:microDat">here</a> (for micro data) and <a href="#ex1:aggDat">here</a> (for pre-aggregated data) that the set of codes available in the input data for variables <code>V1</code>, <code>V2</code> and <code>V3</code> differ since in the case where micro data are used as input data, no codes for subtotals are included in the micro data while in the case where pre-aggregated data are used those subtotals must already be included in the input data set.</p>
 <p>When defining the complete hierarchies, no (sub)-totals must be excluded from the description. This means that for each variable defining one dimension of the table the complete structure must of course includes all (sub)totals.</p>
 <p>In this example the hierarchies we want to define are quite basic. We start by showing the level-codes for each variable <code>V1</code>, <code>V2</code> and <code>V3</code> that are included in <code>completeData</code> but not in <code>microData</code>.</p>
 <ul>
 <li>(sub)totals of variable <code>V1</code>:</li>
 </ul>
-<pre><code>## [1] "Tot" "B"</code></pre>
+<pre><code>'Tot', 'B'</code></pre>
 <ul>
 <li>(sub)totals of variable <code>V2</code>:</li>
 </ul>
-<pre><code>## [1] "Tot"</code></pre>
+<pre><code><span><span class="st">'Tot'</span></span></code></pre>
 <ul>
 <li>(sub)totals of variable <code>V3</code>:</li>
 </ul>
-<pre><code>## [1] "Tot"</code></pre>
+<pre><code><span><span class="st">'Tot'</span></span></code></pre>
 <p>We observe that variable <code>V1</code> has two codes (<code>Tot</code> and <code>B</code>) that can be calculated from the codes of <code>V1</code> available in the micro data set <code>microData</code>. For variables <code>V2</code> and <code>V3</code> only one total value (<code>Tot</code>) exists which means the summation over all characteristics of variables <code>V2</code> and <code>V3</code> is the (only) total value. To specify the complete structure of a dimensional variable one needs to create a data frame or a matrix for each of those variables. The structure of any object describing a dimensional variable be created as follows:</p>
 <ul>
 <li>the object must consist of exactly 2 columns, both being character vectors</li>
@@ -218,120 +217,125 @@
 <li>the object must contain a row for each possible level-code</li>
 </ul>
 <p>While this may sound difficult, it is in fact quite easy to create such objects within <strong>R</strong>. We will now explain how to create the required objects for the dimensional variables <code>V1</code>, <code>V2</code> and <code>V3</code> used in the example.</p>
-<div id="defining-level-structure-for-variable-v1" class="section level4">
-<h4 class="hasAnchor">
-<a href="#defining-level-structure-for-variable-v1" class="anchor"></a>defining level-structure for variable <code>V1</code>
-</h4>
+<div class="section level5">
+<h5 id="defining-level-structure-for-variable-v1">defining level-structure for variable <code>V1</code><a class="anchor" aria-label="anchor" href="#defining-level-structure-for-variable-v1"></a>
+</h5>
 <p>The hierarchy we want to describe is as follows. The overall code <code>Tot</code> is calculated from the codes (<code>A</code>, <code>B</code>, <code>C</code> and <code>D</code>). Additionally, code <code>B</code> (which is the second (sub)total-code for variable <code>V1</code> as described <a href="#ex1:aggDat">here</a>) can be calculated from the level-codes <code>Ba</code>, <code>Bb</code> and <code>Bc</code>.</p>
 <p>Following rule 1, we have to create a data frame or matrix consisting of two columns, the first specifying levels, the second column the corresponding level codes. Since we have to follow a top-down approach, the first level code must always correspond to the grand total which is always considered as the code with a level equaling 1. Thus, we create the matrix with a single row defining the overall total as follows:</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">0</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)
-<span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"@"</span>, <span class="st">"Tot"</span>))
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>)</pre></body></html></div>
-<pre><code>##      [,1] [,2] 
-## [1,] "@"  "Tot"</code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">0</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">dimV1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"@"</span>, <span class="st">"Tot"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dimV1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##      [,1] [,2] </span></span>
+<span><span class="co">## [1,] "@"  "Tot"</span></span></code></pre>
 <p>The level code for the overall total is <code>@</code> because according to rule 4 it is the only allowed character in the first column and it consists of exactly 1 character. Also, since the overall total is defined as level 1, the number of characters of the string <code>@</code> and the level of the overall total code <code>Tot</code> matches.</p>
 <p>The next step is to add additional codes. As mentioned before, codes <code>A</code>, <code>B</code>, <code>C</code> and <code>D</code> contribute the the overall total. Therefore we know that these codes are considered as level 2 codes and must be (according to the top-down approach) listed below the overall total code. Adding these codes to object <code>dimV1</code> is shown below:</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)
-<span class="no">mat</span>[, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"@@"</span>, <span class="fl">4</span>)
-<span class="no">mat</span>[, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="no">LETTERS</span>[<span class="fl">1</span>:<span class="fl">4</span>]
-<span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="no">mat</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>)</pre></body></html></div>
-<pre><code>##      [,1] [,2] 
-## [1,] "@"  "Tot"
-## [2,] "@@" "A"  
-## [3,] "@@" "B"  
-## [4,] "@@" "C"  
-## [5,] "@@" "D"</code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">4</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">mat</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"@@"</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">mat</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">dimV1</span>, <span class="va">mat</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dimV1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##      [,1] [,2] </span></span>
+<span><span class="co">## [1,] "@"  "Tot"</span></span>
+<span><span class="co">## [2,] "@@" "A"  </span></span>
+<span><span class="co">## [3,] "@@" "B"  </span></span>
+<span><span class="co">## [4,] "@@" "C"  </span></span>
+<span><span class="co">## [5,] "@@" "D"</span></span></code></pre>
 <p>We know that code <code>B</code> is a subtotal that can be calculated from codes <code>Ba</code>, <code>Bb</code> and <code>Bc</code>. Since <code>B</code> is a code of level 2, the codes contributing to it must be of a lower level, in this case of level 3. We show below how to add the codes to object <code>dimV1</code>:</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="no">mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw">nrow</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">ncol</span> <span class="kw">=</span> <span class="fl">2</span>)
-<span class="no">mat</span>[, <span class="fl">1</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="st">"@@@"</span>, <span class="fl">3</span>)
-<span class="no">mat</span>[, <span class="fl">2</span>] <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Ba"</span>, <span class="st">"Bb"</span>, <span class="st">"Bc"</span>)
-
-<span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span>(<span class="no">dimV1</span>, <span class="no">mat</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>)</pre></body></html></div>
-<pre><code>##      [,1]  [,2] 
-## [1,] "@"   "Tot"
-## [2,] "@@"  "A"  
-## [3,] "@@"  "B"  
-## [4,] "@@"  "C"  
-## [5,] "@@"  "D"  
-## [6,] "@@@" "Ba" 
-## [7,] "@@@" "Bb" 
-## [8,] "@@@" "Bc"</code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">mat</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"@@@"</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">mat</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ba"</span>, <span class="st">"Bb"</span>, <span class="st">"Bc"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">dimV1</span>, <span class="va">mat</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dimV1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##      [,1]  [,2] </span></span>
+<span><span class="co">## [1,] "@"   "Tot"</span></span>
+<span><span class="co">## [2,] "@@"  "A"  </span></span>
+<span><span class="co">## [3,] "@@"  "B"  </span></span>
+<span><span class="co">## [4,] "@@"  "C"  </span></span>
+<span><span class="co">## [5,] "@@"  "D"  </span></span>
+<span><span class="co">## [6,] "@@@" "Ba" </span></span>
+<span><span class="co">## [7,] "@@@" "Bb" </span></span>
+<span><span class="co">## [8,] "@@@" "Bc"</span></span></code></pre>
 <p>Now object <code>dimV1</code> contains all possible codes along with their levels. However, it not valid because the top-down approach is violated. This means that codes that contribute to a (sub)total must be listed directly below it. If we would not change the order of object <code>dimV1</code>, <strong>sdcTable</strong> would assume that code <code>D</code> can be calculated by summation over codes <code>Ba</code>, <code>Bb</code> and <code>Bc</code>. For this reason it is necessary to move this <em>“block”</em> up so that it is directly below code <code>B</code>. The required code and the resulting correct object describing the structure of variable <code>V1</code> is printed below:</p>
-<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="no">dimV1</span>[<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>:<span class="fl">3</span>,<span class="fl">6</span>:<span class="fl">8</span>, <span class="fl">4</span>:<span class="fl">5</span>),]
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">dimV1</span>, <span class="kw">row.names</span> <span class="kw">=</span> <span class="fl">FALSE</span>)</pre></body></html></div>
-<pre><code>##      [,1]  [,2] 
-## [1,] "@"   "Tot"
-## [2,] "@@"  "A"  
-## [3,] "@@"  "B"  
-## [4,] "@@@" "Ba" 
-## [5,] "@@@" "Bb" 
-## [6,] "@@@" "Bc" 
-## [7,] "@@"  "C"  
-## [8,] "@@"  "D"</code></pre>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="va">dimV1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,<span class="fl">6</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">4</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>,<span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">dimV1</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##      [,1]  [,2] </span></span>
+<span><span class="co">## [1,] "@"   "Tot"</span></span>
+<span><span class="co">## [2,] "@@"  "A"  </span></span>
+<span><span class="co">## [3,] "@@"  "B"  </span></span>
+<span><span class="co">## [4,] "@@@" "Ba" </span></span>
+<span><span class="co">## [5,] "@@@" "Bb" </span></span>
+<span><span class="co">## [6,] "@@@" "Bc" </span></span>
+<span><span class="co">## [7,] "@@"  "C"  </span></span>
+<span><span class="co">## [8,] "@@"  "D"</span></span></code></pre>
 <p>Using this information, <strong>sdcTable</strong> internally calculates all kinds of information on dimensional variables. So for example it is able to deal with codes that can be (temporarily) removed from the structure because it can be considered as a <em>“duplicate”</em>. This is however not the case for this basic dimensional variable that has a total of 8 codes of which 6 are required to calculate information for the 2 (sub)totals.</p>
-<p>Since versions <code>&gt;= 0.27</code>, <strong>sdcTable</strong> allows to use inputs created from package <a href="https://CRAN.R-project.org/package=sdcHierarchies"><strong>sdcHierarchies</strong></a> as input. This package allows for a very simple way to create, compute and modify hierarchies. For a complete introduction, the package vignette can be viewed with <code>hier_vignette()</code>. The main functions are <code>hier_create()</code>, <code>hier_add()</code>, <code>hier_rename()</code> and <code>hier_delete()</code>. We now show an alternative way to generate the hierarchy for variable <code>V1</code>.</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu">hier_create</span>(<span class="kw">root</span> <span class="kw">=</span> <span class="st">"Tot"</span>, <span class="kw">nodes</span> <span class="kw">=</span> <span class="no">LETTERS</span>[<span class="fl">1</span>:<span class="fl">4</span>])
-<span class="no">dimV1</span> <span class="kw">&lt;-</span> <span class="fu">hier_add</span>(<span class="no">dimV1</span>, <span class="kw">root</span> <span class="kw">=</span> <span class="st">"B"</span>, <span class="kw">nodes</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Ba"</span>,<span class="st">"Bb"</span>,<span class="st">"Bc"</span>))
-<span class="fu">hier_display</span>(<span class="no">dimV1</span>)</pre></body></html></div>
-<pre><code>## Tot
-## ├─A
-## ├─B
-## │ ├─Ba
-## │ ├─Bb
-## │ └─Bc
-## ├─C
-## └─D</code></pre>
-<p><strong>sdcTable</strong> will internally convert the tree-based structure generated using functionality from the <a href="https://CRAN.R-project.org/package=sdcHierarchies"><strong>sdcHierarchies</strong></a> package automatically into the <code>data.frame</code> based structure discussed at the begin of this section.</p>
+<p>Since versions <code>&gt;= 0.27</code>, <strong>sdcTable</strong> allows to use inputs created from package <a href="https://CRAN.R-project.org/package=sdcHierarchies" class="external-link"><strong>sdcHierarchies</strong></a> as input. This package allows for a very simple way to create, compute and modify hierarchies. For a complete introduction, the package vignette can be viewed with <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_vignette.html" class="external-link">hier_vignette()</a></code>. The main functions are <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create()</a></code>, <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add()</a></code>, <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_rename.html" class="external-link">hier_rename()</a></code> and <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_delete.html" class="external-link">hier_delete()</a></code>. We now show an alternative way to generate the hierarchy for variable <code>V1</code>.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add</a></span><span class="op">(</span><span class="va">dimV1</span>, root <span class="op">=</span> <span class="st">"B"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ba"</span>,<span class="st">"Bb"</span>,<span class="st">"Bc"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV1</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Tot</span></span>
+<span><span class="co">## ├─A</span></span>
+<span><span class="co">## ├─B</span></span>
+<span><span class="co">## │ ├─Ba</span></span>
+<span><span class="co">## │ ├─Bb</span></span>
+<span><span class="co">## │ └─Bc</span></span>
+<span><span class="co">## ├─C</span></span>
+<span><span class="co">## └─D</span></span></code></pre>
+<p><strong>sdcTable</strong> will internally convert the tree-based structure generated using functionality from the <a href="https://CRAN.R-project.org/package=sdcHierarchies" class="external-link"><strong>sdcHierarchies</strong></a> package automatically into the <code>data.frame</code> based structure discussed at the begin of this section.</p>
 </div>
-<div id="defining-level-structure-for-variable-v2" class="section level4">
-<h4 class="hasAnchor">
-<a href="#defining-level-structure-for-variable-v2" class="anchor"></a>defining level-structure for variable <code>V2</code>
-</h4>
+<div class="section level5">
+<h5 id="defining-level-structure-for-variable-v2">defining level-structure for variable <code>V2</code><a class="anchor" aria-label="anchor" href="#defining-level-structure-for-variable-v2"></a>
+</h5>
 <p>The creation of a suitable object that describes the hierarchical structure of variable <code>V2</code> is easy. We are only dealing with one overall Total (<code>Tot</code>) that is the sum of all codes listed <a href="#ex1:microDat">here</a> for this variable.</p>
 <p>The code how to specify an object that describes the structure of dimensional variable <code>V2</code> is given below:</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">dimV2</span> <span class="kw">&lt;-</span> <span class="fu">hier_create</span>(<span class="kw">root</span> <span class="kw">=</span> <span class="st">"Tot"</span>, <span class="kw">nodes</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"m"</span>, <span class="st">"w"</span>))
-<span class="fu">hier_display</span>(<span class="no">dimV2</span>)</pre></body></html></div>
-<pre><code>## Tot
-## ├─m
-## └─w</code></pre>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dimV2</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>, <span class="st">"w"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV2</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Tot</span></span>
+<span><span class="co">## ├─m</span></span>
+<span><span class="co">## └─w</span></span></code></pre>
 <p>We see that the overall total (<code>Tot</code>) is again listed in the first row with the two other contributing codes (<code>m</code> and <code>w</code>) being below in the same hierarchy level.</p>
 </div>
-<div id="defining-level-structure-for-variable-v3" class="section level4">
-<h4 class="hasAnchor">
-<a href="#defining-level-structure-for-variable-v3" class="anchor"></a>defining level-structure for variable <code>V3</code>
-</h4>
+<div class="section level5">
+<h5 id="defining-level-structure-for-variable-v3">defining level-structure for variable <code>V3</code><a class="anchor" aria-label="anchor" href="#defining-level-structure-for-variable-v3"></a>
+</h5>
 <p>The creation of a suitable object that describes the hierarchical structure of variable <code>V3</code> is easy. We are only dealing with one overall Total (<code>Tot</code>) that is the sum of all codes listed <a href="#ex1:microDat">here</a> for variable <code>V3</code>.</p>
 <p>The required code to generate an object specifying the hierarchical structure of variable <code>V3</code> is given below:</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">dimV3</span> <span class="kw">&lt;-</span> <span class="fu">hier_create</span>(<span class="kw">root</span> <span class="kw">=</span> <span class="st">"Tot"</span>, <span class="kw">nodes</span> <span class="kw">=</span> <span class="no">letters</span>[<span class="fl">1</span>:<span class="fl">6</span>])
-<span class="fu">hier_display</span>(<span class="no">dimV3</span>)</pre></body></html></div>
-<pre><code>## Tot
-## ├─a
-## ├─b
-## ├─c
-## ├─d
-## ├─e
-## └─f</code></pre>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dimV3</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV3</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Tot</span></span>
+<span><span class="co">## ├─a</span></span>
+<span><span class="co">## ├─b</span></span>
+<span><span class="co">## ├─c</span></span>
+<span><span class="co">## ├─d</span></span>
+<span><span class="co">## ├─e</span></span>
+<span><span class="co">## └─f</span></span></code></pre>
 <p>It is required to create an object defining the complete structure and hierarchies for each dimensional variable. Once this step has been done, the multidimensional tabular structure that is required to apply any statistical disclosure methods can be created using <strong>makeProblem()</strong>.</p>
 </div>
 </div>
-<div id="ex1:makeProb" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ex1:makeProb" class="anchor"></a>Creating objects of class <code>sdcProblem</code> for further processing</h3>
+<div class="section level4">
+<h4 id="ex1:makeProb">Creating objects of class <code>sdcProblem</code> for further processing<a class="anchor" aria-label="anchor" href="#ex1:makeProb"></a>
+</h4>
 <p>We now show how to create objects of class <code>sdcProblem</code> which can further be used to identify, suppress and protect sensitive table cells.</p>
-<p>It was discussed <a href="#ex1:microDat">here</a> and <a href="#ex1:aggDat">here</a> how micro data and pre-aggregated data can be used as data-input objects. We will now explain how to create instances of class <code>sdcProblem</code> from both <code>microData</code> and <code>completeData</code> and describe the required and optional parameters of function <code><a href="../reference/makeProblem.html">makeProblem()</a></code>.</p>
+<p>It was discussed <a href="#ex1:microDat">here</a> and <a href="#ex1:aggDat">here</a> how micro data and pre-aggregated data can be used as data-input objects. We will now explain how to create instances of class <code>sdcProblem</code> from both <code>microData</code> and <code>completeData</code> and describe the required and optional parameters of function <code>makeProblem()</code>.</p>
 <p>We start building a suitable object of class <code>sdcProblem</code> starting with the data on individual level available from object <code>microData</code>.</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="no">dimList</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V1</span> <span class="kw">=</span> <span class="no">dimV1</span>, <span class="kw">V2</span> <span class="kw">=</span> <span class="no">dimV2</span>, <span class="kw">V3</span> <span class="kw">=</span> <span class="no">dimV3</span>)
-<span class="no">prob.microDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/makeProblem.html">makeProblem</a></span>(
-    <span class="kw">data</span> <span class="kw">=</span> <span class="no">microData</span>,
-    <span class="kw">dimList</span> <span class="kw">=</span> <span class="no">dimList</span>,
-    <span class="kw">dimVarInd</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>,
-    <span class="kw">freqVarInd</span> <span class="kw">=</span> <span class="kw">NULL</span>,
-    <span class="kw">numVarInd</span> <span class="kw">=</span> <span class="fl">4</span>:<span class="fl">5</span>,
-    <span class="kw">weightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>,
-    <span class="kw">sampWeightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>)</pre></body></html></div>
-<p>First we have to combine the objects describing the hierarchical variables <code>V1</code>, <code>V2</code> and <code>V3</code> into a list-object named <code>dimList</code>. Each list element is one of the objects created in section <a href="#ex1:hier">“Defining hierarchies”</a>. The names of the list-elements must correspond to the variable name that the corresponding list-element refers to. In this case, the first list-element - <code>dimV1</code> - should describe variable <code>V1</code> in the input data set <code>microData</code> when calling <code><a href="../reference/makeProblem.html">makeProblem()</a></code> while the second list element - <code>dimV2</code> - defines the hierarchy of variable <code>V2</code> and <code>dimV3</code> - the third list element - describes the structure of variable <code>V3</code>.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dimList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V1 <span class="op">=</span> <span class="va">dimV1</span>, V2 <span class="op">=</span> <span class="va">dimV2</span>, V3 <span class="op">=</span> <span class="va">dimV3</span><span class="op">)</span></span>
+<span><span class="va">prob.microDat</span> <span class="op">&lt;-</span> <span class="fu">makeProblem</span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">microData</span>,</span>
+<span>    dimList <span class="op">=</span> <span class="va">dimList</span>,</span>
+<span>    dimVarInd <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
+<span>    freqVarInd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    numVarInd <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>    weightInd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    sampWeightInd <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p>First we have to combine the objects describing the hierarchical variables <code>V1</code>, <code>V2</code> and <code>V3</code> into a list-object named <code>dimList</code>. Each list element is one of the objects created in section <a href="#ex1:hier">“Defining hierarchies”</a>. The names of the list-elements must correspond to the variable name that the corresponding list-element refers to. In this case, the first list-element - <code>dimV1</code> - should describe variable <code>V1</code> in the input data set <code>microData</code> when calling <code>makeProblem()</code> while the second list element - <code>dimV2</code> - defines the hierarchy of variable <code>V2</code> and <code>dimV3</code> - the third list element - describes the structure of variable <code>V3</code>.</p>
 <p>The remaining parameters are quite self-explanatory and shorty described below:</p>
 <ul>
 <li>
@@ -351,31 +355,34 @@
 <code>sampWeightInd</code>: if not <code>NULL</code>, an index specifying the column holding sampling weights for each person/group</li>
 </ul>
 <p>Building an object of class <code>sdcProblem</code> using the complete, pre-aggregated data <code>completeData</code> as discussed <a href="#ex1:aggDat">above</a> is very similar as it is shown below:</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="co">### problem from complete data ###</span>
-<span class="no">dimList</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V1</span> <span class="kw">=</span> <span class="no">dimV1</span>, <span class="kw">V2</span> <span class="kw">=</span> <span class="no">dimV2</span>, <span class="kw">V3</span> <span class="kw">=</span> <span class="no">dimV3</span>)
-<span class="no">prob.completeDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/makeProblem.html">makeProblem</a></span>(
-    <span class="kw">data</span> <span class="kw">=</span> <span class="no">completeData</span>,
-    <span class="kw">dimList</span> <span class="kw">=</span> <span class="no">dimList</span>,
-    <span class="kw">dimVarInd</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">3</span>,
-    <span class="kw">freqVarInd</span> <span class="kw">=</span> <span class="fl">4</span>,
-    <span class="kw">numVarInd</span> <span class="kw">=</span> <span class="fl">5</span>:<span class="fl">6</span>,
-    <span class="kw">weightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>,
-    <span class="kw">sampWeightInd</span> <span class="kw">=</span> <span class="kw">NULL</span>)</pre></body></html></div>
-<p>The only difference is that in this case we define parameter ‘freqVarInd’ that specifies a column within the input data set {completeData} containing information on cell counts. Also the indices of argument <code>numVarInd</code> are different to the first example.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">### problem from complete data ###</span></span>
+<span><span class="va">dimList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V1 <span class="op">=</span> <span class="va">dimV1</span>, V2 <span class="op">=</span> <span class="va">dimV2</span>, V3 <span class="op">=</span> <span class="va">dimV3</span><span class="op">)</span></span>
+<span><span class="va">prob.completeDat</span> <span class="op">&lt;-</span> <span class="fu">makeProblem</span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">completeData</span>,</span>
+<span>    dimList <span class="op">=</span> <span class="va">dimList</span>,</span>
+<span>    dimVarInd <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
+<span>    freqVarInd <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>    numVarInd <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">6</span>,</span>
+<span>    weightInd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    sampWeightInd <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<p>The only difference is that in this case we define parameter ‘freqVarInd’ that specifies a column within the input data set {} containing information on cell counts. Also the indices of argument <code>numVarInd</code> are different to the first example.</p>
 <p>In any case, both procedures return an object of class <code>sdcProblem</code> as it can easily be checked:</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="no">prob.microDat</span>), <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span>(<span class="no">prob.completeDat</span>)) <span class="kw">==</span> <span class="st">"sdcProblem"</span>)</pre></body></html></div>
-<pre><code>## [1] TRUE</code></pre>
-<p>We now can check if the cell counts of both objects are equal. Function <code><a href="../reference/getInfo.html">getInfo()</a></code> can be used to extract information from objects of class <code>sdcProblem</code>. Specifying argument <code>type</code> as <code>freq</code>, <code><a href="../reference/getInfo.html">getInfo()</a></code> returns cell counts which are indeed equal independently if micro-data or pre-aggregated data have been used as input to create the complete tabular structure.</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">counts1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"freq"</span>)
-<span class="no">counts2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.microDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"freq"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span>(<span class="no">counts1</span> <span class="kw">==</span> <span class="no">counts2</span>)</pre></body></html></div>
-<pre><code>## [1] TRUE</code></pre>
-<p>Once the problem has been set up and an instance of class {sdcProblem} is available, it is possible to identify and suppress sensitive table cells as we demonstrate in the next section using object <code>prob.completeDat</code>.</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">prob.microDat</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">prob.completeDat</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="st">"sdcProblem"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
+<p>We now can check if the cell counts of both objects are equal. Function <code>getInfo()</code> can be used to extract information from objects of class <code>sdcProblem</code>. Specifying argument <code>type</code> as <code>freq</code>, <code>getInfo()</code> returns cell counts which are indeed equal independently if micro-data or pre-aggregated data have been used as input to create the complete tabular structure.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">counts1</span> <span class="op">&lt;-</span> <span class="fu">getInfo</span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span>
+<span><span class="va">counts2</span> <span class="op">&lt;-</span> <span class="fu">getInfo</span><span class="op">(</span><span class="va">prob.microDat</span>, type <span class="op">=</span> <span class="st">"freq"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">counts1</span> <span class="op">==</span> <span class="va">counts2</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
+<p>Once the problem has been set up and an instance of class {} is available, it is possible to identify and suppress sensitive table cells as we demonstrate in the next section using object <code>prob.completeDat</code>.</p>
 </div>
-<div id="ex1:primSupp" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ex1:primSupp" class="anchor"></a>Identifying sensitive cells</h3>
-<p>Identifying and suppressing primary sensitive cells is usually done by applying function <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>.</p>
+<div class="section level4">
+<h4 id="ex1:primSupp">Identifying sensitive cells<a class="anchor" aria-label="anchor" href="#ex1:primSupp"></a>
+</h4>
+<p>Identifying and suppressing primary sensitive cells is usually done by applying function <code>primarySuppression()</code>.</p>
 <p>Having a look at the cell counts in table <code>prob.completeDat</code> shows that a total of <code>15</code> cells have less than 10 individuals contributing to it. We think that these cells should be considered as primary sensitive and we want to have them protected.</p>
 <p>When creating an object of class <code>sdcProblem</code>, all cells are assigned an anonymization state. The possible codes are listed below:</p>
 <ul>
@@ -388,94 +395,104 @@
 <li>
 <code>"z"</code>: cell must not be suppressed</li>
 </ul>
-<p>The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of <code>s</code> to <code>u</code>. The easiest way is to use function <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> directly:</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">prob.completeDat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/primarySuppression.html">primarySuppression</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"freq"</span>, <span class="kw">maxN</span> <span class="kw">=</span> <span class="fl">10</span>)</pre></body></html></div>
-<p>Argument <code>type</code> specifies the primary suppression rule we want to apply. In this case we want to use the frequency threshold rule that allows to suppress all table cells having cell counts less or equal than the threshold specified using argument <code>maxN</code>. <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code> also allows to apply the nk-dominance rule or the p-percent rule directly, in case micro data have been used as input data. For all possible parameters and their explanation the interested reader may consult the manual or the help-page of <code><a href="../reference/primarySuppression.html">primarySuppression()</a></code>.</p>
+<p>The goal is now to change the anonymization status of all cells having less than 10 individuals contributing to it from the default value of <code>s</code> to <code>u</code>. The easiest way is to use function <code>primarySuppression()</code> directly:</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prob.completeDat</span> <span class="op">&lt;-</span> <span class="fu">primarySuppression</span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"freq"</span>, maxN <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p>Argument <code>type</code> specifies the primary suppression rule we want to apply. In this case we want to use the frequency threshold rule that allows to suppress all table cells having cell counts less or equal than the threshold specified using argument <code>maxN</code>. <code>primarySuppression()</code> also allows to apply the nk-dominance rule or the p-percent rule directly, in case micro data have been used as input data. For all possible parameters and their explanation the interested reader may consult the manual or the help-page of <code>primarySuppression()</code>.</p>
 <p>After performing the suppression, we can have a look at the distribution of the anonymization states:</p>
-<div class="sourceCode" id="cb36"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span>(<span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"sdcStatus"</span>)))</pre></body></html></div>
-<pre><code>## 
-##   s   u 
-## 153  15</code></pre>
-<div class="sourceCode" id="cb38"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">prob.completeDat</span>)</pre></body></html></div>
-<pre><code>## The raw data contain pre-aggregated (tabular) data!
-## 
-## The complete table to protect consists of 168 cells and has 3 spanning variables.
-## The distribution of
-## - primary unsafe (u)
-## - secondary suppressed (x)
-## - forced to publish (z) and
-## - selectable for secondary suppression (s) cells is shown below:
-## 
-##   s   u 
-## 153  15 
-## 
-## If this table is protected with heuristic methods, a total of 12 has (sub)tables must be considered!</code></pre>
-<p>One can see that the <code>15</code> cells having counts less or equal than 10 have been identified and marked as primary suppressed. However, we should note that it is very easy to implement custom suppression rules by manually changing the anonymization state of cells using functions <code><a href="../reference/setInfo.html">setInfo()</a></code> or <code><a href="../reference/changeCellStatus.html">changeCellStatus()</a></code>. Information on how to use these functions is of course provided in the manual and the corresponding help-pages.</p>
-<p>To protect these cells by solving the secondary cell suppression problem one can go on to use function <code><a href="../reference/protectTable.html">protectTable()</a></code> as explained in the next section.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu">getInfo</span><span class="op">(</span><span class="va">prob.completeDat</span>, type <span class="op">=</span> <span class="st">"sdcStatus"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">##   s   u </span></span>
+<span><span class="co">## 153  15</span></span></code></pre>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">prob.completeDat</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## The raw data contain pre-aggregated (tabular) data!</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The complete table to protect consists of 168 cells and has 3 spanning variables.</span></span>
+<span><span class="co">## The distribution of</span></span>
+<span><span class="co">## - primary unsafe (u)</span></span>
+<span><span class="co">## - secondary suppressed (x)</span></span>
+<span><span class="co">## - forced to publish (z) and</span></span>
+<span><span class="co">## - selectable for secondary suppression (s) cells is shown below:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##   s   u </span></span>
+<span><span class="co">## 153  15 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## If this table is protected with heuristic methods, a total of 12 has (sub)tables must be considered!</span></span></code></pre>
+<p>One can see that the <code>15</code> cells having counts less or equal than 10 have been identified and marked as primary suppressed. However, we should note that it is very easy to implement custom suppression rules by manually changing the anonymization state of cells using functions <code>setInfo()</code> or <code>changeCellStatus()</code>. Information on how to use these functions is of course provided in the manual and the corresponding help-pages.</p>
+<p>To protect these cells by solving the secondary cell suppression problem one can go on to use function <code>protectTable()</code> as explained in the next section.</p>
 </div>
-<div id="ex1:secondSupp" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ex1:secondSupp" class="anchor"></a>Secondary cell suppression using <strong>sdcTable</strong>
-</h3>
-<p><strong>sdcTable</strong> provides the algorithms to protect primary sensitive table cells within objects of class <code>sdcProblem</code>. The algorithms that may be selected are:</p>
+<div class="section level4">
+<h4 id="ex1:secondSupp">Secondary cell suppression using <strong>sdcTable</strong><a class="anchor" aria-label="anchor" href="#ex1:secondSupp"></a>
+</h4>
+<p><strong>sdcTable</strong> provides algorithms to protect primary sensitive table cells defined in objects of class <code>sdcProblem</code>. The algorithms that may be selected are shown below:</p>
 <ul>
+<li>
+<strong>“GAUSS”</strong>: secondary suppression algorithm based on Gaussian elimination implemented in <code><a href="https://rdrr.io/pkg/SSBtools/man/GaussSuppression.html" class="external-link">SSBtools::GaussSuppression()</a></code>.</li>
 <li>
 <strong>“OPT”</strong>: protect the complete hierarchical, multidimensional table at once. This algorithm is however only suitable for small problem instances.</li>
 <li>
-<strong>“HITAS”</strong>: solving the secondary cell suppression problem by applying a cut and branch algorithm to subtables that are protected in specific order</li>
+<strong>“HITAS”</strong>: solving the secondary cell suppression problem by applying a cut and branch algorithm to sub-tables that are protected in specific order</li>
 <li>
-<strong>“HYPERCUBE”</strong>: solving the problem using a heuristic that is based on finding geometric hypercubes that are required to protect primary sensitive table cells</li>
+<strong>“HYPERCUBE”</strong>: solving the problem using a heuristic that is based on finding geometric hyper-cubes that are required to protect primary sensitive table cells. This algorithm is not extensively tested. It is a better idea to create a batch-file usable for <a href="https://github.com/sdcTools/tauargus" class="external-link">tau-argus</a> using <code>createArgusInput()</code> (<code>?createArgusInput</code>) and solve the problem using Argus.</li>
 <li>
-<strong>“SIMPLEHEURISTIC”</strong>: solving the problem using a fast heuristic approach that only protects against exact recalculation of values</li>
+<strong>“SIMPLEHEURISTIC”</strong>: solving the problem using a heuristic approach that aims to only protect against exact recalculation of values. Internally, attacker-problems are iteratively solved until all primary sensitive cells are protected.</li>
+<li>
+<strong>“SIMPLEHEURISTIC_OLD”</strong>: the heuristic procedure implemented in sdcTable versions <code>&lt; 0.32</code>.</li>
 </ul>
-<p>We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function <code><a href="../reference/protectTable.html">protectTable()</a></code>.</p>
-<div class="sourceCode" id="cb40"><html><body><pre class="r"><span class="no">resHITAS</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"HITAS"</span>)
-<span class="no">resOPT</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"OPT"</span>)
-<span class="no">resHYPER</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"HYPERCUBE"</span>)
-<span class="no">resSIMPLE</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/protectTable.html">protectTable</a></span>(<span class="no">prob.completeDat</span>, <span class="kw">method</span> <span class="kw">=</span> <span class="st">"SIMPLEHEURISTIC"</span>)</pre></body></html></div>
-<p>Having a look at the Output objects we can observe that the number of secondary suppressions required to protect the 15 primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.</p>
-<p>Using the <em>“OPT”</em>-algorithm, a total of <code>23</code> cells have been marked as secondary suppressions. When using <em>“HITAS”</em>-algorithm, it was required to additionally suppress <code>25</code> cells. A total of <code>29</code> cells was selected and marked as secondary suppressions when the <em>“HYPERCUBE”</em> algorithm was used while <code>31</code> additional suppressions were required for the fast heuristic simple procedure <em>“SIMPLEHEURISTIC”</em>.</p>
-<p>One now easily get information from the resulting output objects that are instances of class <code>safeObj</code> by using function <code><a href="../reference/getInfo.html">getInfo()</a></code> or applying the <code>summary</code>-method. For the former we show how to extract the final data set which can be achieved as follows:</p>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="no">finalData</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/getInfo.html">getInfo</a></span>(<span class="no">resOPT</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"finalData"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">finalData</span>))</pre></body></html></div>
-<pre><code>##   V1 V2 V3 Freq numVal1 numVal2 sdcStatus
-## 1  A  m  a   12 3919.84 4090.31         s
-## 2 Ba  m  a   18 4707.53 5101.81         s
-## 3 Bb  m  a   18 4199.31 4186.62         x
-## 4 Bc  m  a   10 3890.27 4084.40         u
-## 5  C  m  a   11 3341.39 2988.84         s
-## 6  D  m  a   13 3975.03 3873.34         s</code></pre>
+<p>We show how to protect the data using the available algorithms. For an extensive discussion on the possible parameters have a look at the manual or help page for function <code>protectTable()</code>.</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">resGAUSS</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"GAUSS"</span><span class="op">)</span></span>
+<span><span class="va">resHITAS</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"HITAS"</span><span class="op">)</span></span>
+<span><span class="va">resOPT</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"OPT"</span><span class="op">)</span></span>
+<span><span class="va">resHYPER</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"HYPERCUBE"</span><span class="op">)</span></span>
+<span><span class="va">resSIMPLE</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">prob.completeDat</span>, method <span class="op">=</span> <span class="st">"SIMPLEHEURISTIC"</span><span class="op">)</span></span></code></pre></div>
+<p>Having a look at the resulting objects we can observe that the number of secondary suppressions required to protect the 15 primary sensitive cells (by default against exact re-calculation given sliding protection levels of 1 for each primary sensitive cell) differs.</p>
+<p>Using the <em>“OPT”</em>-algorithm, a total of <code>23</code> cells have been marked as secondary suppressions. When using <em>“HITAS”</em>-algorithm, it was required to additionally suppress <code>25</code> cells. A total of <code>27</code> cells was selected and marked as secondary suppressions when the <em>“HYPERCUBE”</em> algorithm was used while <code>27</code> additional suppressions were required for the fast heuristic simple procedure <em>“SIMPLEHEURISTIC”</em> and <code>23</code> supps for the Gaussian elimination method.</p>
+<p>One now easily get information from the resulting output objects that are instances of class <code>safeObj</code> by using function <code>getInfo()</code> or applying the <code>summary</code>-method. For the former we show how to extract the final data set which can be achieved as follows:</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">finalData</span> <span class="op">&lt;-</span> <span class="fu">getInfo</span><span class="op">(</span><span class="va">resOPT</span>, type <span class="op">=</span> <span class="st">"finalData"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">finalData</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##     V1  V2  V3 Freq   numVal1   numVal2 sdcStatus</span></span>
+<span><span class="co">## 1: Tot Tot Tot 1000 294693.72 298707.90         s</span></span>
+<span><span class="co">## 2: Tot Tot   a  178  49115.62  49784.65         s</span></span>
+<span><span class="co">## 3: Tot Tot   b  159  49115.62  49784.65         s</span></span>
+<span><span class="co">## 4: Tot Tot   c  177  49115.62  49784.65         s</span></span>
+<span><span class="co">## 5: Tot Tot   d  144  49115.62  49784.65         s</span></span>
+<span><span class="co">## 6: Tot Tot   e  150  49115.62  49784.65         s</span></span></code></pre>
 <p>As we can see above the final result data set contains all columns specified in the input data set along with another column <code>sdcStatus</code> that specifies the anonymization state for each table cell.</p>
 <p>For the latter we show how to apply the summary method. This can be done by applying the following code:</p>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span>(<span class="no">resOPT</span>)</pre></body></html></div>
-<pre><code>## 
-## ######################################################
-## ### Summary of the result object of class 'safeObj' ###
-## ######################################################
-## --&gt; The input data have been protected using algorithm OPT.
-## --&gt; The algorithm ran for 45 seconds.
-## --&gt; To protect 15 primary sensitive cells, 23 cells need to be additionally suppressed.
-## --&gt; A total of 130 cells may be published.
-## 
-## ###################################
-## ### Structure of protected Data ###
-## ###################################
-## 'data.frame':    168 obs. of  7 variables:
-##  $ V1       : Factor w/ 8 levels "A","B","Ba","Bb",..: 1 3 4 5 6 7 1 3 4 5 ...
-##  $ V2       : Factor w/ 3 levels "m","Tot","w": 1 1 1 1 1 1 3 3 3 3 ...
-##  $ V3       : Factor w/ 7 levels "a","b","c","d",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Freq     : num  12 18 18 10 11 13 19 12 12 18 ...
-##  $ numVal1  : num  3920 4708 4199 3890 3341 ...
-##  $ numVal2  : num  4090 5102 4187 4084 2989 ...
-##  $ sdcStatus: chr  "s" "s" "x" "u" ...
-## NULL</code></pre>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">resOPT</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## #####################################</span></span></code></pre>
+<pre><code><span><span class="co">## ### Summary of the protected data ###</span></span></code></pre>
+<pre><code><span><span class="co">## #####################################</span></span></code></pre>
+<pre><code><span><span class="co">## --&gt; The input data have been protected using algorithm 'OPT'</span></span></code></pre>
+<pre><code><span><span class="co">## --&gt; To protect 15 primary sensitive cells, 23 cells were additionally suppressed</span></span></code></pre>
+<pre><code><span><span class="co">## --&gt; A total of 130 cells may be published</span></span></code></pre>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">## ###################################</span></span></code></pre>
+<pre><code><span><span class="co">## ### Structure of protected data ###</span></span></code></pre>
+<pre><code><span><span class="co">## ###################################</span></span></code></pre>
+<pre><code><span><span class="co">## Classes 'safeObj', 'data.table' and 'data.frame':    168 obs. of  7 variables:</span></span>
+<span><span class="co">##  $ V1       : chr  "Tot" "Tot" "Tot" "Tot" ...</span></span>
+<span><span class="co">##  $ V2       : chr  "Tot" "Tot" "Tot" "Tot" ...</span></span>
+<span><span class="co">##  $ V3       : chr  "Tot" "a" "b" "c" ...</span></span>
+<span><span class="co">##  $ Freq     : num  1000 178 159 177 144 150 192 487 82 80 ...</span></span>
+<span><span class="co">##  $ numVal1  : num  294694 49116 49116 49116 49116 ...</span></span>
+<span><span class="co">##  $ numVal2  : num  298708 49785 49785 49785 49785 ...</span></span>
+<span><span class="co">##  $ sdcStatus: chr  "s" "s" "s" "s" ...</span></span>
+<span><span class="co">##  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span></span>
+<span><span class="co">## NULL</span></span></code></pre>
 <p>We see that the summary provides all kind of useful information such as the algorithm that has been used to protect primary sensitive cells, the time it has been taken to solve the problem, the number of primary sensitive and secondary suppressed cells as well as the number of cells that may be published. Also, a excerpt of the final data set is shown.</p>
-<p>I would also like to mention that an iterative algorithm is available in function <code><a href="../reference/protectLinkedTables.html">protectLinkedTables()</a></code> that allows to protect two tables that have common table cells. The function takes two objects of class <code>sdcProblem</code> as input and a list defining the common cells in both tables. Details on how to construct this a list-element are given in the manual and help-page of <code><a href="../reference/protectLinkedTables.html">protectLinkedTables()</a></code>.</p>
+<p>I would also like to mention that an iterative algorithm is available in function <code>protectLinkedTables()</code> that allows to protect two tables that have common table cells. The function takes two objects of class <code>sdcProblem</code> as input and a list defining the common cells in both tables. Details on how to construct this a list-element are given in the manual and help-page of <code>protectLinkedTables()</code>.</p>
 </div>
 </div>
-<div id="remarks" class="section level1">
-<h1 class="hasAnchor">
-<a href="#remarks" class="anchor"></a>Remarks</h1>
+<div class="section level2">
+<h2 id="remarks">Remarks<a class="anchor" aria-label="anchor" href="#remarks"></a>
+</h2>
 <p>A lot of work has gone into the rewrite of <strong>sdcTable</strong> using S4-classes and methods in order to robustify the code and in order to make it easier in future to add new algorithms such as rounding- or cell-perturbation methods and features.</p>
 <p>I would really like to hear any kind of feedback and will be more than happy to work in patches you submit or ideas any one might have which would make it easier to work <strong>sdcTable</strong>. Also, the next step in the evolution of the package will be performance optimization, evaluation for possibilities of parallel computing and so on. I would really like to hear any kind of feedback on package users on these kind of things. Thus, for any remarks, please do not hesitate to contact me using my e-mail adress <code>bernhard.meindl@statistik.gv.at</code>.</p>
 </div>
@@ -492,11 +509,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Bernhard Meindl.</p>
+  <p></p>
+<p>Developed by Bernhard Meindl.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -504,6 +523,8 @@
 
   
 
+
+  
 
   </body>
 </html>

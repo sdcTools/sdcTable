@@ -21,6 +21,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -33,18 +35,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.31.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="articles/sdcTable.html">Get started</a>
 </li>
@@ -57,8 +53,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/sdcTools/userSupport/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/sdcTools/userSupport/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -74,88 +70,98 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="sdctable" class="section level2">
-<h2 class="hasAnchor">
-<a href="#sdctable" class="anchor"></a>sdcTable</h2>
+<div class="section level2">
+<h2 id="sdctable">sdcTable<a class="anchor" aria-label="anchor" href="#sdctable"></a>
+</h2>
 
 <p>This is the git-repo for sdcTable development.</p>
 <p>On github, development of the R-package <code>sdcTable</code> takes place. A version is provided on CRAN, too.</p>
-<p>Please feel free to report bugs, issues and suggestions to enhance the package on the <a href="https://github.com/sdcTools/userSupport/issues"><strong>issue-tracker</strong></a>.</p>
-<div id="installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h3>
-<div id="cran" class="section level4">
-<h4 class="hasAnchor">
-<a href="#cran" class="anchor"></a>CRAN</h4>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">"sdcTable"</span>)</a></code></pre></div>
+<p>Please feel free to report bugs, issues and suggestions to enhance the package on the <a href="https://github.com/sdcTools/userSupport/issues" class="external-link"><strong>issue-tracker</strong></a>.</p>
+<div class="section level3">
+<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h3>
+<div class="section level4">
+<h4 id="cran">CRAN<a class="anchor" aria-label="anchor" href="#cran"></a>
+</h4>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"sdcTable"</span>)</span></code></pre></div>
 </div>
-<div id="github" class="section level4">
-<h4 class="hasAnchor">
-<a href="#github" class="anchor"></a>Github</h4>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">"remotes"</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">remotes<span class="op">::</span><span class="kw">install_github</span>(</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  <span class="dt">repo =</span> <span class="st">"sdcTools/sdcTable"</span>,</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">dependencies =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">build_opts =</span> <span class="kw">c</span>(<span class="st">"--no-resave-data"</span>, <span class="st">"--no-manual"</span>)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">)</a></code></pre></div>
+<div class="section level4">
+<h4 id="github">Github<a class="anchor" aria-label="anchor" href="#github"></a>
+</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">repo =</span> <span class="st">"sdcTools/sdcTable"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dependencies =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">build_opts =</span> <span class="fu">c</span>(<span class="st">"--no-resave-data"</span>, <span class="st">"--no-manual"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 </div>
-<div id="usage" class="section level3">
-<h3 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h3>
-<p>Please have a look at the <a href="https://sdctools.github.io/sdcTable/articles/sdcTable.html"><strong>package vignette</strong></a> and/or browse the automatically generated <a href="https://sdctools.github.io/sdcTable"><strong>documentation</strong></a>.</p>
+<div class="section level3">
+<h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h3>
+<p>Please have a look at the <a href="https://sdctools.github.io/sdcTable/articles/sdcTable.html" class="external-link"><strong>package vignette</strong></a> and/or browse the automatically generated <a href="https://sdctools.github.io/sdcTable" class="external-link"><strong>documentation</strong></a>.</p>
 </div>
-<div id="updates" class="section level3">
-<h3 class="hasAnchor">
-<a href="#updates" class="anchor"></a>Updates</h3>
-<p>Updates/Changes are listed <a href="https://sdctools.github.io/sdcTable/news/index.html"><strong>here</strong></a>.</p>
+<div class="section level3">
+<h3 id="updates">Updates<a class="anchor" aria-label="anchor" href="#updates"></a>
+</h3>
+<p>Updates/Changes are listed <a href="https://sdctools.github.io/sdcTable/news/index.html" class="external-link"><strong>here</strong></a>.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=sdcTable">https://​cloud.r-project.org/​package=sdcTable</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/sdcTools/userSupport/">https://​github.com/​sdcTools/​userSupport/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/sdcTools/userSupport/issues">https://​github.com/​sdcTools/​userSupport/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=sdcTable" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/sdcTools/userSupport/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/sdcTools/userSupport/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>GPL (&gt;= 2)</li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Bernhard Meindl <br><small class="roles"> Maintainer </small>  </li>
+<li><a href="authors.html#citation">Citing sdcTable</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.org/sdcTools/sdcTable"><img src="https://travis-ci.org/sdcTools/sdcTable.svg?branch=master" alt="Travis build status"></a></li>
-<li><a href="https://github.com/sdcTools/sdcTable/commits/master"><img src="https://img.shields.io/github/last-commit/sdcTools/sdcTable.svg?logo=github" alt="GitHub last commit"></a></li>
-<li><a href="https://github.com/sdcTools/sdcTable"><img src="https://img.shields.io/github/languages/code-size/sdcTools/sdcTable.svg?logo=github" alt="GitHub code size in bytes"></a></li>
+<li>Bernhard Meindl <br><small class="roles"> Author, maintainer </small>  </li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/sdcTools/sdcTable/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/sdcTools/sdcTable/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/sdcTools/sdcTable/commits/master" class="external-link"><img src="https://img.shields.io/github/last-commit/sdcTools/sdcTable.svg?logo=github" alt="GitHub last commit"></a></li>
+<li><a href="https://github.com/sdcTools/sdcTable" class="external-link"><img src="https://img.shields.io/github/languages/code-size/sdcTools/sdcTable.svg?logo=github" alt="GitHub code size in bytes"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Bernhard Meindl.</p>
+  <p></p>
+<p>Developed by Bernhard Meindl.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -163,6 +169,8 @@
 
   
 
+
+  
 
   </body>
 </html>
