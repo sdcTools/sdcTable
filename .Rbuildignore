@@ -10,3 +10,4 @@ debugzeugs
 ^README\.md$
 ^README\.Rmd$
 ^data-raw$
+^\.github$

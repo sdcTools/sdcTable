@@ -4,7 +4,8 @@ output: github_document
 
 ## sdcTable
 
-[![Travis build status](https://travis-ci.org/sdcTools/sdcTable.svg?branch=master)](https://travis-ci.org/sdcTools/sdcTable) [![GitHub last commit](https://img.shields.io/github/last-commit/sdcTools/sdcTable.svg?logo=github)](https://github.com/sdcTools/sdcTable/commits/master)
+[![R-CMD-check](https://github.com/sdcTools/sdcTable/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sdcTools/sdcTable/actions/workflows/R-CMD-check.yaml)
+[![GitHub last commit](https://img.shields.io/github/last-commit/sdcTools/sdcTable.svg?logo=github)](https://github.com/sdcTools/sdcTable/commits/master)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sdcTools/sdcTable.svg?logo=github)](https://github.com/sdcTools/sdcTable)
 
 This is the git-repo for sdcTable development.

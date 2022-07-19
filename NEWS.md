@@ -1,3 +1,17 @@
+# sdcTable next
+- [todo] when creating @finalData; save linear constraints + indices for bogus cells!
+- [todo] get rid of old dim-objects (using old structure) and use sdcHierarchies functionality directly
+- [todo] get rid of simpleTriplet class (used eg. in `c_gen_mat()`)
+- [todo] check if we can get rid of empty constraints (sum of freqs/weights is zero -> only empty cells before computing anything to speed up computations?)
+- [todo] use `sdcHierarchies::hier_grid()` for `data.frame` generation
+- [todo] Depreciate `protectLinkedTables()`
+- [todo] optionally allow to use cbc-solver
+- [todo] feature: create `contributing_cells()` that returns (for cell-ids) the table cells that contribute to it
+- [todo] check if `contributing_cells()` may be combined with `contributing_indices()`
+- [todo]: make gaussian default
+- [todo] deal correctly with weighted (`sampWeightInd`) input in `suppConstraints()`
+- [todo] check for hierarchies with only a single value
+
 # sdcTable 0.32.3
 - make `SSBtools::GaussSuppression` as `method = "GAUSS"` available in `protectTable()`
 - updated vignette
