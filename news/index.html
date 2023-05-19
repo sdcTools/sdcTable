@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.4</span>
       </span>
     </div>
 
@@ -51,6 +51,10 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.32.4" id="sdctable-0324">sdcTable 0.32.4<small>2022-09-22</small><a class="anchor" aria-label="anchor" href="#sdctable-0324"></a></h2>
+<ul><li>update dependency on <code>Matrix</code> package</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.32.3" id="sdctable-0323">sdcTable 0.32.3<small>2022-07-16</small><a class="anchor" aria-label="anchor" href="#sdctable-0323"></a></h2>
 <ul><li>make <code><a href="https://rdrr.io/pkg/SSBtools/man/GaussSuppression.html" class="external-link">SSBtools::GaussSuppression</a></code> as <code>method = "GAUSS"</code> available in <code><a href="../reference/protectTable.html">protectTable()</a></code>
 </li>
@@ -70,14 +74,17 @@
 <ul><li>allow invocation of exact previous implementation of <code>"SIMPLEHEURISTIC</code> using <code>method = "SIMPLEHEURISTIC_OLD"</code> in <code><a href="../reference/protectTable.html">protectTable()</a></code>
 </li>
 <li>fix for edge-cases in <code>"SIMPLEHEURISTIC"</code>: weights are temporarily changed for <code>"z"</code>-cells if no additional suppression can be detected</li>
-<li>combined existing functionality to compute constraint-matrix of a problem instance into (much faster) <code>create_m_matrix()</code><ul><li>replaced internal methods/functions <code>c_gen_mat_m()</code> and <code>.gen_constraint_matrix()</code> and <code>genMatMFull()</code>
-</li></ul></li>
+<li>combined existing functionality to compute constraint-matrix of a problem instance into (much faster) <code>create_m_matrix()</code>
+<ul><li>replaced internal methods/functions <code>c_gen_mat_m()</code> and <code>.gen_constraint_matrix()</code> and <code>genMatMFull()</code>
+</li>
+</ul></li>
 <li>re-parametrized internal method <code>c_make_att_prob</code>
 </li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.32.0" id="sdctable-0320">sdcTable 0.32.0<small>2021-08-06</small><a class="anchor" aria-label="anchor" href="#sdctable-0320"></a></h2>
-<ul><li>rewrite of the <code>"SIMPLEHEURISTIC</code> approach<ul><li>is based on (full) constraint matrix written using <code>rcpp</code>
+<ul><li>rewrite of the <code>"SIMPLEHEURISTIC</code> approach
+<ul><li>is based on (full) constraint matrix written using <code>rcpp</code>
 </li>
 <li>rewritten the singleton-detection procedure with <code>rcpp</code>
 </li>
@@ -86,19 +93,24 @@
 </li>
 </ul></li>
 <li>bugfix in internal method <code>c_gen_mat_m</code> with problems that have a single dimension</li>
-<li>dominance rules:<ul><li>bugfix when computing rules on weighted data</li>
+<li>dominance rules:
+<ul><li>bugfix when computing rules on weighted data</li>
 <li>allow nk-dominance rules with n=1 (thx <a href="https://github.com/MaximeBeaute" class="external-link">@MaximeBeaute</a> for reporting)</li>
 <li>increased performance as contributing-units to cells are computed only once</li>
 </ul></li>
-<li>improved function <code><a href="../reference/attack.html">attack()</a></code><ul><li>problem-formulation and solution using the <code>glpkAPI</code>-package</li>
+<li>improved function <code><a href="../reference/attack.html">attack()</a></code>
+<ul><li>problem-formulation and solution using the <code>glpkAPI</code>-package</li>
 <li>can be used to attack all (suppressed) or specific cells</li>
 <li>can also be used after computing a solution for the cell suppression problem</li>
 </ul></li>
-<li>performance improvements<ul><li>
+<li>performance improvements
+<ul><li>
 <code>c_quick_suppression()</code> and <code><a href="../reference/attack.html">attack()</a></code> compute linear deps (<code>.gen_contraint_matrix</code>) only once</li>
 <li>improvements in computation of contributing units to a cell (<code>contributing_indices</code>)</li>
 </ul></li>
-<li>new/updated functions/methods:<ul><li>new function <code><a href="../reference/protect_linked_tables.html">protect_linked_tables()</a></code><ul><li>will replace <code><a href="../reference/protect_linked_tables.html">protectLinkedTables()</a></code> in the future (currently calls new function internally)</li>
+<li>new/updated functions/methods:
+<ul><li>new function <code><a href="../reference/protect_linked_tables.html">protect_linked_tables()</a></code>
+<ul><li>will replace <code><a href="../reference/protect_linked_tables.html">protectLinkedTables()</a></code> in the future (currently calls new function internally)</li>
 <li>only allows the <code>SIMPLEHEURISTIC</code> algorithm</li>
 </ul></li>
 <li>
@@ -107,20 +119,24 @@
 <code><a href="../reference/change_cellstatus.html">change_cellstatus()</a></code> replaces <code><a href="../reference/defunct-sdcTable.html">changeCellStatus()</a></code> (defunct)</li>
 <li>new function <code><a href="../reference/createRegSDCInput.html">createRegSDCInput()</a></code> allows to compute input for e.g <code>RegSDC::SuppressDec</code>
 </li>
-<li>removed S4-class definition <code>safeObj</code> and related methods<ul><li>results are stored within <code>sdcProblem</code>-objects (in slot <code>results</code>)</li>
+<li>removed S4-class definition <code>safeObj</code> and related methods
+<ul><li>results are stored within <code>sdcProblem</code>-objects (in slot <code>results</code>)</li>
 <li>rewritten <code><a href="../reference/getInfo.html">getInfo()</a></code> using an internal helper-function <code><a href="../reference/get_safeobj.html">get_safeobj()</a></code>
 </li>
 </ul></li>
-<li>new function <code><a href="../reference/contributing_indices.html">contributing_indices()</a></code><ul><li>returns contributing units (from raw input data) to a cell</li>
+<li>new function <code><a href="../reference/contributing_indices.html">contributing_indices()</a></code>
+<ul><li>returns contributing units (from raw input data) to a cell</li>
 <li>removed internal helper-function <code>c_contributing_indices()</code>
 </li>
 </ul></li>
 <li>replaced internal S4-method <code>c_cellID</code> with utility-function <code>cell_id()</code>
 </li>
 </ul></li>
-<li>improved examples, documentation, test-data and unit-tests<ul><li>improved and updated documentation <code><a href="../reference/getInfo.html">getInfo()</a></code> and <code><a href="../reference/setInfo.html">setInfo()</a></code>
+<li>improved examples, documentation, test-data and unit-tests
+<ul><li>improved and updated documentation <code><a href="../reference/getInfo.html">getInfo()</a></code> and <code><a href="../reference/setInfo.html">setInfo()</a></code>
 </li>
-<li>replaced <code>microData1.RData</code> and <code>microData2.RData</code><ul><li>generation is reproducible in <code>data-raw</code>
+<li>replaced <code>microData1.RData</code> and <code>microData2.RData</code>
+<ul><li>generation is reproducible in <code>data-raw</code>
 </li>
 <li>data can be loaded using <code>data(microdata1)</code> and <code>data(microdata2)</code>
 </li>
@@ -174,19 +190,24 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.27" id="sdctable-027">sdcTable 0.27<small>2019-02-28</small><a class="anchor" aria-label="anchor" href="#sdctable-027"></a></h2>
-<ul><li>use functionality from <a href="https://cran.r-project.org/package=sdcHierarchies" class="external-link"><code>sdcHierarchies</code></a> to build hierarchies. - removed <code><a href="../reference/defunct-sdcTable.html">create_node()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create()</a></code> instead<ul><li>removed <code><a href="../reference/defunct-sdcTable.html">add_nodes()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add()</a></code> instead</li>
+<ul><li>use functionality from <a href="https://cran.r-project.org/package=sdcHierarchies" class="external-link"><code>sdcHierarchies</code></a> to build hierarchies. - removed <code><a href="../reference/defunct-sdcTable.html">create_node()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create()</a></code> instead
+<ul><li>removed <code><a href="../reference/defunct-sdcTable.html">add_nodes()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add()</a></code> instead</li>
 <li>removed <code><a href="../reference/defunct-sdcTable.html">delete_nodes()</a></code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_delete.html" class="external-link">hier_delete()</a></code> instead</li>
 <li>removed <code>rename_nodes()</code>; please use <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_rename.html" class="external-link">hier_rename()</a></code> instead</li>
-</ul></li></ul></div>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.26" id="sdctable-026">sdcTable 0.26<small>2019-01-18</small><a class="anchor" aria-label="anchor" href="#sdctable-026"></a></h2>
-<ul><li>bugfix when computing indices for contributing units used in some primary suppression methods</li></ul></div>
+<ul><li>bugfix when computing indices for contributing units used in some primary suppression methods</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.25" id="sdctable-025">sdcTable 0.25<small>2018-11-14</small><a class="anchor" aria-label="anchor" href="#sdctable-025"></a></h2>
-<ul><li>better error messages in case invalid hierarchies have been specified</li></ul></div>
+<ul><li>better error messages in case invalid hierarchies have been specified</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.24" id="sdctable-024">sdcTable 0.24<small>2018-07-24</small><a class="anchor" aria-label="anchor" href="#sdctable-024"></a></h2>
-<ul><li>update in SIMPLEHEURISTIC-algorithm that now really respects cells (status <code>"z"</code>) that must not be suppressed</li></ul></div>
+<ul><li>update in SIMPLEHEURISTIC-algorithm that now really respects cells (status <code>"z"</code>) that must not be suppressed</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.23" id="sdctable-023">sdcTable 0.23<small>2018-06-22</small><a class="anchor" aria-label="anchor" href="#sdctable-023"></a></h2>
 <ul><li>bugfix in SIMPLEHEURISTIC-algorithm</li>
@@ -198,7 +219,8 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.22" id="sdctable-022x">sdcTable 0.22.x<a class="anchor" aria-label="anchor" href="#sdctable-022x"></a></h2>
 <ul><li>Feature to create BATCH files suitable for <a href="https://github.com/sdcTools/tauargus" class="external-link"><strong>tau-argus</strong></a>
-</li></ul></div>
+</li>
+</ul></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -213,7 +235,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
