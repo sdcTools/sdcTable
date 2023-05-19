@@ -1,11 +1,14 @@
+# sdcTable 0.32.5
+- Fix singleton-detection procedure in case of existing "dummy-cells" (code `"w"`)
+
 # sdcTable 0.32.4
-- update dependency on `Matrix` package
+- Update dependency on `Matrix` package
 
 # sdcTable 0.32.3
-- make `SSBtools::GaussSuppression` as `method = "GAUSS"` available in `protectTable()`
-- updated vignette
-- small overall fixes
-- fix argus-batchfile creation (`typ = "microdata")`) in case aggregate codes are available in raw input data
+- Make `SSBtools::GaussSuppression` as `method = "GAUSS"` available in `protectTable()`
+- Update of package vignette
+- Small overall fixes
+- Fix creation of tau-Argus batchfiles (`typ = "microdata"`) in case aggregate codes are available in raw input data
 
 # sdcTable 0.32.2
 - when applying dominance rules, empty cells (with frequency `0`) are never marked primary sensitive

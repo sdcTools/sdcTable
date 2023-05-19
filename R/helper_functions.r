@@ -492,7 +492,7 @@ detect_singletons <- function(dat, indices, sub_indices, do_singletons, threshol
           # only if we have a real subtable (more than 1 cell)
           # that is populated (freqs > 0) and not fully suppressed
           ss <- dat[ii]
-          fully_supped <- sum(ss$freq[!ss$sdcStatus %in% c("u", "x")]) == 0
+          fully_supped <- sum(ss$freq[!ss$sdcStatus %in% c("u", "x", "w")]) == 0
 
           if (length(ii) > 1 & max(ss$freq) > 0 & !fully_supped) {
             if (do_singletons) {
