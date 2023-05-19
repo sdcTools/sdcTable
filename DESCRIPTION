@@ -1,6 +1,6 @@
 Package: sdcTable
-Version: 0.32.3
-Date: 2022-07-14
+Version: 0.32.4
+Date: 2022-09-22
 Title: Methods for Statistical Disclosure Control in Tabular Data
 Description: Methods for statistical disclosure control in
     tabular data such as primary and secondary cell suppression as described for example
@@ -23,7 +23,7 @@ Imports:
     glpkAPI,
     progress,
     utils,
-    Matrix,
+    Matrix (>= 1.3-0),
     SSBtools
 Suggests: testthat (>= 0.3), rmarkdown, webshot, digest
 LinkingTo: Rcpp
