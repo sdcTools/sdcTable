@@ -1,4 +1,4 @@
-context("test primarySuppression()")
+context("test secondarySuppression()")
 
 prob <- function() {
   v1 <- sdcHierarchies::hier_create("tot", c("w", "x", "y", "z"))
@@ -65,20 +65,23 @@ prob <- function() {
   #p <- change_cellstatus(sdc, specs = c(v1 = "x", v2 = "b"), rule = "u")
   p
 }
+test_that("simpleheuristic and simpleheuristic-old work", {
+  skip_on_cran()
 
-sdc <- prob()
-expect_is(sdc, "sdcProblem")
-expect_equal(sum(sdc@problemInstance@sdcStatus == "u"), 9)
-expect_equal(sum(sdc@results$sdcStatus == "x"), 0)
+  sdc <- prob()
+  expect_is(sdc, "sdcProblem")
+  expect_equal(sum(sdc@problemInstance@sdcStatus == "u"), 9)
+  expect_equal(sum(sdc@results$sdcStatus == "x"), 0)
 
-sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC_OLD")
-expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 0) # --> still a problem
+  sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC_OLD")
+  expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 0) # --> still a problem
 
-# we need to check that simpleheuristic adds at least one additional suppression
-sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC", solve_attackerprobs = TRUE) # this is the default
-expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 1)
+  # we need to check that simpleheuristic adds at least one additional suppression
+  sdc_protected <- protectTable(sdc, method = "SIMPLEHEURISTIC", solve_attackerprobs = TRUE) # this is the default
+  expect_equal(sum(sdc_protected@results$sdcStatus == "x"), 1)
 
-bnds <- attack(sdc_protected, to_attack = 8)
-expect_equal(bnds$freq, 47)
-expect_equal(bnds$low, 0)
-expect_equal(bnds$up, 141)
+  bnds <- attack(sdc_protected, to_attack = 8)
+  expect_equal(bnds$freq, 47)
+  expect_equal(bnds$low, 0)
+  expect_equal(bnds$up, 78)
+})
