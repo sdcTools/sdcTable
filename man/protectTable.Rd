@@ -118,6 +118,7 @@ suggested as these methods may eventually be removed completely. In case you enc
 please report it or use Tau-Argus (\url{https://research.cbs.nl/casc/tau.htm}).
 }
 \examples{
+\dontrun{
 # load example-problem with with a single primary suppression
 # (same as example from ?primarySuppression)
 p <- sdc_testproblem(with_supps = TRUE)
@@ -141,6 +142,7 @@ res4
 
 # looking at the final table with result suppression pattern
 print(getInfo(res1, type = "finalData"))
+}
 }
 \author{
 Bernhard Meindl \email{bernhard.meindl@statistik.gv.at}

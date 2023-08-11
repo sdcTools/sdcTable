@@ -22,6 +22,7 @@
 #' @export attack
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
 #' @examples
+#' \dontrun{
 #' dims <- list(
 #'   v1 = sdcHierarchies::hier_create("tot", letters[1:4]),
 #'   v2 = sdcHierarchies::hier_create("tot", letters[5:8])
@@ -52,6 +53,7 @@
 #'
 #' # attack only selected cells
 #' attack(sdc, to_attack = c(7, 12))
+#' }
 attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
   stopifnot(inherits(object, "sdcProblem"))
 
@@ -91,7 +93,6 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
     verbose = verbose
   ))
 }
-
 
 # m: constraint matrix
 # df: data.frame with ids to attack, its frequencies and sdc-stati

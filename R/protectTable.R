@@ -86,6 +86,7 @@
 #' @return an [safeObj-class] object
 #' @md
 #' @examples
+#' \dontrun{
 #' # load example-problem with with a single primary suppression
 #' # (same as example from ?primarySuppression)
 #' p <- sdc_testproblem(with_supps = TRUE)
@@ -109,6 +110,7 @@
 #'
 #' # looking at the final table with result suppression pattern
 #' print(getInfo(res1, type = "finalData"))
+#' }
 #' @rdname protectTable
 #' @export protectTable
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}

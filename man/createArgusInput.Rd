@@ -88,6 +88,7 @@ the filepath to the batch-file
 create required input-files and batch-file for tau-argus given an \linkS4class{sdcProblem} object
 }
 \examples{
+\dontrun{
 # loading micro data from sdcTable
 utils::data("microdata1", package="sdcTable")
 microdata1$num1 <- rnorm(mean = 100, sd = 25, nrow(microdata1))
@@ -159,7 +160,6 @@ bO_td2 <- createArgusInput(
   solver = "FREE",
   method = "OPT")
 
-\dontrun{
 ## in case CPLEX should be used, it is required to specify argument licensefile
 bO_md2 <- createArgusInput(
   obj = obj,

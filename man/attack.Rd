@@ -33,6 +33,7 @@ sdcProblem instance. For all calculations the current suppression pattern
 is used when calculating solutions of the attacker's problem.
 }
 \examples{
+\dontrun{
 dims <- list(
   v1 = sdcHierarchies::hier_create("tot", letters[1:4]),
   v2 = sdcHierarchies::hier_create("tot", letters[5:8])
@@ -63,6 +64,7 @@ attack(sdc, to_attack = NULL)
 
 # attack only selected cells
 attack(sdc, to_attack = c(7, 12))
+}
 }
 \author{
 Bernhard Meindl \email{bernhard.meindl@statistik.gv.at}
