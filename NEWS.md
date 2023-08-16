@@ -1,3 +1,8 @@
+# sdcTable 0.32.6
+- Improvements in `SIMPLEHEURISTIC` when adding additional suppressions
+- Add `RegSDC` as suggested package in order to avoid a CRAN note
+- Skip Unit-Tests for CRAN only
+
 # sdcTable 0.32.5
 - Fix singleton-detection procedure in case of existing "dummy-cells" (code `"w"`)
 
