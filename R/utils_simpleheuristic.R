@@ -27,12 +27,18 @@
   # looping or not
   finished <- FALSE
   run <- 0
-  max_run <- 10
+  max_run <- 20
+  cell_info <- list()
+
   while (!finished) {
     run <- run + 1
+    if (input$verbose) {
+      message("run ", run, " | ", max_run)
+    }
     if (run > max_run) {
       stop("no solution possible after ", max_run, " runs", call. = FALSE)
     }
+
     if (run > 1) {
       do_singletons <- FALSE
       threshold <- 0
@@ -72,57 +78,62 @@
     chkdf <- chkdf[chkdf$protected == FALSE, ]
 
     added_supps <- c()
-
     if (nrow(chkdf) > 0) {
       if (input$verbose) {
-        message("--> invalid solution found in run ", run, ": additional suppressions are added")
+        message("--> invalid solution for ", nrow(chkdf), " cells found in run ", run, appendLF = FALSE)
+        message(" --> additional suppressions need to be added")
       }
       df$added_supps <- FALSE # we keep track if additional cells have already been suppressed
 
       for (cell in chkdf$id) {
-        all_deps_supped <- TRUE # we compute if all cells in all constraints are suppressed
-
-        # constraints to which the row contributes
-        rr <- full_m$i[full_m$j == cell]
-        nr_deps <- length(rr)
         added_supp <- FALSE
-
         cnt <- 0
         while (!added_supp) {
           cnt <- cnt + 1
-          if (cnt > nr_deps) {
-            message("we try one last time")
-            # we only try for the first constraint
-            ids <- full_m$j[full_m$i == rr[1]]
-            idx_z <- ids[which(df[ids, sdcStatus == "z"])]
-            if (length(idx_z) > 0) {
-              df$sdcStatus[idx_z] <- "s"
-              df[[.tmpweightname()]][idx_z] <- max(df$freq[ids]) - 1
-              added_supp <- TRUE
-              break
-            } else {
-              stop("no additional suppression could be found (cell: ", cell, ")", call. = FALSE)
+          # in which partition is the cell in?
+          if (is.null(cell_info[[as.character(cell)]])) {
+            # compute cell information
+            tmp_i <- tmp_j <- c()
+            pp <- object@partition$indices
+            for (idx_i in 1:length(pp)) {
+              for (idx_j in 1:length(pp[[idx_i]])) {
+                if (cell %in% pp[[idx_i]][[idx_j]]) {
+                  tmp_i <- c(tmp_i, idx_i)
+                  tmp_j <- c(tmp_j, idx_j)
+                }
+              }
             }
-          }
-          ids <- full_m$j[full_m$i == rr[cnt]]
-          strids <- colnames(full_m)[ids]
-          st <- df[ids, ]
-
-          all_deps_supped <- all_deps_supped && all(st$sdcStatus %in% c("u", "x", "w"))
-          if (any(st$added_supps)) {
-            added_supp <- TRUE
+            cell_info[[as.character(cell)]] <- list(tmp_i = tmp_i, tmp_j = tmp_j)
           } else {
-            st <- st[sdcStatus == "s"]
+            # receive cell information
+            tmp_i <- cell_info[[as.character(cell)]]$tmp_i
+            tmp_j <- cell_info[[as.character(cell)]]$tmp_j
+          }
+
+          # Idea: use cell with lowest value in the contributing cells
+          finished2 <- FALSE
+          added_supp <- FALSE
+          i <- length(tmp_i) + 1
+          while (!finished2) {
+            i <- i - 1
+            if (i <= 0) {
+              stop("Unfortunately, no suitable suppression-pattern could be found", call. = FALSE)
+            }
+            ids <- pp[[tmp_i[i]]][[tmp_j[i]]]
+            st <- df[ids][sdcStatus == "s"]
             if (nrow(st) > 0) {
               data.table::setorderv(st, .tmpweightname())
               add_supp <- st$id[1]
               df$added_supps[add_supp] <- TRUE
               df$sdcStatus[add_supp] <- "x"
               added_supp <- TRUE
+              finished2 <- TRUE
             } else {
-              if (cnt == nr_deps && all_deps_supped) {
-                # edge case: if all cells are suppressed, we cannot supp more!
+              if (i == 1) {
+                # all tables with this cells are fully supped
+                # -> nothing more to suppress left
                 added_supp <- TRUE
+                finished2 <- TRUE
               }
             }
           }
