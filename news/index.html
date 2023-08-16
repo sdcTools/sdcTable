@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.6</span>
       </span>
     </div>
 
@@ -50,6 +50,12 @@
       <small>Source: <a href="https://github.com/sdcTools/userSupport/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.32.6" id="sdctable-0326">sdcTable 0.32.6<small>2023-08-11</small><a class="anchor" aria-label="anchor" href="#sdctable-0326"></a></h2>
+<ul><li>Improvements in <code>SIMPLEHEURISTIC</code> when adding additional suppressions</li>
+<li>Add <code>RegSDC</code> as suggested package in order to avoid a CRAN note</li>
+<li>Skip Unit-Tests for CRAN only</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.32.5" id="sdctable-0325">sdcTable 0.32.5<small>2023-05-19</small><a class="anchor" aria-label="anchor" href="#sdctable-0325"></a></h2>
 <ul><li>Fix singleton-detection procedure in case of existing “dummy-cells” (code <code>"w"</code>)</li>
@@ -121,7 +127,7 @@
 <code><a href="../reference/cell_info.html">cell_info()</a></code> replaces <code><a href="../reference/defunct-sdcTable.html">cellInfo()</a></code> (defunct)</li>
 <li>
 <code><a href="../reference/change_cellstatus.html">change_cellstatus()</a></code> replaces <code><a href="../reference/defunct-sdcTable.html">changeCellStatus()</a></code> (defunct)</li>
-<li>new function <code><a href="../reference/createRegSDCInput.html">createRegSDCInput()</a></code> allows to compute input for e.g <code>RegSDC::SuppressDec</code>
+<li>new function <code><a href="../reference/createRegSDCInput.html">createRegSDCInput()</a></code> allows to compute input for e.g <code><a href="https://rdrr.io/pkg/RegSDC/man/SuppressDec.html" class="external-link">RegSDC::SuppressDec</a></code>
 </li>
 <li>removed S4-class definition <code>safeObj</code> and related methods
 <ul><li>results are stored within <code>sdcProblem</code>-objects (in slot <code>results</code>)</li>

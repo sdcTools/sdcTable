@@ -18,7 +18,7 @@ that can be used as input for RegSDC::SuppressDec (among others)."><!-- mathjax 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.6</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@ that can be used as input for RegSDC::SuppressDec (among others)."><!-- mathjax 
 
     <div class="ref-description">
     <p>This function transforms a <a href="sdcProblem-class.html">sdcProblem</a> object into an object
-that can be used as input for RegSDC::SuppressDec (among others).</p>
+that can be used as input for <a href="https://rdrr.io/pkg/RegSDC/man/SuppressDec.html" class="external-link">RegSDC::SuppressDec</a> (among others).</p>
     </div>
 
     <div id="ref-usage">
@@ -115,7 +115,7 @@ but suppressed cells have a value of <code>NA</code></p></li>
 <span class="r-in"><span><span class="va">inp_regsdc</span> <span class="op">&lt;-</span> <span class="fu">createRegSDCInput</span><span class="op">(</span>x <span class="op">=</span> <span class="va">prob</span>, chk <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># estimate innner cells based on linear dependencies</span></span></span>
-<span class="r-in"><span><span class="va">res_regsdc</span> <span class="op">&lt;-</span> <span class="fu">RegSDC</span><span class="fu">::</span><span class="fu">SuppressDec</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">res_regsdc</span> <span class="op">&lt;-</span> <span class="fu">RegSDC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RegSDC/man/SuppressDec.html" class="external-link">SuppressDec</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">inp_regsdc</span><span class="op">$</span><span class="va">x</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  z <span class="op">=</span> <span class="va">inp_regsdc</span><span class="op">$</span><span class="va">z_supp</span>,</span></span>
 <span class="r-in"><span>  y <span class="op">=</span> <span class="va">inp_regsdc</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span></span></span>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.6</span>
       </span>
     </div>
 
@@ -158,7 +158,8 @@ as well as <code>licensefile</code> in clase <code>"CPLEX"</code> was specified 
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># loading micro data from sdcTable</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># loading micro data from sdcTable</span></span></span>
 <span class="r-in"><span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"microdata1"</span>, package<span class="op">=</span><span class="st">"sdcTable"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">microdata1</span><span class="op">$</span><span class="va">num1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">100</span>, sd <span class="op">=</span> <span class="fl">25</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">microdata1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">microdata1</span><span class="op">$</span><span class="va">num2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">500</span>, sd<span class="op">=</span><span class="fl">125</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">microdata1</span><span class="op">)</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span></span></span>
@@ -229,7 +230,6 @@ as well as <code>licensefile</code> in clase <code>"CPLEX"</code> was specified 
 <span class="r-in"><span>  solver <span class="op">=</span> <span class="st">"FREE"</span>,</span></span>
 <span class="r-in"><span>  method <span class="op">=</span> <span class="st">"OPT"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span><span class="co">## in case CPLEX should be used, it is required to specify argument licensefile</span></span></span>
 <span class="r-in"><span><span class="va">bO_md2</span> <span class="op">&lt;-</span> <span class="fu">createArgusInput</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  obj <span class="op">=</span> <span class="va">obj</span>,</span></span>

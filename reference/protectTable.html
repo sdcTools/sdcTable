@@ -22,7 +22,7 @@ the protection algorithm are set using parameter ...."><!-- mathjax --><script s
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.6</span>
       </span>
     </div>
 
@@ -170,99 +170,31 @@ please report it or use Tau-Argus (<a href="https://research.cbs.nl/casc/tau.htm
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># load example-problem with with a single primary suppression</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># load example-problem with with a single primary suppression</span></span></span>
 <span class="r-in"><span><span class="co"># (same as example from ?primarySuppression)</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="sdc_testproblem.html">sdc_testproblem</a></span><span class="op">(</span>with_supps <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># protect the table using the 'GAUSS' algorithm with verbose output</span></span></span>
 <span class="r-in"><span><span class="va">res1</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">p</span>, method <span class="op">=</span> <span class="st">"GAUSS"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> computing constraint matrix</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> convert constraint matrix into sparse matrix</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> apply SSBtools::GaussSuppression()</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> GaussSuppression_anySum: ..............</span>
 <span class="r-in"><span><span class="va">res1</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The object is a sdcProblem instance with 15 cells in 2 dimension(s)!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Protection: yes (using 'GAUSS')</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The dimensions are:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- region (2 levels; 5 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- gender (2 levels; 3 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Suppression pattern:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Primary suppressions: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Secondary suppressions: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Publishable cells: 11</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># protect the table using the 'HITAS' algorithm with verbose output</span></span></span>
 <span class="r-in"><span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">p</span>, method <span class="op">=</span> <span class="st">"HITAS"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, useC <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Starting to solve problem 1 / 1 in group 4 / 4 !</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --&gt; starting to do some preparations...[done]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --&gt; calculated a heuristic solution with obj_val=42! [done]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --&gt; solved the relaxed master problem (4 constraints) and got a valid, integer solution. [done]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finished! The algorithm has terminated with an obj_val of 42!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="va">res2</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The object is a sdcProblem instance with 15 cells in 2 dimension(s)!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Protection: yes (using 'HITAS')</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The dimensions are:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- region (2 levels; 5 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- gender (2 levels; 3 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Suppression pattern:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Primary suppressions: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Secondary suppressions: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Publishable cells: 11</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># protect using the heuristic algorithm</span></span></span>
 <span class="r-in"><span><span class="va">res3</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">p</span>, method <span class="op">=</span> <span class="st">"SIMPLEHEURISTIC"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res3</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The object is a sdcProblem instance with 15 cells in 2 dimension(s)!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Protection: yes (using 'SIMPLEHEURISTIC')</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The dimensions are:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- region (2 levels; 5 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- gender (2 levels; 3 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Suppression pattern:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Primary suppressions: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Secondary suppressions: 3</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Publishable cells: 11</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># protect using the old implmentation of the heuristic algorithm</span></span></span>
 <span class="r-in"><span><span class="co"># used in sdcTable versions &lt;0.32</span></span></span>
 <span class="r-in"><span><span class="va">res4</span> <span class="op">&lt;-</span> <span class="fu">protectTable</span><span class="op">(</span><span class="va">p</span>, method <span class="op">=</span> <span class="st">"SIMPLEHEURISTIC_OLD"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res4</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The object is a sdcProblem instance with 15 cells in 2 dimension(s)!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Protection: yes (using 'SIMPLEHEURISTIC_OLD')</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The dimensions are:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- region (2 levels; 5 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- gender (2 levels; 3 codes; of these being 1 aggregates)</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Suppression pattern:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Primary suppressions: 1</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Secondary suppressions: 5</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	- Publishable cells: 9</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># looking at the final table with result suppression pattern</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="getInfo.html">getInfo</a></span><span class="op">(</span><span class="va">res1</span>, type <span class="op">=</span> <span class="st">"finalData"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     region gender Freq  val sdcStatus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  total  total  100 1284         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  total   male   55  802         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  total female   45  482         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      A  total   20  198         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      A   male   18  178         x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      A female    2   20         u</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      B  total   33  344         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      B   male   14  140         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      B female   19  204         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      C  total   22  224         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      C   male   12  118         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      C female   10  106         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      D  total   25  518         s</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      D   male   11  366         x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      D female   14  152         x</span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
