@@ -104,6 +104,9 @@ check_varinput <- function(obj, type, responsevar, shadowvar, costvar, requestva
     if (!holdingvar %in% cn) {
       stop("non-valid variable selected for choice 'holdingvar'.\n")
     }
+    if (!is.integer(obj@dataObj@rawData[[holdingvar]])) {
+      stop("holdingvar (", shQuote(holdingvar), ") is not an integer!")
+    }
   } else {
     holdingvar <- ""
   }

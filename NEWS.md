@@ -1,3 +1,6 @@
+# sdcTable next
+- Additional check for `createArgusInput()` to make sure that the holding variable is integer (if specified)
+
 # sdcTable 0.32.6
 - Improvements in `SIMPLEHEURISTIC` when adding additional suppressions
 - Add `RegSDC` as suggested package in order to avoid a CRAN note
