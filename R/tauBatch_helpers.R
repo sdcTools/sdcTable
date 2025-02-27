@@ -123,6 +123,15 @@ check_suppmethod <- function(method) {
   method
 }
 
+# no colons in var-labels (https://github.com/sdcTools/UserSupport/issues/301)
+check_colon <- function(x) {
+  for (n in names(x)) {
+    if (sum(grepl(",", x[[n]]$codes)) > 0) {
+      stop("Colon (,) detected in a label for dimensional variable ", shQuote(n))
+    }
+  }
+  invisible(TRUE)
+}
 
 ###############################################################################################################
 ##### helper-functions that are used to create hierarchy-files for tau-argus using an sdcProblem-instance #####
@@ -218,8 +227,9 @@ create_microdata_and_metadata <- function(obj, verbose, digits=2, path=getwd(), 
   # define output-matrix (required for fixed-file format)
   mat <- matrix("", nrow=nrow(mdat), ncol=1)
 
-  # calculate hierarchy-files
+  # calculate and check hierarchy-files
   hiercodes <- hrc(obj)
+  check_colon(x = hiercodes)
 
   # write microdata
   # 1: dim-vars
@@ -352,8 +362,9 @@ create_tabdata_and_metadata <- function(obj, verbose, responsevar, digits=2, pat
   # define output-matrix (required for fixed-file format)
   mat <- matrix("", nrow=nrow(mdat), ncol=1)
 
-  # calculate hierarchiy-files
+  # calculate and check hierarchy-files
   hiercodes <- hrc(obj)
+  check_colon(x = hiercodes)
 
   # write microdata
   # 1: dim-vars

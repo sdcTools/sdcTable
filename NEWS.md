@@ -1,5 +1,6 @@
 # sdcTable next
 - Additional check for `createArgusInput()` to make sure that the holding variable is integer (if specified)
+- Additional check for colons in labels in `createArgusInput()`
 
 # sdcTable 0.32.6
 - Improvements in `SIMPLEHEURISTIC` when adding additional suppressions

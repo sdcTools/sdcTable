@@ -36,5 +36,4 @@ License: GPL (>= 2)
 LazyData: true
 SystemRequirements: GLPK library, including -dev or -devel part
 Encoding: UTF-8
-RoxygenNote: 7.2.3
 VignetteBuilder: knitr
