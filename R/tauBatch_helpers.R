@@ -256,6 +256,7 @@ create_microdata_and_metadata <- function(obj, verbose, digits=2, path=getwd(), 
     f_hrc <- normalizePath(f_hrc, winslash="/", mustWork=TRUE)
     cmds <- append(cmds, paste(vv, cur_dig)) # no missings allowed in sdcProblem-objects
     cmds <- append(cmds, paste(bl, "<RECODEABLE>"))
+    cmds <- append(cmds, paste(bl, "<TOTCODE>", shQuote(slot(di, "dimInfo")[[vv]]@codesOriginal[1])))
     cmds <- append(cmds, paste(bl, "<HIERCODELIST>", dQuote(f_hrc)))
     cmds <- append(cmds, paste(bl, "<HIERLEADSTRING>", dQuote("@")))
     cmds <- append(cmds, paste(bl, "<HIERARCHICAL>"))
@@ -376,6 +377,7 @@ create_tabdata_and_metadata <- function(obj, verbose, responsevar, digits=2, pat
   # --> all have <HIERLEADSTRING>
   # --> none have <REQUEST> or <HOLDING>: currently not supported
   dim_vars <- names(hiercodes)
+  di <- slot(obj, "dimInfo")
   f_hrcs <- c()
   for (i in seq_along(dim_vars)) {
     vv <- dim_vars[i]
@@ -396,6 +398,7 @@ create_tabdata_and_metadata <- function(obj, verbose, responsevar, digits=2, pat
 
     cmds <- append(cmds, paste(vv)) # no missings allowed in sdcProblem-objects
     cmds <- append(cmds, paste(bl, "<RECODEABLE>"))
+    cmds <- append(cmds, paste(bl, "<TOTCODE>", shQuote(slot(di, "dimInfo")[[vv]]@codesOriginal[1])))
     cmds <- append(cmds, paste(bl, "<TOTCODE>", dQuote(tot_code)))
     cmds <- append(cmds, paste(bl, "<HIERCODELIST>", dQuote(f_hrc)))
     cmds <- append(cmds, paste(bl, "<HIERLEADSTRING>", dQuote("@")))
