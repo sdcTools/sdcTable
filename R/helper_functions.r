@@ -15,25 +15,26 @@ pasteStrVec <- function(strVec, nrVars, coll = NULL) {
 }
 
 # alternative to expand.grid (used for pasteStrVec!)
-expand <- function(inputList, vector=TRUE) {
+expand <- function(inputList, vector = TRUE) {
   uniques <- sapply(inputList, length)
   nrPoss <- prod(uniques)
-  if ( vector == TRUE ) {
+  if (vector == TRUE) {
     out <- NULL
-    for ( i in 1:length(inputList) ) {
-      if ( i == 1 )
-        out <- rep(inputList[[i]], nrPoss/length(inputList[[i]]))
-      else
-        out <- c(out, rep(inputList[[i]], each=prod(uniques[1:(i-1)]), nrPoss/length(rep(inputList[[i]], each=prod(uniques[1:(i-1)])))))
+    for (i in 1:length(inputList)) {
+      if (i == 1) {
+        out <- rep(inputList[[i]], nrPoss / length(inputList[[i]]))
+      } else {
+        out <- c(out, rep(inputList[[i]], each = prod(uniques[1:(i - 1)]), nrPoss / length(rep(inputList[[i]], each = prod(uniques[1:(i - 1)])))))
+      }
     }
-  }
-  else {
+  } else {
     out <- list()
-    for ( i in 1:length(inputList) ) {
-      if ( i == 1 )
-        out[[i]] <- rep(inputList[[i]], nrPoss/length(inputList[[i]]))
-      else
-        out[[i]] <- rep(inputList[[i]], each=prod(uniques[1:(i-1)]), nrPoss/length(rep(inputList[[i]], each=prod(uniques[1:(i-1)]))))
+    for (i in 1:length(inputList)) {
+      if (i == 1) {
+        out[[i]] <- rep(inputList[[i]], nrPoss / length(inputList[[i]]))
+      } else {
+        out[[i]] <- rep(inputList[[i]], each = prod(uniques[1:(i - 1)]), nrPoss / length(rep(inputList[[i]], each = prod(uniques[1:(i - 1)]))))
+      }
     }
   }
   out
@@ -41,20 +42,20 @@ expand <- function(inputList, vector=TRUE) {
 
 # returns a vector original size or str
 mySplit <- function(strVec, keepIndices) {
-  if ( min(keepIndices) < 1 | max(keepIndices) > nchar(strVec[1]) ) {
-    stop("indices must be in 1:",nchar(strVec[1]),"!\n")
+  if (min(keepIndices) < 1 | max(keepIndices) > nchar(strVec[1])) {
+    stop("indices must be in 1:", nchar(strVec[1]), "!\n")
   }
   keepIndices <- unique(keepIndices)
   return(cpp_mySplit(as.character(strVec), as.integer(keepIndices)))
 }
 
-mySplitIndicesList <- function(strVec, keepList, coll="-") {
+mySplitIndicesList <- function(strVec, keepList, coll = "-") {
   u <- unlist(keepList)
-  if ( min(u) < 1 | max(u) > nchar(strVec[1]) ) {
-    stop("indices must be in 1:",nchar(strVec[1]),"!\n")
+  if (min(u) < 1 | max(u) > nchar(strVec[1])) {
+    stop("indices must be in 1:", nchar(strVec[1]), "!\n")
   }
   out <- list()
-  for ( i in 1:length(keepList) ) {
+  for (i in 1:length(keepList)) {
     out[[i]] <- mySplit(strVec, keepList[[i]])
   }
   out <- cpp_myPaste(as.character(unlist(out)), as.integer(length(out)), coll)
@@ -62,7 +63,7 @@ mySplitIndicesList <- function(strVec, keepList, coll="-") {
 # mySplitIndicesList("112233444", list(1:3, 5:6, 7:8))
 
 # check ob 'x' ganzzahlig ist
-is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  {
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
   abs(x - round(x)) < tol
 }
 
@@ -81,57 +82,78 @@ getBranchingVariable <- function(sol, alreadyBranched, primSupps) {
   branchVar
 }
 
-my.Rglpk_solve_LP <- function(obj, mat, dir, rhs, types=NULL, max=FALSE,
-  bounds=NULL, verbose=FALSE, presolve=TRUE) {
-  if (!identical(max, TRUE) && !identical(max, FALSE)) {
+# solves a specific LP using highs solver
+my.highs.solve_LP <- function(obj, mat, dir, rhs, types = NULL, max = FALSE, bounds = NULL, verbose = FALSE, presolve = TRUE) {
+  if (!rlang::is_scalar_logical(max)) {
     stop("'Argument 'max' must be either TRUE or FALSE!", call. = FALSE)
   }
-  if (!identical(verbose, TRUE) && !identical(verbose, FALSE)) {
+  if (!rlang::is_scalar_logical(verbose)) {
     stop("'Argument 'verbose' must be either TRUE or FALSE.", call. = FALSE)
   }
-
   if (!inherits(mat, "simpleTriplet")) {
-    stop("argument 'mat' must be of class 'simpleTriplet'", call. = FALSE)
+    stop("Argument 'mat' must be of class 'simpleTriplet'", call. = FALSE)
   }
 
-  if (!all(dir %in% c("<", "<=", ">", ">=", "=="))) {
-    stop('directions must be one of "<", "<=", ">", ">= or "==".', call. = FALSE)
+  if (!all(dir %in% c("==", ">=", "<="))) {
+    print(dir)
+    stop('all given constraints must have direction "==".', call. = FALSE)
   }
+
+  # compute lhs + rhs depending on direction
+  lhs <- rhs # ==
+  rhs[dir == ">="] <- Inf
+  lhs[dir == "<="] <- -Inf
 
   if (is.null(types)) {
     types <- rep("C", length(obj))
   }
-  if (any(is.na(match(types, c("I", "B", "C"), nomatch = NA)))) {
-    stop("'types' must be either 'B', 'C' or 'I'.", call. = FALSE)
+  if (any(is.na(match(types, c("C", "I"), nomatch = NA)))) {
+    stop("'types' must be either 'C', 'I'.", call. = FALSE)
   }
 
-  slammat <- simple_triplet_matrix(
-    i = mat@i,
-    j = mat@j,
-    v = mat@v,
-    nrow = mat@nrRows,
-    ncol = mat@nrCols
+  mm <- Matrix::sparseMatrix(i = mat@i, j = mat@j, x = mat@v, dims = c(mat@nrRows, mat@nrCols))
+  nr_vars <- ncol(mm)
+
+  if (is.null(bounds)) {
+    l <- u <- NULL
+  } else {
+    l <- rep(0, nr_vars)
+    u <- rep(Inf, nr_vars)
+    l[bounds$lower$ind] <- bounds$lower$val
+    u[bounds$upper$ind] <- bounds$upper$val
+  }
+
+  control <- highs::highs_control(
+    threads = 1,
+    time_limit = Inf,
+    log_to_console = verbose
   )
 
-  x <- Rglpk_solve_LP(
-    obj = obj,
-    mat = slammat,
-    dir = dir,
+  prob <- highs::highs_model(
+    Q = NULL,
+    L = obj,
+    lower = l,
+    upper = u,
+    A = mm,
+    lhs = lhs,
     rhs = rhs,
-    bounds = bounds,
     types = types,
-    max = max,
-    control = list(
-      verbose = verbose,
-      presolve = presolve,
-      tm_limit = 0
-    )
+    maximum = FALSE,
+    offset = 0
   )
+
+  solver <- highs::highs_solver(
+    model = prob,
+    control = control
+  )
+  solver$solve()
+  x <- solver$solution()
+
   list(
-    optimum = sum(x$solution * obj),
-    solution = x$solution,
-    status = x$status,
-    dual = x$solution_dual
+    optimum = sum(x$row_value * x$row_dual),
+    solution = x$col_value,
+    status = ifelse(x$value_valid, 0L, -1L),
+    dual = x$col_dual
   )
 }
 
@@ -224,7 +246,7 @@ genParaObj <- function(selection, ...) {
     paraObj$method <- NA
     paraObj$verbose <- FALSE
     paraObj$save <- FALSE
-    paraObj$solver <- "glpk"
+    paraObj$solver <- "highs"
 
     # HITAS|OPT - parameter
     paraObj$maxIter <- 10
@@ -246,8 +268,8 @@ genParaObj <- function(selection, ...) {
 
     # GAUSS
     paraObj$removeDuplicated <- TRUE
-    paraObj$whenEmptySuppressed	<- NULL
-    paraObj$whenEmptyUnsuppressed	<- NULL
+    paraObj$whenEmptySuppressed <- NULL
+    paraObj$whenEmptyUnsuppressed <- NULL
     paraObj$singletonMethod <- "anySum"
 
     # protect_linked_tables
@@ -292,7 +314,7 @@ genParaObj <- function(selection, ...) {
       stop("argument `timeLimit` must be >= 1 and <= 3000 minutes!", call. = FALSE)
     }
     if (!length(paraObj$approxPerc) &
-        !paraObj$approxPerc %in% 1:100) {
+      !paraObj$approxPerc %in% 1:100) {
       stop("argument `approxPerc` must be >= 1 and <= 100!\n", call. = FALSE)
     }
 
@@ -300,7 +322,7 @@ genParaObj <- function(selection, ...) {
     if (!paraObj$method %in% methods_ok) {
       stop(paste("valid methods:", paste(shQuote(methods_ok), collapse = ", ")), call. = FALSE)
     }
-    if (!paraObj$suppMethod %in% c('minSupps', 'minSum', 'minSumLogs')) {
+    if (!paraObj$suppMethod %in% c("minSupps", "minSum", "minSumLogs")) {
       stop("`suppMethod` must be either `minSupps`, `minSum` or `minSumLogs`", call. = FALSE)
     }
 
@@ -332,19 +354,19 @@ genParaObj <- function(selection, ...) {
 st_to_mat <- function(x) {
   n.rows <- g_nr_rows(x)
   n.cols <- g_nr_cols(x)
-  M <- matrix(0, nrow=n.rows, ncol=n.cols)
+  M <- matrix(0, nrow = n.rows, ncol = n.cols)
 
   i.x <- g_row_ind(x)
   j.x <- g_col_ind(x)
   v.x <- g_values(x)
-  for ( i in 1:g_nr_cells(x) ) {
+  for (i in 1:g_nr_cells(x)) {
     M[i.x[i], j.x[i]] <- v.x[i]
   }
   # matrizen from attackers problem are transposed -> switch!
   return(t(M))
 }
 
-csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
+csp_cpp <- function(sdcProblem, attackonly = FALSE, verbose) {
   pI <- g_problemInstance(sdcProblem)
   dimInfo <- g_dimInfo(sdcProblem)
   aProb <- c_make_att_prob(input = list(objectA = sdcProblem))$aProb
@@ -357,7 +379,7 @@ csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
   ind_fixed <- as.integer(g_forcedCells(pI))
   len_fixed <- as.integer(length(ind_fixed))
 
-  attProbM <- init.simpleTriplet("simpleTriplet", input=list(mat=st_to_mat(aProb@constraints)))
+  attProbM <- init.simpleTriplet("simpleTriplet", input = list(mat = st_to_mat(aProb@constraints)))
 
   ia <- as.integer(c(0, g_row_ind(attProbM)))
   ja <- as.integer(c(0, g_col_ind(attProbM)))
@@ -376,64 +398,64 @@ csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
   UPL <- as.integer(g_UPL(pI))
   SPL <- as.integer(g_SPL(pI))
 
-  if ( attackonly == TRUE ) {
+  if (attackonly == TRUE) {
     attackonly <- as.integer(1)
   } else {
     attackonly <- as.integer(0)
   }
   final_pattern <- as.integer(rep(0, length(vals)))
   res <- .C("csp",
-    ind_prim=ind_prim,
-    len_prim=len_prim,
-    bounds_min=bounds_min,
-    bounds_max=bounds_max,
-    ind_fixed=ind_fixed,
-    len_fixed=len_fixed,
-    ia=ia,
-    ja=ja,
-    ar=ar,
-    cells_mat=cells_mat,
-    nr_vars=nr_vars,
-    nr_rows=nr_rows,
-    vals=vals,
-    lb=lb, ub=ub,
-    LPL=LPL,
-    UPL=UPL,
-    SPL=SPL,
-    final_pattern=final_pattern,
-    attackonly=attackonly,
-    verbose=as.integer(verbose),
-    is_ok=0L
+    ind_prim = ind_prim,
+    len_prim = len_prim,
+    bounds_min = bounds_min,
+    bounds_max = bounds_max,
+    ind_fixed = ind_fixed,
+    len_fixed = len_fixed,
+    ia = ia,
+    ja = ja,
+    ar = ar,
+    cells_mat = cells_mat,
+    nr_vars = nr_vars,
+    nr_rows = nr_rows,
+    vals = vals,
+    lb = lb, ub = ub,
+    LPL = LPL,
+    UPL = UPL,
+    SPL = SPL,
+    final_pattern = final_pattern,
+    attackonly = attackonly,
+    verbose = as.integer(verbose),
+    is_ok = 0L
   )
 
-  if ( attackonly ) {
-    df <- data.frame(prim_supps=res$ind_prim, val=res$vals[res$ind_prim], bounds_low=res$bounds_min, bounds_up=res$bounds_max)
-    df$protected <- df$bounds_low <= df$val - LPL[df$prim_supps]  &
-    df$bounds_up >=  df$val + UPL[df$prim_supps] &
+  if (attackonly) {
+    df <- data.frame(prim_supps = res$ind_prim, val = res$vals[res$ind_prim], bounds_low = res$bounds_min, bounds_up = res$bounds_max)
+    df$protected <- df$bounds_low <= df$val - LPL[df$prim_supps] &
+      df$bounds_up >= df$val + UPL[df$prim_supps] &
       df$bounds_up - df$bounds_low >= SPL[df$prim_supps]
 
-    if ( length(g_secondSupps(pI)) > 0 ) {
+    if (length(g_secondSupps(pI)) > 0) {
       index <- g_primSupps(pI)
-      df <- df[which(df$prim_supps %in% index),]
+      df <- df[which(df$prim_supps %in% index), ]
     }
     return(df)
   } else {
-    if  ( res$is_ok != 0 ) {
+    if (res$is_ok != 0) {
       return(NULL)
     } else {
       nr_vars <- g_nrVars(g_problemInstance(sdcProblem))
       status_new <- rep("s", nr_vars)
-      status_new[res$final_pattern!=0] <- "x"
+      status_new[res$final_pattern != 0] <- "x"
       status_new[ind_prim] <- "u"
-      if ( length(g_secondSupps(pI)) > 0 ) {
+      if (length(g_secondSupps(pI)) > 0) {
         status_new[g_secondSupps(pI)] <- "x"
       }
-      if ( length(ind_fixed) > 0 ) {
+      if (length(ind_fixed) > 0) {
         status_new[ind_fixed] <- "z"
       }
 
       pI <- g_problemInstance(sdcProblem)
-      s_sdcStatus(pI) <- list(index=1:nr_vars, vals=status_new)
+      s_sdcStatus(pI) <- list(index = 1:nr_vars, vals = status_new)
       s_problemInstance(sdcProblem) <- pI
       s_indicesDealtWith(sdcProblem) <- 1:nr_vars
       return(sdcProblem)
@@ -444,7 +466,7 @@ csp_cpp <- function(sdcProblem, attackonly=FALSE, verbose) {
 # do_singletons: logical --> ordinary singleton detection procedure
 # threshold: make sure that in all rows the total amount of contributors is >= threshold_th
 detect_singletons <- function(dat, indices, sub_indices, do_singletons, threshold = NA) {
-  #.supp_val <- function(dt, dat) {
+  # .supp_val <- function(dt, dat) {
   .supp_val <- function(dt) {
     tmp <- subset(dt, dt$sdcStatus == "s")
     if (nrow(tmp) == 0) {

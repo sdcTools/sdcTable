@@ -43,7 +43,7 @@ working directory (\code{TRUE}) or not (\code{FALSE}) which is the default value
 \item parameters used for \strong{"HITAS"} and \strong{"OPT"} algorithms:
 \itemize{
 \item \code{solver}: character vector of length 1 defining the solver to be used. Currently available choices
-are limited to \code{"glpk"}.
+are limited to \code{"highs"}.
 \item \code{timeLimit}: numeric vector of length 1 (or NULL) defining a time limit in minutes after which the
 cut and branch algorithm should stop and return a possible non-optimal solution. Parameter \code{safe} has
 a default value of \code{NULL}

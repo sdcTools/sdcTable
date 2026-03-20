@@ -30,7 +30,11 @@ List simple_triplet_to_indices(List mat, LogicalVector is_common_cell, IntegerVe
 
     // check if the constraint contains common cells
     LogicalVector to_check = is_common_cell[mat_cols];
-    if (sum(to_check) > 0) {
+    int mychecksum = 0;
+    for (int j = 0; j < to_check.size(); j++) {
+      mychecksum = mychecksum + to_check[j];
+    }
+    if (mychecksum > 0) {
       contains_common[i - 1] = true;
     } else {
       contains_common[i - 1] = false;
@@ -137,7 +141,11 @@ List find_linked_constraints(List constraints, IntegerVector freqs, LogicalVecto
             l1[j] = true;
           }
         }
-        int sum1 = sum(l1);
+        int sum1 = 0;
+        for (int k = 0; k < l1.size(); k++) {
+          sum1 = sum1 + l1[k];
+        }
+
         if (sum1 == 0) {
           // case1: both contributing overlapping cells come from constraint j
           vvec = {idx_tot_i[0], idx_tot_j[0], overlapping_ids[0], overlapping_ids[1]};
@@ -301,7 +309,13 @@ List constraint_info(CharacterVector sdc, IntegerVector freqs, NumericVector wei
   // possible indices relevant to local position */
   IntegerVector local_poss_primsupps, local_poss_s, local_poss_s_or_z, local_poss_z, local_poss_w;
 
-  double max_w = max(weights) + 1;
+  double max_w = 0;
+  for (int k = 0; k < weights.size(); k++) {
+    if (weights[k] > max_w) {
+      max_w = weights[k];
+    }
+  }
+  max_w = max_w + 1;
 
   for (int i = 0; i < sdc.size(); i++) {
     if (sdc[i] == "u") {

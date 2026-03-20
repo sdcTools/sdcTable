@@ -1,3 +1,6 @@
+# sdcTable 0.33.0
+- Use `highs` instead of `Rglpk` and `glpkAPI` for LP-Solving as package was removed from CRAN
+
 # sdcTable 0.32.7
 - Additional check for `createArgusInput()` to make sure that the holding variable is integer (if specified)
 - Additional check for colons in labels in `createArgusInput()`

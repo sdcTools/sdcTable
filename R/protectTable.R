@@ -37,7 +37,7 @@
 #'    working directory (`TRUE`) or not (`FALSE`) which is the default value.
 #' - parameters used for **"HITAS"** and **"OPT"** algorithms:
 #'    * `solver`: character vector of length 1 defining the solver to be used. Currently available choices
-#'    are limited to `"glpk"`.
+#'    are limited to `"highs"`.
 #'    * `timeLimit`: numeric vector of length 1 (or NULL) defining a time limit in minutes after which the
 #'    cut and branch algorithm should stop and return a possible non-optimal solution. Parameter `safe` has
 #'    a default value of `NULL`

@@ -28,7 +28,7 @@ test_that("jj-format works", {
 
   # create inputs for jj format
   inp <- createJJFormat(prob)
-  expect_identical(digest::digest(inp), "accb193e8f09427be7f8ccd1787a9815")
+  expect_identical(digest::digest(inp), "05d866e2cdd0929aa1fffb4c694f3bb2")
 
   # no numvar
   prob <- makeProblem(
@@ -36,6 +36,6 @@ test_that("jj-format works", {
     dimList = dimList
   )
   inp <- createJJFormat(prob)
-  expect_identical(digest::digest(inp), "dbba270f1edc3cedff83e97f82eeae49")
+  expect_identical(digest::digest(inp), "72f5e82733d640a302cc8e55d2d0ec44")
 })
 

@@ -1,7 +1,7 @@
 #' @useDynLib sdcTable, .registration=TRUE
 #' @import methods
 #' @import Rcpp
-#' @import Rglpk
+#' @import highs
 #' @import stringr
 #' @import data.table
 #' @importFrom slam simple_triplet_matrix

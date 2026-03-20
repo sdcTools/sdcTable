@@ -108,46 +108,33 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
   out$to_attack <- NULL
   out$up <- out$low <- out$freq
 
-  if (verbose) {
-    glpkAPI::termOutGLPK(glpkAPI::GLP_ON)
-    glpkAPI::setSimplexParmGLPK("MSG_LEV", glpkAPI::GLP_MSG_ON)
-  } else {
-    glpkAPI::termOutGLPK(glpkAPI::GLP_OFF)
-    glpkAPI::setSimplexParmGLPK("MSG_LEV", glpkAPI::GLP_MSG_OFF)
-  }
-
-  prob <- glpkAPI::initProbGLPK()
-  glpkAPI::setProbNameGLPK(prob, "attackersProblem")
-
+  nr_cells <- nrow(out)
   nr_vars <- ncol(m)
-  nr_constraints <- nrow(m)
-  glpkAPI::addColsGLPK(prob, nr_vars)
-  glpkAPI::addRowsGLPK(prob, nr_constraints)
-  glpkAPI::loadMatrixGLPK(
-    lp = prob,
-    ne = length(m$i),
-    ia = m$i ,
-    ja = m$j ,
-    ra = m$v
+  highs::highs_control(log_to_console = verbose)
+
+  l <- u <- freqs
+  l[sdc %in% c("u", "x", "w")] <- 0
+  u[sdc %in% c("u", "x", "w")] <- max(freqs)
+
+  prob <- highs::highs_model(
+    Q = NULL,
+    L = rep(0, nr_vars),
+    lower = l,
+    upper = u,
+    A = m,
+    lhs = rep(0, nrow(m)),
+    rhs = rep(0, nrow(m)),
+    types = rep("C", nr_vars),
+    maximum = FALSE,
+    offset = 0
   )
 
-  # set obj-to zero
-  glpkAPI::setObjCoefsGLPK(prob, j = seq_len(nr_vars), rep(0, nr_vars))
-  # bounds by variable
+  # objective
+  highs::hi_model_set_objective(
+    model = prob,
+    objective = rep(0, nr_vars)
+  )
 
-  for (j in seq_len(nr_vars)) {
-    if (sdc[j] %in% c("u", "x", "w")) {
-      glpkAPI::setColBndGLPK(prob, j = j, type = glpkAPI::GLP_LO, 0, Inf)
-    } else {
-      glpkAPI::setColBndGLPK(prob, j = j, type = glpkAPI::GLP_FX, freqs[j], freqs[j])
-    }
-  }
-  for (i in seq_len(nr_constraints)) {
-    glpkAPI::setRowBndGLPK(prob, i, type = glpkAPI::GLP_FX, 0, 0)
-  }
-
-  # solve
-  nr_cells <- nrow(out)
   if (verbose) {
     pb <- progress::progress_bar$new(total = nr_cells)
   }
@@ -156,27 +143,31 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
       pb$tick(1)
     }
     primsupp_to_attack <- out$id[i]
-    glpkAPI::setObjCoefGLPK(prob, j = primsupp_to_attack, obj_coef = 1)
+    obj <- rep(0, nr_vars)
+    obj[primsupp_to_attack] <- 1
+    highs::hi_model_set_objective(
+      model = prob,
+      objective = obj
+    )
 
     # minimize
-    glpkAPI::setObjDirGLPK(prob, glpkAPI::GLP_MIN)
-    #glpkAPI::writeLPGLPK(prob, paste0("prob-min-", primsupp_to_attack,".txt"))
-    glpkAPI::solveSimplexGLPK(prob)
-    out$low[i] <- glpkAPI::getObjValGLPK(prob)
+    highs::hi_model_set_sense(
+      model = prob,
+      maximum = FALSE
+    )
+
+    solver <- highs::highs_solver(prob)
+    solver$solve()
+    out$low[i] <- solver$solution()$col_value[primsupp_to_attack]
 
     # maximize
-    glpkAPI::setObjDirGLPK(prob, glpkAPI::GLP_MAX)
-    #glpkAPI::writeLPGLPK(prob, paste0("prob-max-", primsupp_to_attack,".txt"))
-    glpkAPI::solveSimplexGLPK(prob)
-
-    # unbounded solution: possible if entire (sub)table is suppressed
-    if (glpkAPI::getSolStatGLPK(prob) == glpkAPI::GLP_UNBND) {
-      out$up[i] <- Inf
-    } else {
-      out$up[i] <- glpkAPI::getObjValGLPK(prob)
-    }
-    # reset obj
-    glpkAPI::setObjCoefGLPK(prob, j = primsupp_to_attack, obj_coef = 0)
+    highs::hi_model_set_sense(
+      model = prob,
+      maximum = TRUE
+    )
+    solver <- highs::highs_solver(prob)
+    solver$solve()
+    out$up[i] <- solver$solution()$col_value[primsupp_to_attack]
   }
   if (verbose) {
     pb$terminate()
