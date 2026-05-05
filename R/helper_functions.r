@@ -265,6 +265,7 @@ genParaObj <- function(selection, ...) {
     # SIMPLEHEURISTIC - parameter
     paraObj$detectSingletons <- FALSE
     paraObj$threshold <- NA
+    paraObj$n_workers <- 1
 
     # GAUSS
     paraObj$removeDuplicated <- TRUE
@@ -334,6 +335,9 @@ genParaObj <- function(selection, ...) {
         stop("argument `threshold` must be >= 1.", call. = FALSE)
       }
     }
+
+    stopifnot(rlang::is_scalar_integerish(paraObj$n_workers))
+    stopifnot(paraObj$n_workers >= 1)
     return(paraObj)
   }
 

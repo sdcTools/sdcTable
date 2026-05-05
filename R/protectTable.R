@@ -74,6 +74,10 @@
 #'    * `threshold`: if not `NULL` (the default) an integerish number (> `0`). If specified, a procedure similar
 #'    to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
 #'    contains primary sensitive cells the suppressed number of contributors is `>=` the specified threshold.
+#'    * `n_workers`: (integer >= 1, for `method = "SIMPLEHEURISTIC"` only);
+#'    number of parallel workers. Defaults to `1` (sequential). If `> 1`, parallel
+#'    execution via [`future.apply`](https://cran.r-project.org/web/packages/future.apply/index.html)
+#'    is used to accelerate processing. Warning: Higher values increase RAM usage.
 #'
 #' - parameters used for the **"GAUSS"** procedure; for details please see `?SSBtools::GaussSuppression` as
 #' the default values are the same as in this function:

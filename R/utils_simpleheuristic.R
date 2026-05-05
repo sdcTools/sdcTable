@@ -2,7 +2,12 @@
 # until all primary suppressed cells are secure
 .protect_simpleheuristic <- function(object, input) {
   if (input$verbose) {
-    message("note: attacker-problems are iteratively solved in this procedure")
+    if (input$n_workers == 1) {
+      message("Note: attacker-problems are iteratively solved in this procedure")
+    } else {
+      message("Note: attacker-problems are solved in parallel using ", input$n_workers,
+      " workers in this procedure")
+    }
   }
 
   sdcStatus <- chkdf <- NULL
@@ -74,7 +79,7 @@
     object@problemInstance@sdcStatus <- res$sdc_status
     # cells_to_check are all remaining primary suppressions that were
     # previously not safe
-    chkdf <- attack(object, to_attack = primsupps)
+    chkdf <- attack(object, to_attack = primsupps, n_workers = input$n_workers)
     chkdf <- chkdf[chkdf$protected == FALSE, ]
 
     added_supps <- c()

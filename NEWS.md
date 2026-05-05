@@ -1,3 +1,11 @@
+# sdcTable 0.34.0
+- New parallel processing support: `attack()` now features an `n_workers` argument, enabling parallel 
+execution of attacker problems via the `future.apply` package (if available).
+- `protectTable()` now exposes `n_workers` when using `method = "SIMPLEHEURISTIC"`, allowing parallelized internal attacker calls.
+- Documentation updates: Added detailed explanations and performance warnings regarding RAM usage for parallel 
+processing in the package vignette and function man-pages.
+- Added a `threshold` argument to `attack()` for more flexible safety checks (defaults to `1e-8`).
+
 # sdcTable 0.33.0
 - Use `highs` instead of `Rglpk` and `glpkAPI` for LP-Solving as package was removed from CRAN
 

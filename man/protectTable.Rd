@@ -87,6 +87,10 @@ data, defaults to \code{FALSE}.
 \item \code{threshold}: if not \code{NULL} (the default) an integerish number (> \code{0}). If specified, a procedure similar
 to the singleton-detection procedure is run that makes sure that for all (simple) rows in the table instance that
 contains primary sensitive cells the suppressed number of contributors is \code{>=} the specified threshold.
+\item \code{n_workers}: (integer >= 1, for \code{method = "SIMPLEHEURISTIC"} only);
+number of parallel workers. Defaults to \code{1} (sequential). If \verb{> 1}, parallel
+execution via \href{https://cran.r-project.org/web/packages/future.apply/index.html}{\code{future.apply}}
+is used to accelerate processing. Warning: Higher values increase RAM usage.
 }
 \item parameters used for the \strong{"GAUSS"} procedure; for details please see \code{?SSBtools::GaussSuppression} as
 the default values are the same as in this function:

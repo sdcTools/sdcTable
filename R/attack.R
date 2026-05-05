@@ -8,16 +8,22 @@
 #' @param to_attack if `NULL` all current primary suppressed cells are attacked;
 #' otherwise either an integerish (indices) or character-vector (str-ids) of
 #' the cells that should be attacked.
-#' @param verbose a logical scalar determing if additional output should be
+#' @param verbose a logical scalar determining if additional output should be
 #' displayed
+#' @param threshold a numeric scalar defining the tolerance for the protection
+#' check. A cell is considered protected if the absolute difference between the computed
+#' upper and lower bound is strictly greater than this threshold. Defaults to `1e-8`.
+#' @param n_workers a scalar positive integer specifying the number of parallel
+#' workers to use for calculation
 #' @param ... placeholder for possible additional input, currently unused;
 #' @return a `data.frame` with the following columns:
-#' - `prim_supps`: index of primary suppressed cells
-#' - `status`: the original sdc-status code
-#' - `val` the original value of the cell
+#' - `sdc`: the original sdc-status code
+#' - `freq`: the original value of the cell
+#' - `id`: index of primary suppressed cells
 #' - `low`: computed lower bound of the attacker's problem
 #' - `up`: computed upper bound of the attacker's problem
-#' - `protected` shows if a given cell is accordingly protected
+#' - `protected`: logical, TRUE if the absolute difference between `up` and `low`
+#' exceeds the defined `threshold`
 #' @rdname attack
 #' @export attack
 #' @author Bernhard Meindl \email{bernhard.meindl@@statistik.gv.at}
@@ -43,9 +49,8 @@
 #' )
 #' sdc <- change_cellstatus(sdc, specs = specs, rule = "u")
 #'
-#' # attack all primary sensitive cells
-#' # the cells can be recomputed exactly
-#' attack(sdc, to_attack = NULL)
+#' # attack all primary sensitive cells with a custom threshold
+#' attack(sdc, to_attack = NULL, threshold = 1e-6)
 #'
 #' # protect the table and attack again
 #' sdc <- protectTable(sdc, method = "SIMPLEHEURISTIC")
@@ -53,11 +58,18 @@
 #'
 #' # attack only selected cells
 #' attack(sdc, to_attack = c(7, 12))
+#'
+#' # Parallel processing (future.apply needs to be available)
+#' attack(sdc, n_workers = 4)
 #' }
-attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
+attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n_workers = 1, ...) {
   stopifnot(inherits(object, "sdcProblem"))
+  stopifnot(rlang::is_scalar_integerish(n_workers))
+  stopifnot(n_workers >= 1)
+  stopifnot(rlang::is_scalar_double(threshold))
+  stopifnot(threshold > 0)
 
-  # get/compute constraint matrix
+  # Fetch or compute the mathematical constraint matrix from the problem instance
   pi <- slot(object, "problemInstance")
   m <- attributes(pi)$constraint_matrix
   if (is.null(m)) {
@@ -68,6 +80,7 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
   all_secsupps <- g_secondSupps(pi)
   all_supps <- c(all_primsupps, all_secsupps)
 
+  # Resolve targeted cell indices based on type input validation
   if (is.null(to_attack)) {
     to_attack <- all_primsupps
   } else {
@@ -77,7 +90,7 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
     } else if (rlang::is_character(to_attack)) {
       stopifnot(all(to_attack %in% g_strID(pi)[all_supps]))
     } else {
-      stop("invalid input detected (argument `to_attack)`", call. = FALSE)
+      stop("invalid input detected (argument `to_attack)`)", call. = FALSE)
     }
   }
 
@@ -87,92 +100,175 @@ attack <- function(object, to_attack = NULL, verbose = FALSE, ...) {
     freq = slot(pi, "Freq")
   )
   df$to_attack[to_attack] <- TRUE
-  return(.attack_worker(
-    m = m,
-    df = df,
-    verbose = verbose
-  ))
+
+  # Execute processing path based on requested worker limits
+  parallel <- n_workers > 1
+  if (parallel) {
+    if (!rlang::is_installed("future.apply")) {
+      stop("Package `future.apply` is required for parallel processing. Please install.", call. = FALSE)
+    }
+    with(future::plan(future::multisession, workers = n_workers), local = TRUE)
+    results <- .attack_worker_batched(m = m, df = df, verbose = verbose, n_workers = n_workers)
+  } else {
+    results <- .attack_worker(m = m, df = df, verbose = verbose)
+  }
+
+  results$protected <- abs(results$up - results$low) > threshold
+  rownames(results) <- NULL
+  return(results)
 }
 
-# m: constraint matrix
-# df: data.frame with ids to attack, its frequencies and sdc-stati
-.attack_worker <- function(m, df, verbose = FALSE) {
-  # create problem
+# Utility-Fn to run dual-sense optimization bounds on a given model instance
+.solve_bounds <- function(prob, cell_index, num_vars) {
+  out_row <- list(id = cell_index, low = NA, up = NA)
 
+  tryCatch({
+    obj <- rep(0, num_vars)
+    obj[cell_index] <- 1
+    highs::hi_model_set_objective(prob, obj)
+
+    # Minimize objective
+    highs::hi_model_set_sense(prob, maximum = FALSE)
+    solver_min <- highs::highs_solver(prob)
+    solver_min$solve()
+    out_row$low <- solver_min$solution()$col_value[cell_index]
+
+    # Maximize objective
+    highs::hi_model_set_sense(prob, maximum = TRUE)
+    solver_max <- highs::highs_solver(prob)
+    solver_max$solve()
+    out_row$up <- solver_max$solution()$col_value[cell_index]
+
+  }, error = function(e) {
+    warning(paste("Optimization failed at cell", cell_index, ":", e$message))
+  })
+  return(out_row)
+}
+
+# Utility-Fn to construct LP-model for highs solver instances
+.create_lp_model <- function(m, df) {
   freqs <- df$freq
   sdc <- df$sdc
-  idx <- which(df$to_attack)
-
-  out <- df[idx, , drop = FALSE]
-  out$id <- idx
-  out$to_attack <- NULL
-  out$up <- out$low <- out$freq
-
-  nr_cells <- nrow(out)
   nr_vars <- ncol(m)
-  highs::highs_control(log_to_console = verbose)
 
   l <- u <- freqs
   l[sdc %in% c("u", "x", "w")] <- 0
   u[sdc %in% c("u", "x", "w")] <- max(freqs)
 
   prob <- highs::highs_model(
-    Q = NULL,
-    L = rep(0, nr_vars),
-    lower = l,
-    upper = u,
-    A = m,
-    lhs = rep(0, nrow(m)),
-    rhs = rep(0, nrow(m)),
-    types = rep("C", nr_vars),
-    maximum = FALSE,
-    offset = 0
+    Q = NULL, L = rep(0, nr_vars),
+    lower = l, upper = u, A = m,
+    lhs = rep(0, nrow(m)), rhs = rep(0, nrow(m)),
+    types = rep("C", nr_vars), maximum = FALSE, offset = 0
   )
+  highs::hi_model_set_objective(model = prob, objective = rep(0, nr_vars))
+  return(prob)
+}
 
-  # objective
-  highs::hi_model_set_objective(
-    model = prob,
-    objective = rep(0, nr_vars)
-  )
+# Sequential worker function
+.attack_worker <- function(m, df, verbose = FALSE) {
+  idx <- which(df$to_attack)
+  out <- df[idx, , drop = FALSE]
+  out$id <- idx
+  out$to_attack <- NULL
 
-  if (verbose) {
-    pb <- progress::progress_bar$new(total = nr_cells)
+  highs::highs_control(log_to_console = verbose)
+  prob <- .create_lp_model(m, df)
+
+  # Setup progress monitoring
+  #progressr::handlers(global = TRUE)
+  old_handlers <- progressr::handlers()
+  on.exit(progressr::handlers(old_handlers), add = TRUE)
+  progressr::handlers("cli")
+  p <- progressr::progressor(steps = nrow(out), finalize = TRUE)
+  if (!verbose) {
+    progressr::handlers()
   }
-  for (i in seq_len(nr_cells)) {
+
+  low_vals <- numeric(nrow(out))
+  up_vals <- numeric(nrow(out))
+
+  for (i in seq_len(nrow(out))) {
+    cell_res <- .solve_bounds(prob, out$id[i], ncol(m))
+    low_vals[i] <- cell_res$low
+    up_vals[i] <- cell_res$up
     if (verbose) {
-      pb$tick(1)
+      p(amount = 1)
     }
-    primsupp_to_attack <- out$id[i]
-    obj <- rep(0, nr_vars)
-    obj[primsupp_to_attack] <- 1
-    highs::hi_model_set_objective(
-      model = prob,
-      objective = obj
-    )
-
-    # minimize
-    highs::hi_model_set_sense(
-      model = prob,
-      maximum = FALSE
-    )
-
-    solver <- highs::highs_solver(prob)
-    solver$solve()
-    out$low[i] <- solver$solution()$col_value[primsupp_to_attack]
-
-    # maximize
-    highs::hi_model_set_sense(
-      model = prob,
-      maximum = TRUE
-    )
-    solver <- highs::highs_solver(prob)
-    solver$solve()
-    out$up[i] <- solver$solution()$col_value[primsupp_to_attack]
   }
-  if (verbose) {
-    pb$terminate()
+
+  out$low <- low_vals
+  out$up <- up_vals
+  return(out)
+}
+
+# Multicore chunked worker processor splitting indices evenly across workers
+.attack_worker_batched <- function(m, df, verbose = FALSE, n_workers = 2) {
+  .dev_mode <- function() {
+    tryCatch({
+      pkg_path <- find.package("sdcTable")
+      lib_paths <- .libPaths()
+      !any(vapply(lib_paths, function(lp) grepl(paste0("^", lp), pkg_path), logical(1)))
+    }, error = function(e) NA)
   }
-  out$protected <- out$up > out$low
-  rownames(out) <- NULL
-  out
+
+  idx <- which(df$to_attack)
+
+  # Setup progress monitoring
+  #progressr::handlers(global = TRUE)
+  old_handlers <- progressr::handlers()
+  on.exit(progressr::handlers(old_handlers), add = TRUE)
+  progressr::handlers("cli")
+  p <- progressr::progressor(steps = length(idx), finalize = TRUE)
+  if (!verbose) {
+    progressr::handlers()
+  }
+
+  chunks <- split(idx, cut(seq_along(idx), n_workers, labels = FALSE))
+  if (.dev_mode()) {
+    # DEVELOPMENT MODE: Manual environment mapping necessary
+    f_list <- list(
+      .create_lp_model = .create_lp_model,
+      .solve_bounds = .solve_bounds
+    )
+    f_globals <- lapply(f_list, function(fn) {
+      environment(fn) <- .GlobalEnv
+      return(fn)
+    })
+    f_globals$m <- m
+    f_globals$df <- df
+    f_globals$verbose <- verbose
+    f_globals$p <- p
+    f_pkgs <- c("highs", "progressr")
+  } else {
+    f_globals <- TRUE
+    f_pkgs <- c("highs", "progressr", "sdcTable")
+  }
+
+  # Parallel batch processing
+  results_list <- future.apply::future_lapply(chunks, function(chunk_indices) {
+    prob <- .create_lp_model(m, df)
+    nr_vars <- ncol(m)
+
+    chunk_res <- lapply(chunk_indices, function(i) {
+      out_row <- .solve_bounds(prob, i, nr_vars)
+      if (verbose) p(amount = 1)
+      return(out_row)
+    })
+    return(do.call(rbind, lapply(chunk_res, as.data.frame)))
+  },
+  future.seed = TRUE,
+  future.packages = f_pkgs,
+  future.globals = f_globals
+  )
+
+  res_df <- do.call(rbind, results_list)
+  res_df <- res_df[order(res_df$id), ]
+
+  out <- df[idx, , drop = FALSE]
+  out$id <- res_df$id
+  out$low <- res_df$low
+  out$up <- res_df$up
+  out$to_attack <- NULL
+  return(out)
 }

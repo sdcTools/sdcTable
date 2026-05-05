@@ -4,7 +4,14 @@
 \alias{attack}
 \title{Attacking primary suppressed cells}
 \usage{
-attack(object, to_attack = NULL, verbose = FALSE, ...)
+attack(
+  object,
+  to_attack = NULL,
+  verbose = TRUE,
+  threshold = 1e-08,
+  n_workers = 1,
+  ...
+)
 }
 \arguments{
 \item{object}{an object of class `sdcProblem`}
@@ -13,19 +20,27 @@ attack(object, to_attack = NULL, verbose = FALSE, ...)
 otherwise either an integerish (indices) or character-vector (str-ids) of
 the cells that should be attacked.}
 
-\item{verbose}{a logical scalar determing if additional output should be
+\item{verbose}{a logical scalar determining if additional output should be
 displayed}
+
+\item{threshold}{a numeric scalar defining the tolerance for the protection
+check. A cell is considered protected if the absolute difference between the computed
+upper and lower bound is strictly greater than this threshold. Defaults to `1e-8`.}
+
+\item{n_workers}{a scalar positive integer specifying the number of parallel
+workers to use for calculation}
 
 \item{...}{placeholder for possible additional input, currently unused;}
 }
 \value{
 a `data.frame` with the following columns:
-- `prim_supps`: index of primary suppressed cells
-- `status`: the original sdc-status code
-- `val` the original value of the cell
+- `sdc`: the original sdc-status code
+- `freq`: the original value of the cell
+- `id`: index of primary suppressed cells
 - `low`: computed lower bound of the attacker's problem
 - `up`: computed upper bound of the attacker's problem
-- `protected` shows if a given cell is accordingly protected
+- `protected`: logical, TRUE if the absolute difference between `up` and `low`
+exceeds the defined `threshold`
 }
 \description{
 Function [attack()] is used to compute lower and upper bounds for a given
@@ -54,9 +69,8 @@ specs <- data.frame(
 )
 sdc <- change_cellstatus(sdc, specs = specs, rule = "u")
 
-# attack all primary sensitive cells
-# the cells can be recomputed exactly
-attack(sdc, to_attack = NULL)
+# attack all primary sensitive cells with a custom threshold
+attack(sdc, to_attack = NULL, threshold = 1e-6)
 
 # protect the table and attack again
 sdc <- protectTable(sdc, method = "SIMPLEHEURISTIC")
@@ -64,6 +78,9 @@ attack(sdc, to_attack = NULL)
 
 # attack only selected cells
 attack(sdc, to_attack = c(7, 12))
+
+# Parallel processing (future.apply needs to be available)
+attack(sdc, n_workers = 4)
 }
 }
 \author{
