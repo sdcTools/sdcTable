@@ -79,7 +79,12 @@
     object@problemInstance@sdcStatus <- res$sdc_status
     # cells_to_check are all remaining primary suppressions that were
     # previously not safe
-    chkdf <- attack(object, to_attack = primsupps, n_workers = input$n_workers)
+    chkdf <- attack(
+      object,
+      to_attack = primsupps,
+      n_workers = input$n_workers,
+      threshold = input$attack_threshold
+    )
     chkdf <- chkdf[chkdf$protected == FALSE, ]
 
     added_supps <- c()

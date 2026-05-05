@@ -266,6 +266,7 @@ genParaObj <- function(selection, ...) {
     paraObj$detectSingletons <- FALSE
     paraObj$threshold <- NA
     paraObj$n_workers <- 1
+    paraObj$attack_threshold <- 1e-8
 
     # GAUSS
     paraObj$removeDuplicated <- TRUE
@@ -292,9 +293,11 @@ genParaObj <- function(selection, ...) {
       is.numeric(paraObj$maxIter),
       is.numeric(paraObj$approxPerc),
       is.numeric(paraObj$protectionLevel),
-      is.numeric(paraObj$maxIter)
+      is.numeric(paraObj$maxIter),
+      is.numeric(paraObj$attack_threshold)
+
     ))) {
-      e <- "arguments 'maxIter', 'maxIter', 'protectionLevel' and 'maxIter' must be numeric!"
+      e <- "arguments 'maxIter', 'maxIter', 'protectionLevel', 'maxIter' and 'attack_threshold' must be numeric!"
       stop(e, call. = FALSE)
     }
     if (!all(c(
@@ -338,6 +341,7 @@ genParaObj <- function(selection, ...) {
 
     stopifnot(rlang::is_scalar_integerish(paraObj$n_workers))
     stopifnot(paraObj$n_workers >= 1)
+    stopifnot(paraObj$attack_threshold >= 0)
     return(paraObj)
   }
 

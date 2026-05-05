@@ -78,6 +78,11 @@
 #'    number of parallel workers. Defaults to `1` (sequential). If `> 1`, parallel
 #'    execution via [`future.apply`](https://cran.r-project.org/web/packages/future.apply/index.html)
 #'    is used to accelerate processing. Warning: Higher values increase RAM usage.
+#'    * `attack_threshold`: (numeric >= 0, for `method = "SIMPLEHEURISTIC"` only);
+#'    the safety threshold used to determine if a primary sensitive cell is considered
+#'    protected. A cell is deemed "safe" if the difference between its computed
+#'    upper and lower bound (`abs(upper - lower)`) is strictly greater than this
+#'    threshold. Defaults to `1e-8`.
 #'
 #' - parameters used for the **"GAUSS"** procedure; for details please see `?SSBtools::GaussSuppression` as
 #' the default values are the same as in this function:
