@@ -1,5 +1,3 @@
-context("test protectTable()")
-
 test_that("protectTable works", {
   skip_on_cran()
   # create a test-problem without any suppressions
@@ -29,8 +27,8 @@ test_that("protectTable works", {
   p_hitas <- protectTable(object = p, method = "HITAS", useC = TRUE, verbose = FALSE)
   p_gauss <- protectTable(object = p, method = "GAUSS", verbose = FALSE)
 
-  expect_equivalent(p_opt@results, p_opt_c@results)
-  expect_is(p_opt@results, "data.frame")
+  expect_equal(p_opt@results, p_opt_c@results, ignore_attr = TRUE)
+  expect_s3_class(p_opt@results, "data.frame")
   expect_equal(sum(p_opt@results$sdcStatus %in% c("s", "z")), 11) # nr_publishable
   expect_equal(sum(p_opt@results$sdcStatus == c("x")), 3) # second_supps
 
@@ -41,7 +39,7 @@ test_that("protectTable works", {
 
   # test SIMPLEHEURISTIC
   p_simple <- protectTable(object = p, method = "SIMPLEHEURISTIC", verbose = FALSE)
-  expect_is(p_simple@results, "data.frame")
+  expect_s3_class(p_simple@results, "data.frame")
   expect_equal(which(p_simple@results$sdcStatus != "s"), c(5, 6, 11, 12))
 
   # create dataset with singletons
@@ -70,7 +68,7 @@ test_that("protectTable works", {
 
   # create testproblem without suppressions
   p <- testprob()
-  expect_is(p, "sdcProblem")
+  expect_s4_class(p, "sdcProblem")
   expect_equal(sum(p@problemInstance@sdcStatus == "s"), 15)
 
   p_opt <- protectTable(
@@ -79,8 +77,8 @@ test_that("protectTable works", {
     useC = TRUE,
     verbose = FALSE
   )
-  expect_is(p_opt, "sdcProblem")
-  expect_is(p_opt@results, "data.frame")
+  expect_s4_class(p_opt, "sdcProblem")
+  expect_s3_class(p_opt@results, "data.frame")
   expect_equal(sum(p_opt@results$sdcStatus == "s"), 15)
   expect_equal(sum(p_opt@results$sdcStatus != "s"), 0)
 

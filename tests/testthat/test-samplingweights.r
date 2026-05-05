@@ -1,5 +1,3 @@
-context("test problem generation with sampling weights")
-
 test_that("sdcprobs with sampling weights are correctly generated", {
   skip_on_cran()
 
@@ -17,7 +15,7 @@ test_that("sdcprobs with sampling weights are correctly generated", {
     numVarInd = "val",
     sampWeightInd = "sampweights")
 
-  expect_is(p, "sdcProblem")
+  expect_s4_class(p, "sdcProblem")
   expect_equal(get.problemInstance(p@problemInstance, "nrVars"), 15)
 
   df <- sdcProb2df(p, addDups = TRUE, addNumVars = TRUE, dimCodes = "original")
@@ -31,7 +29,7 @@ test_that("sdcprobs with sampling weights are correctly generated", {
     dimList = dims,
     numVarInd = "val",
     freqVarInd = "freq")
-  expect_is(p, "sdcProblem")
+  expect_s4_class(p, "sdcProblem")
   expect_equal(get.problemInstance(p@problemInstance, "nrVars"), 15)
   df <- sdcProb2df(p, addDups = TRUE, addNumVars = TRUE, dimCodes = "original")
   expect_equal(df$freq[1], sum(microdata1$sampweights))
@@ -45,7 +43,7 @@ test_that("sdcprobs with sampling weights are correctly generated", {
     numVarInd = "val",
     freqVarInd = "freq",
     sampWeightInd = "sampweights")
-  expect_is(p, "sdcProblem")
+  expect_s4_class(p, "sdcProblem")
   expect_equal(get.problemInstance(p@problemInstance, "nrVars"), 15)
   df <- sdcProb2df(p, addDups = TRUE, addNumVars = TRUE, dimCodes = "original")
   expect_equal(df$freq[1], sum(microdata1$sampweights))

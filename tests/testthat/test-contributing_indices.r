@@ -1,4 +1,3 @@
-context("test contributing_indices")
 test_that("computing contribuging indices works", {
   skip_on_cran()
   utils::data("microdata1", package = "sdcTable")
@@ -23,7 +22,7 @@ test_that("computing contribuging indices works", {
 
   rawData <- slot(get.sdcProblem(prob, "dataObj"), "rawData")
 
-  expect_is(ids, "list")
+  expect_type(ids, "list")
   expect_identical(names(ids), "0101")
   expect_identical(ids[[1]], 1:2)
 
@@ -33,7 +32,7 @@ test_that("computing contribuging indices works", {
 
   # all cells
   ids <- contributing_indices(prob = prob)
-  expect_identical(digest::digest(ids), "bc9eb3d9155a36108221c0bb42904ae9")
+  expect_snapshot(ids)
 
   for (i in 1:nrow(df)) {
     code_region <- df$region[i]

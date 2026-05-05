@@ -1,5 +1,3 @@
-context("test makeProblem()")
-
 test_that("makeProblem works", {
   skip_on_cran()
   utils::data("microdata1", package = "sdcTable")
@@ -27,6 +25,6 @@ test_that("makeProblem works", {
     sampWeightInd = sampWeightInd
   )
 
-  expect_is(problem, "sdcProblem")
+  expect_s4_class(problem, "sdcProblem")
   expect_equal(get.problemInstance(problem@problemInstance, "nrVars"), 15)
 })

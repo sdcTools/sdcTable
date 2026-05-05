@@ -1,5 +1,3 @@
-context("test linked-tables")
-
 test_that("linked-tables work", {
   skip_on_cran()
   # Data including two aggregating variables.

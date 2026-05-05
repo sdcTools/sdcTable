@@ -1,5 +1,3 @@
-context("test primarySuppression()")
-
 test_that("primarySuppression works", {
   skip_on_cran()
 
@@ -8,14 +6,14 @@ test_that("primarySuppression works", {
 
   p1 <- primarySuppression(problem, type = "freq", maxN = 2)
   p1.sdc <- get.problemInstance(p1@problemInstance, "sdcStatus")
-  expect_is(p1, "sdcProblem")
+  expect_s4_class(p1, "sdcProblem")
   expect_equal(sum(p1.sdc == "u"), 1)
   expect_equal(which(p1.sdc == "u"), 6)
 
   expect_error(primarySuppression(problem, type = "nk", n = 2, k = 80))
   p2 <- primarySuppression(problem, type = "nk", n = 2, k = 75, numVarName = "val")
   p2.sdc <- get.problemInstance(p2@problemInstance, "sdcStatus")
-  expect_is(p2, "sdcProblem")
+  expect_s4_class(p2, "sdcProblem")
   expect_equal(sum(p2.sdc == "u"), 2)
   expect_equal(which(p2.sdc == "u"), c(6, 14))
 
@@ -24,7 +22,7 @@ test_that("primarySuppression works", {
   expect_error(primarySuppression(problem, type = "p", p = 100, numVarName = "val"))
   p3 <- primarySuppression(problem, type = "p", p = 70, numVarName = "val")
   p3.sdc <- get.problemInstance(p3@problemInstance, "sdcStatus")
-  expect_is(p3, "sdcProblem")
+  expect_s4_class(p3, "sdcProblem")
   expect_equal(sum(p3.sdc == "u"), 2)
   expect_equal(which(p3.sdc == "u"), c(6, 14))
 
@@ -34,7 +32,7 @@ test_that("primarySuppression works", {
   expect_error(primarySuppression(problem, type = "pq", pq = c(110, 120), numVarName = "val"))
   p4 <- primarySuppression(problem, type = "pq", pq = c(60, 80), numVarName = "val")
   p4.sdc <- get.problemInstance(p4@problemInstance, "sdcStatus")
-  expect_is(p4, "sdcProblem")
+  expect_s4_class(p4, "sdcProblem")
   expect_equal(sum(p4.sdc == "u"), 2)
   expect_equal(which(p4.sdc == "u"), c(6, 14))
 
@@ -42,7 +40,6 @@ test_that("primarySuppression works", {
   expect_error(primarySuppression(problem, type = "nk", n = 2, k = 80, numVarName = "val"))
   expect_error(primarySuppression(problem, type = "p", p = 70, numVarName = "val"))
   expect_error(primarySuppression(problem, type = "pq", pq = c(60, 80), numVarName = "val"))
-
 
   # use weights
   rm(list = ls())

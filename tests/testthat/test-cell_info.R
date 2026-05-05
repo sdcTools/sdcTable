@@ -1,9 +1,7 @@
-context("test cell_info()")
-
 test_that("cellInfo works", {
   skip_on_cran()
   sdc <- sdc_testproblem(with_supps = TRUE)
-  expect_is(sdc, "sdcProblem")
+  expect_s4_class(sdc, "sdcProblem")
   expect_equal(sum(sdc@problemInstance@sdcStatus == "u"), 1)
 
   # check correct input
