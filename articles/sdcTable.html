@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sdcTable</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.32.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.33.0</span>
       </span>
     </div>
 
@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Bernhard
 Meindl</h4>
             
-            <h4 data-toc-skip class="date">2025-03-11</h4>
+            <h4 data-toc-skip class="date">2026-05-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/sdcTools/userSupport/blob/master/vignettes/sdcTable.rmd" class="external-link"><code>vignettes/sdcTable.rmd</code></a></small>
       <div class="hidden name"><code>sdcTable.rmd</code></div>
@@ -152,7 +152,7 @@ done as shown below:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sdcTools/sdcTable" class="external-link">sdcTable</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"sdcTable"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] '0.32.6'</span></span></code></pre>
+<pre><code><span><span class="co">## [1] '0.33.0'</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -430,15 +430,15 @@ to calculate information for the 2 (sub)totals.</p>
 allows to use inputs created from package <a href="https://CRAN.R-project.org/package=sdcHierarchies" class="external-link"><strong>sdcHierarchies</strong></a>
 as input. This package allows for a very simple way to create, compute
 and modify hierarchies. For a complete introduction, the package
-vignette can be viewed with <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_vignette.html" class="external-link">hier_vignette()</a></code>. The main
-functions are <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create()</a></code>, <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add()</a></code>,
-<code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_rename.html" class="external-link">hier_rename()</a></code> and <code><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_delete.html" class="external-link">hier_delete()</a></code>. We now show
+vignette can be viewed with <code><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_vignette.html" class="external-link">hier_vignette()</a></code>. The main
+functions are <code><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_create.html" class="external-link">hier_create()</a></code>, <code><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_add.html" class="external-link">hier_add()</a></code>,
+<code><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_rename.html" class="external-link">hier_rename()</a></code> and <code><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_delete.html" class="external-link">hier_delete()</a></code>. We now show
 an alternative way to generate the hierarchy for variable
 <code>V1</code>.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_add.html" class="external-link">hier_add</a></span><span class="op">(</span><span class="va">dimV1</span>, root <span class="op">=</span> <span class="st">"B"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ba"</span>,<span class="st">"Bb"</span>,<span class="st">"Bc"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV1</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">dimV1</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_add.html" class="external-link">hier_add</a></span><span class="op">(</span><span class="va">dimV1</span>, root <span class="op">=</span> <span class="st">"B"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ba"</span>,<span class="st">"Bb"</span>,<span class="st">"Bc"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV1</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Tot</span></span>
 <span><span class="co">## ├─A</span></span>
 <span><span class="co">## ├─B</span></span>
@@ -462,8 +462,8 @@ one overall Total (<code>Tot</code>) that is the sum of all codes listed
 <p>The code how to specify an object that describes the structure of
 dimensional variable <code>V2</code> is given below:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dimV2</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>, <span class="st">"w"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dimV2</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"m"</span>, <span class="st">"w"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Tot</span></span>
 <span><span class="co">## ├─m</span></span>
 <span><span class="co">## └─w</span></span></code></pre>
@@ -481,8 +481,8 @@ one overall Total (<code>Tot</code>) that is the sum of all codes listed
 <p>The required code to generate an object specifying the hierarchical
 structure of variable <code>V3</code> is given below:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dimV3</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/sdcHierarchies/man/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV3</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dimV3</span> <span class="op">&lt;-</span> <span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_create.html" class="external-link">hier_create</a></span><span class="op">(</span>root <span class="op">=</span> <span class="st">"Tot"</span>, nodes <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">sdcHierarchies</span><span class="fu">::</span><span class="fu"><a href="https://bernhard-da.github.io/sdcHierarchies/reference/hier_display.html" class="external-link">hier_display</a></span><span class="op">(</span><span class="va">dimV3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Tot</span></span>
 <span><span class="co">## ├─a</span></span>
 <span><span class="co">## ├─b</span></span>
@@ -724,10 +724,10 @@ manual or help page for function <code><a href="../reference/protectTable.html">
 of secondary suppressions required to protect the 15 primary sensitive
 cells (by default against exact re-calculation given sliding protection
 levels of 1 for each primary sensitive cell) differs.</p>
-<p>Using the <em>“OPT”</em>-algorithm, a total of <code>23</code> cells
+<p>Using the <em>“OPT”</em>-algorithm, a total of <code>22</code> cells
 have been marked as secondary suppressions. When using
 <em>“HITAS”</em>-algorithm, it was required to additionally suppress
-<code>25</code> cells. A total of <code>27</code> cells was selected and
+<code>13</code> cells. A total of <code>27</code> cells was selected and
 marked as secondary suppressions when the <em>“HYPERCUBE”</em> algorithm
 was used while <code>27</code> additional suppressions were required for
 the fast heuristic simple procedure <em>“SIMPLEHEURISTIC”</em> and
@@ -761,8 +761,8 @@ done by applying the following code:</p>
 <pre><code><span><span class="co">## ### Summary of the protected data ###</span></span></code></pre>
 <pre><code><span><span class="co">## #####################################</span></span></code></pre>
 <pre><code><span><span class="co">## --&gt; The input data have been protected using algorithm 'OPT'</span></span></code></pre>
-<pre><code><span><span class="co">## --&gt; To protect 15 primary sensitive cells, 23 cells were additionally suppressed</span></span></code></pre>
-<pre><code><span><span class="co">## --&gt; A total of 130 cells may be published</span></span></code></pre>
+<pre><code><span><span class="co">## --&gt; To protect 15 primary sensitive cells, 22 cells were additionally suppressed</span></span></code></pre>
+<pre><code><span><span class="co">## --&gt; A total of 131 cells may be published</span></span></code></pre>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## ###################################</span></span></code></pre>
 <pre><code><span><span class="co">## ### Structure of protected data ###</span></span></code></pre>
@@ -775,7 +775,7 @@ done by applying the following code:</p>
 <span><span class="co">##  $ numVal1  : num  294694 49116 49116 49116 49116 ...</span></span>
 <span><span class="co">##  $ numVal2  : num  298708 49785 49785 49785 49785 ...</span></span>
 <span><span class="co">##  $ sdcStatus: chr  "s" "s" "s" "s" ...</span></span>
-<span><span class="co">##  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span></span>
+<span><span class="co">##  - attr(*, ".internal.selfref")=&lt;pointer: 0x561fb96dcef0&gt; </span></span>
 <span><span class="co">## NULL</span></span></code></pre>
 <p>We see that the summary provides all kind of useful information such
 as the algorithm that has been used to protect primary sensitive cells,
@@ -826,7 +826,7 @@ contact me using my e-mail adress
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
