@@ -176,13 +176,12 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
   prob <- .create_lp_model(m, df)
 
   # Setup progress monitoring
-  #progressr::handlers(global = TRUE)
   old_handlers <- progressr::handlers()
   on.exit(progressr::handlers(old_handlers), add = TRUE)
-  progressr::handlers("cli")
-  p <- progressr::progressor(steps = nrow(out), finalize = TRUE)
-  if (!verbose) {
-    progressr::handlers()
+
+  if (verbose) {
+    progressr::handlers("cli")
+    p <- progressr::progressor(steps = nrow(out))
   }
 
   low_vals <- numeric(nrow(out))
@@ -215,13 +214,12 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
   idx <- which(df$to_attack)
 
   # Setup progress monitoring
-  #progressr::handlers(global = TRUE)
   old_handlers <- progressr::handlers()
   on.exit(progressr::handlers(old_handlers), add = TRUE)
-  progressr::handlers("cli")
-  p <- progressr::progressor(steps = length(idx), finalize = TRUE)
-  if (!verbose) {
-    progressr::handlers()
+
+  if (verbose) {
+    progressr::handlers("cli")
+    p <- progressr::progressor(steps = length(idx), finalize = TRUE)
   }
 
   chunks <- split(idx, cut(seq_along(idx), n_workers, labels = FALSE))
