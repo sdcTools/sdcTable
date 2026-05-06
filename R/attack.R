@@ -107,12 +107,23 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
     if (!rlang::is_installed("future.apply")) {
       stop("Package `future.apply` is required for parallel processing. Please install.", call. = FALSE)
     }
-    with(future::plan(future::multisession, workers = n_workers), local = TRUE)
-    results <- .attack_worker_batched(m = m, df = df, verbose = verbose, n_workers = n_workers)
-  } else {
-    results <- .attack_worker(m = m, df = df, verbose = verbose)
   }
-
+  if (verbose) {
+    results <- progressr::with_progress({
+      if (n_workers > 1) {
+        results <- .attack_worker_batched(m = m, df = df, verbose = verbose, n_workers = n_workers)
+      } else {
+        results <- .attack_worker(m = m, df = df, verbose = verbose)
+      }
+    })
+  } else {
+    # If not verbose, run without progressr overhead
+    if (n_workers > 1) {
+      results <- .attack_worker_batched(m = m, df = df, verbose = verbose, n_workers = n_workers)
+    } else {
+      results <- .attack_worker(m = m, df = df, verbose = verbose)
+    }
+  }
   results$protected <- abs(results$up - results$low) > threshold
   rownames(results) <- NULL
   return(results)
@@ -138,7 +149,6 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
     solver_max <- highs::highs_solver(prob)
     solver_max$solve()
     out_row$up <- solver_max$solution()$col_value[cell_index]
-
   }, error = function(e) {
     warning(paste("Optimization failed at cell", cell_index, ":", e$message))
   })
@@ -175,12 +185,7 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
   highs::highs_control(log_to_console = verbose)
   prob <- .create_lp_model(m, df)
 
-  # Setup progress monitoring
-  old_handlers <- progressr::handlers()
-  on.exit(progressr::handlers(old_handlers), add = TRUE)
-
   if (verbose) {
-    progressr::handlers("cli")
     p <- progressr::progressor(steps = nrow(out))
   }
 
@@ -213,12 +218,7 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
 
   idx <- which(df$to_attack)
 
-  # Setup progress monitoring
-  old_handlers <- progressr::handlers()
-  on.exit(progressr::handlers(old_handlers), add = TRUE)
-
   if (verbose) {
-    progressr::handlers("cli")
     p <- progressr::progressor(steps = length(idx), finalize = TRUE)
   }
 
