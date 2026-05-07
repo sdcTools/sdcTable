@@ -7,93 +7,64 @@
 primarySuppression(object, type, ...)
 }
 \arguments{
-\item{object}{a \linkS4class{sdcProblem} object}
+\item{object}{an \link[=sdcProblem-class]{sdcProblem} object.}
 
-\item{type}{character vector of length 1 defining the primary suppression
-rule. Allowed types are:
+\item{type}{character string defining the primary suppression rule.
+Allowed values are:
 \itemize{
-\item \code{freq}: apply frequency rule with parameters \code{maxN} and \code{allowZeros}
-\item \code{nk}: apply nk-dominance rule with parameters \code{n}, \code{k}
-\item \code{p}: apply p-percent rule with parameter \code{p}
-\item \code{pq}: apply pq-rule with parameters \code{p} and \code{q}
+\item \code{"freq"}: apply frequency rule (uses \code{maxN} and \code{allowZeros}).
+\item \code{"nk"}: apply nk-dominance rule (uses \code{n} and \code{k}).
+\item \code{"p"}: apply p-percent rule (uses \code{p}).
+\item \code{"pq"}: apply pq-rule (uses \code{p} and \code{q}).
 }}
 
-\item{...}{parameters used in the identification of primary sensitive cells.
-Parameters that can be modified|changed are:
+\item{...}{parameters for the selected primary suppression rule:
 \itemize{
-\item \code{maxN}: numeric vector of length 1 used when applying the frequency rule.
-All cells having counts <= \code{maxN} are set as primary suppressed. The default
-value of \code{maxN} is \code{3}.
-\item \code{allowZeros}: logical value defining if empty cells (with frequency = 0)
-should be considered sensitive when using the frequency rule. Empty cells are
-never considered as sensitive when applying dominance rules; The default
-value of \code{allowZeros} is \code{FALSE} so that empty cells are not
-considered primary sensitive by default. Such cells (frequency 0) are then
-flagged as \code{z} which indicates such a cell may be published but should (internally)
-not be used for (secondary) suppression in the heuristic algorithms.
-\item \code{p}: numeric vector of length 1 specifying parameter \code{p} that is used
-when applying the p-percent rule with default value of \code{80}.
-\item \code{pq}: numeric vector of length 2 specifying parameters \code{p} and \code{q} that
-are used when applying the pq-rule with the default being c(\code{25}, \code{50}).
-\item \code{n}: numeric vector of length 1 specifying parameter \code{n} that is used
-when applying the nk-dominance rule. Parameter \code{n} is set to \code{2} by default.
-\item \code{k}: scalar numeric specifying parameter \code{k} that is used
-when applying the nk-dominance rule. Parameter \code{n} is set to \code{85} by default.
-\item \code{numVarName}: character scalar specifying the name
-of the numerical variable that should be used to identify cells that are
-dominated by dominance rules (\code{p-rule}, \code{pq-rule} or \code{nk-rule}). This setting
-is mandatory in package versions \verb{>= 0.29}
-If \code{type} is either 'nk', 'p' or 'pq', it is mandatory to
-specify either \code{numVarInd} or \code{numVarName}.
-\item \code{numVarInd}: same as \code{numVarName} but a scalar numeric
-specifying the index of the variable is expected. If both \code{numVarName}
-and \code{numVarInd} are specified, \code{numVarName} is used. The index refers to the
-index of the specified numvars in \code{\link[=makeProblem]{makeProblem()}}. This argument is no longer
-respected in versions \verb{>= 0.29} where \code{numVarName} must be used.
+\item \code{maxN}: scalar integerish; cells with counts <= \code{maxN} are suppressed. Defaults to \code{3}.
+\item \code{allowZeros}: scalar logical; if \code{TRUE}, empty cells (frequency \code{0}) are considered sensitive.
+Defaults to \code{FALSE}. Empty cells not flagged as sensitive are marked as \code{z}
+(published, but not used for secondary suppression).
+\item \code{p}: scalar integerish; threshold parameter for \code{p}-percent or \code{pq}-rules.
+Defaults to \code{80}.
+\item \code{q}: scalar numeric; threshold parameter for pq-rule. Defaults to \code{50}.
+\item \code{n}: scalar integerish; parameter \code{n} for the nk-dominance rule. Defaults to \code{2}.
+\item \code{k}: scalar integerish; parameter \code{k} for the nk-dominance rule. Defaults to \code{85}.
+\item \code{numVarName}: scalar character; the name of the numerical variable used
+for dominance-based rules. This is mandatory for \code{nk}, \code{p}, and \code{pq} rules.
 }}
 }
 \value{
-a \linkS4class{sdcProblem} object
+an \link[=sdcProblem-class]{sdcProblem} object.
 }
 \description{
-Function \code{\link[=primarySuppression]{primarySuppression()}} is used to identify and suppress primary
-sensitive table cells in \linkS4class{sdcProblem} objects.
-Argument \code{type} allows to select a rule that should be used to identify
-primary sensitive cells. At the moment it is possible to identify and
-suppress sensitive table cells using the frequency-rule, the nk-dominance
-rule and the p-percent rule.
+\code{\link[=primarySuppression]{primarySuppression()}} identifies and suppresses primary sensitive table cells
+within \link[=sdcProblem-class]{sdcProblem} objects based on specified rules.
 }
 \details{
-since versions \verb{>= 0.29} it is no longer possible to specify underlying
-variables for dominance rules (\code{"p"}, \code{"pq"} or \code{"nk"}) by index; these variables must
-be set by name using argument \code{numVarName}.
+Currently, the \code{frequency} rule, \code{nk}-dominance rule, \code{p}-percent rule
+and \code{pq}-rule are supported.
+
+Note: Since version \code{0.29}, dominance-based rules (\code{"p"}, \code{"pq"}, or \code{"nk"})
+require the identification of the numerical variable by name using the
+\code{numVarName} argument. Identification by index is no longer supported.
 }
 \note{
-the nk-dominance rule, the p-percent rule and the pq-rule can only
-be applied if micro data have been used as input data to function \code{\link[=makeProblem]{makeProblem()}}
+The ``nk\verb{-dominance, }p`-percent, and `pq`-rules require microdata as input to
+\code{\link[=makeProblem]{makeProblem()}}.
 }
 \examples{
-# load micro data
+# load micro data and create a problem instance
 utils::data("microdata1", package = "sdcTable")
-
-# load problem (as it was created in the example in ?makeProblem
 p <- sdc_testproblem(with_supps = FALSE)
 
-# we have a look at the frequency table by gender and region
-xtabs(rep(1, nrow(microdata1)) ~ gender + region, data = microdata1)
-
-# 2 units contribute to cell with region=='A' and gender=='female'
-# --> this cell is considered sensitive according the the
-# freq-rule with 'maxN' equal to 2!
+# apply frequency rule
 p1 <- primarySuppression(
   object = p,
   type = "freq",
   maxN = 2
 )
 
-# we can also apply a p-percent rule with parameter "p" being 30 as below.
-# This is only possible if we are dealing with micro data and we also
-# have to specify the name of a numeric variable.
+# apply p-percent rule (requires specifying a numeric variable)
 p2 <- primarySuppression(
   object = p,
   type = "p",
@@ -101,14 +72,7 @@ p2 <- primarySuppression(
   numVarName = "val"
 )
 
-# looking at anonymization states we see, that one cell is primary
-# suppressed (sdcStatus == "u")
-# the remaining cells are possible candidates for secondary cell
-# suppression (sdcStatus == "s") given the frequency rule with
-# parameter "maxN = 2".
-#
-# Applying the p-percent rule with parameter 'p = 30' resulted in
-# two primary suppressions.
+# compare results
 data.frame(
   p1_sdc = getInfo(p1, type = "sdcStatus"),
   p2_sdc = getInfo(p2, type = "sdcStatus")
