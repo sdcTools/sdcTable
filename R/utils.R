@@ -256,79 +256,92 @@ cell_id <- function(x, specs, complete = TRUE, addDups = FALSE) {
 # a data.frame with all cell ids and TRUE|FALSE depending on wheather
 # the cell is an internal cell or not
 create_m_matrix <- function(obj, convert = TRUE, add_info_df = FALSE) {
+  # Setup
   stopifnot(inherits(obj, "sdcProblem"))
   stopifnot(rlang::is_scalar_logical(convert))
   stopifnot(rlang::is_scalar_logical(add_info_df))
 
-  .constraints_for_single_dim <- function(full_dt, dn, current_dim) {
-    dl <- slot(current_dim, "dims")
-    dname <- slot(current_dim, "vName")
-
-    kv <- c(setdiff(dn, dname), dname)
-    setkeyv(full_dt, kv)
-
-    m <- slam::simple_triplet_zero_matrix(nrow = 0, ncol = nrow(full_dt))
-    for (i in seq_len(length(dl))) {
-      tmp <- full_dt[get(dname) %in% dl[[i]]]
-
-      nr_elements <- length(dl[[i]])
-      nr_constraints <- nrow(tmp) / nr_elements
-
-      # rows
-      v1 <- rep(1, nr_elements)
-      v2 <- c(-1, rep(1, (nr_elements - 1)))
-      m <- rbind(m, slam::simple_triplet_matrix(
-        i = rep(seq_len(nr_constraints), each = nr_elements),
-        j = tmp$id,
-        v = rep(v2, times = nr_constraints),
-        nrow = nr_constraints,
-        ncol = nrow(full_dt)
-      ))
-    }
-    m
-  }
-
   full_dt <- sdcProb2df(obj, addDups = FALSE)
-  full_dt$id <- 1:nrow(full_dt)
-  str_ids <- full_dt$strID
+  full_dt$id <- seq_len(nrow(full_dt))
 
   dim_info <- slot(obj, "dimInfo")
   dim_names <- slot(dim_info, "vNames")
   dims <- slot(dim_info, "dimInfo")
 
-  res <- lapply(seq_len(length(dims)), function(x) {
-    .constraints_for_single_dim(
-      full_dt = full_dt,
-      dn = dim_names,
-      current_dim = dims[[x]]
-    )
-  })
-  mat <- do.call("rbind", res)
+  all_i <- list()
+  all_j <- list()
+  all_v <- list()
+  current_row <- 0
 
+  # Iterate through dimensions
+  for (d_idx in seq_along(dims)) {
+    d_var <- dims[[d_idx]]
+    d_name <- dim_names[d_idx]
+    dl <- slot(d_var, "dims")
 
+    # Identify the dimensions used for grouping/blocking
+    other_dims <- setdiff(dim_names, d_name)
+
+    for (i in seq_along(dl)) {
+      # Subset for specific hierarchy level
+      tmp <- full_dt[get(d_name) %in% dl[[i]]]
+      if (nrow(tmp) == 0) next
+
+      # Sort by 'fixed' dimensions then current 'dim'
+      data.table::setorderv(tmp, c(other_dims, d_name))
+
+      nr_elements <- length(dl[[i]])
+      nr_constraints <- nrow(tmp) / nr_elements
+
+      # Generate vectors
+      row_indices <- rep(current_row + seq_len(nr_constraints), each = nr_elements)
+      col_indices <- tmp$id
+      values <- rep(c(-1, rep(1, nr_elements - 1)), times = nr_constraints)
+
+      all_i[[length(all_i) + 1]] <- row_indices
+      all_j[[length(all_j) + 1]] <- col_indices
+      all_v[[length(all_v) + 1]] <- values
+
+      current_row <- current_row + nr_constraints
+    }
+  }
+
+  # Construct Matrix
+  mat <- slam::simple_triplet_matrix(
+    i = unlist(all_i),
+    j = unlist(all_j),
+    v = unlist(all_v),
+    nrow = current_row,
+    ncol = nrow(full_dt)
+  )
+
+  # Metadata Handling
   if (add_info_df) {
-    colnames(mat) <- str_ids
+    colnames(mat) <- full_dt$strID
     index_subtots <- unique(mat$j[mat$v == -1])
     infodf <- data.frame(
       str_id = colnames(mat),
-      is_inner = TRUE
+      is_inner = TRUE,
+      stringsAsFactors = FALSE
     )
     infodf$is_inner[index_subtots] <- FALSE
     attr(mat, "infodf") <- infodf
+  } else {
+    mat$dimnames <- list(NULL, NULL)
   }
 
-  if (!convert) {
-    return(mat)
-  }
+  if (!convert) return(mat)
 
-  st <- new("simpleTriplet")
-  st@i <- mat$i
-  st@j <- mat$j
-  st@v <- mat$v
-  st@nrRows <- mat$nrow
-  st@nrCols <- mat$ncol
+  # Conversion to simpleTripet (if required)
+  st <- new("simpleTriplet",
+    i = mat$i,
+    j = mat$j,
+    v = mat$v,
+    nrRows = mat$nrow,
+    nrCols = mat$ncol
+  )
   if (add_info_df) {
-    attr(st, "infodf") <- infodf
+    attr(st, "infodf") <- attr(mat, "infodf")
   }
   return(st)
 }
