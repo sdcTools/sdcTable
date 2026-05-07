@@ -160,201 +160,131 @@ my.highs.solve_LP <- function(obj, mat, dir, rhs, types = NULL, max = FALSE, bou
 # create default parameter objects suitable for primary|secondary suppression
 # if selection == 'control.primary': set arguments suitable for primary suppression
 # if selection == 'control.secondary': set arguments suitable for secondary suppression
+# main function to generate parameter lists
 genParaObj <- function(selection, ...) {
-  controlPrimary <- function(...) {
-    ### setDefaults ###
-    paraObj <- list()
-
-    # freq.rule
-    paraObj$maxN <- 3
-    paraObj$allowZeros <- FALSE
-
-    # p-percent rule
-    paraObj$p <- 80
-
-    # n,k rule
-    paraObj$n <- 2
-    paraObj$k <- 85
-
-    # pq-rule
-    paraObj$pq <- c(25, 50)
-
-    paraObj$numVarInd <- NA
-
-    newPara <- list(...)
-
-    indexNumVarIndices <- which(names(newPara) == "numVarIndices")
-    if (length(indexNumVarIndices) == 0) {
-      stop("genPara (type=='control.primary'): parameter 'numVarIndices' must be specified", call. = FALSE)
-    } else {
-      numVarIndices <- newPara[[indexNumVarIndices]]
+  # Helper to check variable types
+  .check_type <- function(val, type, name) {
+    if (is.null(val)) return(TRUE)
+    ok <- switch(type,
+                 "logical"    = is.logical(val) && length(val) == 1,
+                 "integerish" = rlang::is_scalar_integerish(val),
+                 "numeric"    = is.numeric(val) && length(val) == 1,
+                 "character"  = is.character(val) && length(val) == 1,
+                 FALSE
+    )
+    if (!ok) {
+      stop(sprintf("Argument '%s' must be of type %s.", name, type), call. = FALSE)
     }
-
-    for (i in seq_along(newPara)) {
-      m <- match(names(newPara)[i], names(paraObj))
-      if (!is.na(m)) {
-        paraObj[[m]] <- newPara[[i]]
-      }
-    }
-
-    if (!is.logical(paraObj$allowZeros)) {
-      stop("genPara (type=='control.primary'): argument 'allowZeros' must be logical!\n")
-    }
-    if (!all(c(
-      is_scalar_integerish(paraObj$maxN),
-      is_scalar_integerish(paraObj$p),
-      is_scalar_integerish(paraObj$n),
-      is_scalar_integerish(paraObj$k)
-    ))) {
-      stop("arguments `maxN`, `p`, `n` and `k` must be integerish numbers.", call. = FALSE)
-    }
-    if (length(paraObj$pq) != 2) {
-      stop("length of argument 'pq' must equal 2!", call. = FALSE)
-    }
-
-    if (paraObj$k < 1 | paraObj$k >= 100) {
-      stop("argument `k` must be >= 1 and < 100!", call. = FALSE)
-    }
-
-    if (paraObj$p < 1 | paraObj$p >= 100) {
-      stop("argument `p` must be >= 1 and < 100!", call. = FALSE)
-    }
-    if (paraObj$pq[1] < 1 | paraObj$pq[1] >= 100) {
-      stop("argument `p` of `pq` must be >= 1 and < 100!", call. = FALSE)
-    }
-    if (paraObj$pq[2] < 1 | paraObj$pq[2] >= 100) {
-      stop("argument `q` of `pq` must be >= 1 and < 100!", call. = FALSE)
-    }
-    if (paraObj$pq[1] >= paraObj$pq[2]) {
-      stop("argument `p` of `pq` must be < argument `q` of `pq`", call. = FALSE)
-    }
-    if (!is.na(paraObj$numVarInd)) {
-      if (!paraObj$numVarInd %in% 1:length(numVarIndices)) {
-        l <- length(numVarIndices)
-        stop("argument `numVarInd` must be >= 1 and <= ", l, call. = FALSE)
-      }
-    }
-    return(paraObj)
+    return(invisible(TRUE))
   }
 
-  ### create a parameter list with (...) changing the default-values -> used in protectTable()
-  controlSecondary <- function(...) {
-    ### setDefaults ###
-    paraObj <- list()
+  # Helper to check numeric ranges
+  .check_range <- function(val, min_val, max_val, name, min_inc = TRUE, max_inc = TRUE) {
+    if (is.null(val)) return(TRUE)
+    valid <- TRUE
+    if (min_inc) valid <- valid && (val >= min_val) else valid <- valid && (val > min_val)
+    if (max_inc) valid <- valid && (val <= max_val) else valid <- valid && (val < max_val)
 
-    # general parameter
-    paraObj$method <- NA
-    paraObj$verbose <- FALSE
-    paraObj$save <- FALSE
-    paraObj$solver <- "highs"
-
-    # HITAS|OPT - parameter
-    paraObj$maxIter <- 10
-    paraObj$timeLimit <- NULL
-    paraObj$maxVars <- NULL
-    paraObj$fastSolution <- FALSE
-    paraObj$fixVariables <- TRUE
-    paraObj$approxPerc <- 10
-    paraObj$useC <- FALSE
-
-    # HYPERCUBE - parameter
-    paraObj$protectionLevel <- 80
-    paraObj$suppMethod <- "minSupps"
-    paraObj$suppAdditionalQuader <- FALSE
-
-    # SIMPLEHEURISTIC - parameter
-    paraObj$detectSingletons <- FALSE
-    paraObj$threshold <- NA
-    paraObj$n_workers <- 1
-    paraObj$attack_threshold <- 1e-8
-
-    # GAUSS
-    paraObj$removeDuplicated <- TRUE
-    paraObj$whenEmptySuppressed <- NULL
-    paraObj$whenEmptyUnsuppressed <- NULL
-    paraObj$singletonMethod <- "anySum"
-
-    # protect_linked_tables
-    paraObj$maxIter <- 5
-
-    newPara <- list(...)
-    for (i in seq_along(newPara)) {
-      m <- match(names(newPara)[i], names(paraObj))
-      if (!is.na(m)) {
-        paraObj[[m]] <- newPara[[i]]
-      }
+    if (!valid) {
+      stop(sprintf("Argument '%s' must be in range (%s, %s).", name, min_val, max_val), call. = FALSE)
     }
-
-    ### checks
-    if (any(sapply(paraObj, length) != 1)) {
-      stop("arguments controlObj for sdc-procedure are not valid!", call. = FALSE)
-    }
-    if (!all(c(
-      is.numeric(paraObj$maxIter),
-      is.numeric(paraObj$approxPerc),
-      is.numeric(paraObj$protectionLevel),
-      is.numeric(paraObj$maxIter),
-      is.numeric(paraObj$attack_threshold)
-
-    ))) {
-      e <- "arguments 'maxIter', 'maxIter', 'protectionLevel', 'maxIter' and 'attack_threshold' must be numeric!"
-      stop(e, call. = FALSE)
-    }
-    if (!all(c(
-      is.logical(paraObj$verbose),
-      is.logical(paraObj$save),
-      is.logical(paraObj$fastSolution),
-      is.logical(paraObj$fixVariables),
-      is.logical(paraObj$suppAdditionalQuader),
-      is.logical(paraObj$detectSingletons)
-    ))) {
-      e <- c(
-        "arguments `verbose`, `save`, `fastSolution` `fixVariables`",
-        "`suppAdditionalQuader` and `detectSingletons` must be logical!"
-      )
-      stop(paste(e, collapse = " "), call. = FALSE)
-    }
-    if (!is.null(paraObj$timeLimit) && !paraObj$timeLimit %in% 1:3000) {
-      stop("argument `timeLimit` must be >= 1 and <= 3000 minutes!", call. = FALSE)
-    }
-    if (!length(paraObj$approxPerc) &
-      !paraObj$approxPerc %in% 1:100) {
-      stop("argument `approxPerc` must be >= 1 and <= 100!\n", call. = FALSE)
-    }
-
-    methods_ok <- c("GAUSS", "SIMPLEHEURISTIC", "SIMPLEHEURISTIC_OLD", "HITAS", "HYPERCUBE", "OPT")
-    if (!paraObj$method %in% methods_ok) {
-      stop(paste("valid methods:", paste(shQuote(methods_ok), collapse = ", ")), call. = FALSE)
-    }
-    if (!paraObj$suppMethod %in% c("minSupps", "minSum", "minSumLogs")) {
-      stop("`suppMethod` must be either `minSupps`, `minSum` or `minSumLogs`", call. = FALSE)
-    }
-
-    if (!is.na(paraObj$threshold)) {
-      if (!rlang::is_scalar_integerish(paraObj$threshold)) {
-        stop("argument `threshold` is not an integerish number.", call. = FALSE)
-      }
-      if (paraObj$threshold < 1) {
-        stop("argument `threshold` must be >= 1.", call. = FALSE)
-      }
-    }
-
-    stopifnot(rlang::is_scalar_integerish(paraObj$n_workers))
-    stopifnot(paraObj$n_workers >= 1)
-    stopifnot(paraObj$attack_threshold >= 0)
-    return(paraObj)
+    return(invisible(TRUE))
   }
 
-  if (!selection %in% c("control.primary", "control.secondary")) {
-    stop("wrong input in argument `selection`.", call. = FALSE)
-  }
+  defaults <- switch(
+    selection,
+    "control.primary" = list(
+      maxN = 3,
+      allowZeros = FALSE,
+      p = 80,
+      n = 2,
+      k = 85,
+      pq = c(25, 50),
+      numVarInd = NA
+    ),
+    "control.secondary" = list(
+      method = NA,
+      verbose = FALSE,
+      save = FALSE,
+      solver = "highs",
+      maxIter = 5,
+      timeLimit = NULL,
+      maxVars = NULL,
+      fastSolution = FALSE,
+      fixVariables = TRUE,
+      approxPerc = 10,
+      useC = FALSE,
+      protectionLevel = 80,
+      suppMethod = "minSupps",
+      suppAdditionalQuader = FALSE,
+      detectSingletons = FALSE,
+      threshold = NA,
+      n_workers = 1,
+      attack_threshold = 1e-8,
+      removeDuplicated = TRUE,
+      whenEmptySuppressed = NULL,
+      whenEmptyUnsuppressed = NULL,
+      singletonMethod = "anySum"
+    ),
+    stop(
+      "Invalid selection: must be 'control.primary' or 'control.secondary'",
+      call. = FALSE
+    )
+  )
+
+  paraObj <- utils::modifyList(defaults, list(...))
 
   if (selection == "control.primary") {
-    paraObj <- controlPrimary(...)
+    .check_type(paraObj$maxN, "integerish", "maxN")
+    .check_type(paraObj$allowZeros, "logical", "allowZeros")
+    .check_type(paraObj$p, "integerish", "p")
+    .check_type(paraObj$n, "integerish", "n")
+    .check_type(paraObj$k, "integerish", "k")
+    .check_range(paraObj$k, 1, 99, "k")
+    .check_range(paraObj$p, 1, 99, "p")
+    if (length(paraObj$pq) != 2) {
+      stop("Argument 'pq' must be of length 2.", call. = FALSE)
+    }
+    .check_range(paraObj$pq[1], 1, 99, "p of pq")
+    .check_range(paraObj$pq[2], 1, 99, "q of pq")
+    if (paraObj$pq[1] >= paraObj$pq[2]) {
+      stop("pq[1] must be < pq[2].", call. = FALSE)
+    }
   }
+
+  # validation for secondary suppression
   if (selection == "control.secondary") {
-    paraObj <- controlSecondary(...)
+    .check_type(paraObj$verbose, "logical", "verbose")
+    .check_type(paraObj$save, "logical", "save")
+    .check_type(paraObj$maxIter, "numeric", "maxIter")
+    .check_type(paraObj$approxPerc, "numeric", "approxPerc")
+    .check_type(paraObj$fastSolution, "logical", "fastSolution")
+    .check_type(paraObj$fixVariables, "logical", "fixVariables")
+    .check_type(paraObj$suppAdditionalQuader, "logical", "suppAdditionalQuader")
+    .check_type(paraObj$detectSingletons, "logical", "detectSingletons")
+    .check_type(paraObj$n_workers, "integerish", "n_workers")
+    .check_type(paraObj$attack_threshold, "numeric", "attack_threshold")
+
+    if (!is.null(paraObj$timeLimit)) {
+      .check_range(paraObj$timeLimit, 1, 3000, "timeLimit")
+    }
+    .check_range(paraObj$approxPerc, 1, 100, "approxPerc")
+    .check_range(paraObj$protectionLevel, 1, 100, "protectionLevel")
+    .check_range(paraObj$n_workers, 1, Inf, "n_workers")
+    .check_range(paraObj$attack_threshold, 0, Inf, "attack_threshold")
+
+    if (!is.na(paraObj$method)) {
+      valid_methods <- c("GAUSS", "SIMPLEHEURISTIC", "SIMPLEHEURISTIC_OLD", "HITAS", "HYPERCUBE", "OPT")
+      if (!paraObj$method %in% valid_methods) {
+        stop(paste("Invalid method. Valid:", paste(valid_methods, collapse=", ")), call. = FALSE)
+      }
+    }
+
+    if (!paraObj$suppMethod %in% c("minSupps", "minSum", "minSumLogs")) {
+      stop("Invalid suppMethod.", call. = FALSE)
+    }
   }
+
   return(paraObj)
 }
 
