@@ -107,6 +107,7 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
     if (!rlang::is_installed("future.apply")) {
       stop("Package `future.apply` is required for parallel processing. Please install.", call. = FALSE)
     }
+    with(future::plan(future::multisession, workers = n_workers), local = TRUE)
   }
   if (verbose) {
     results <- progressr::with_progress({
