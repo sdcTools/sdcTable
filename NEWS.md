@@ -1,12 +1,18 @@
 # sdcTable 0.34.0
-- New parallel processing support: `attack()` now features an `n_workers` argument, enabling parallel 
+- New parallel processing support: 
+  * `attack()` now features an `n_workers` argument, enabling parallel 
 execution of attacker problems via the `future.apply` package (if available).
 - `protectTable()` enhancements:
   * The function now exposes `n_workers` when using `method = "SIMPLEHEURISTIC"`, allowing parallelized internal attacker calls (passed through to `attack()`).
-  *Added argument `attack_threshold` for `method = "SIMPLEHEURISTIC"`. This allows users to define the safety tolerance (as `abs(upper - lower) > attack_threshold`) directly when protecting tables.
+  * Added argument `attack_threshold` for `method = "SIMPLEHEURISTIC"`. This allows users to define the safety tolerance (as `abs(upper - lower) > attack_threshold`) directly when protecting tables.
 - Documentation updates: Added detailed explanations and performance warnings regarding RAM usage for parallel 
 processing in the package vignette and function man-pages.
 - Added a `threshold` argument to `attack()` for more flexible safety checks (defaults to `1e-8`).
+- Optimized internal `create_m_matrix()` for faster matrix construction and lower memory overhead. 
+- Refactored/Simplified internal parameter-generation 
+- Added a centralized **Cell Status Codes** section to `sdcProblem` documentation, explaining states like `"z"` (empty cells) and `"w"`. 
+This section is now reused across all functions that modify cell statuses ([UserIssue #319](https://github.com/sdcTools/UserSupport/issues/319))
+- Significantly optimized `contributing_indices()` regarding running-time and memory usage
 
 # sdcTable 0.33.0
 - Use `highs` instead of `Rglpk` and `glpkAPI` for LP-Solving as package was removed from CRAN
