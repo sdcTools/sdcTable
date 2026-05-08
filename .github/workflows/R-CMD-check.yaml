@@ -31,7 +31,6 @@ jobs:
 
       - name: Document Package
         run: |
-          devtools::document()
-          shell: Rscript {0}
+          Rscript -e 'devtools::document()'
 
       - uses: r-lib/actions/check-r-package@v2
