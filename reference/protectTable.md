@@ -152,7 +152,7 @@ protectTable(object, method, ...)
     - `n_workers`: (integer \>= 1, for `method = "SIMPLEHEURISTIC"`
       only); number of parallel workers. Defaults to `1` (sequential).
       If `> 1`, parallel execution via
-      [`future.apply`](https://cran.r-project.org/web/packages/future.apply/index.html)
+      [`future.apply`](https://CRAN.R-project.org/package=future.apply)
       is used to accelerate processing. Warning: Higher values increase
       RAM usage.
 
@@ -195,7 +195,7 @@ The implemented methods may have bugs that yield in not-fully protected
 tables. Especially the usage of `"OPT"`, `"HITAS"` and `"HYPERCUBE"` in
 production is not suggested as these methods may eventually be removed
 completely. In case you encounter any problems, please report it or use
-Tau-Argus (<https://research.cbs.nl/casc/tau.htm>).
+Tau-Argus (<https://github.com/sdcTools/tauargus>).
 
 ## Cell Status Codes
 

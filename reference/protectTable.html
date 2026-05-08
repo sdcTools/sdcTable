@@ -131,7 +131,7 @@ to the singleton-detection procedure is run that makes sure that for all (simple
 contains primary sensitive cells the suppressed number of contributors is <code>&gt;=</code> the specified threshold.</p></li>
 <li><p><code>n_workers</code>: (integer &gt;= 1, for <code>method = "SIMPLEHEURISTIC"</code> only);
 number of parallel workers. Defaults to <code>1</code> (sequential). If <code>&gt; 1</code>, parallel
-execution via <a href="https://cran.r-project.org/web/packages/future.apply/index.html" class="external-link"><code>future.apply</code></a>
+execution via <a href="https://CRAN.R-project.org/package=future.apply" class="external-link"><code>future.apply</code></a>
 is used to accelerate processing. Warning: Higher values increase RAM usage.</p></li>
 <li><p><code>attack_threshold</code>: (numeric &gt;= 0, for <code>method = "SIMPLEHEURISTIC"</code> only);
 the safety threshold used to determine if a primary sensitive cell is considered
@@ -159,7 +159,7 @@ the default values are the same as in this function:</p><ul><li><p><code>removeD
     <p>The implemented methods may have bugs that yield in not-fully protected tables. Especially
 the usage of <code>"OPT"</code>, <code>"HITAS"</code> and <code>"HYPERCUBE"</code> in production is not
 suggested as these methods may eventually be removed completely. In case you encounter any problems,
-please report it or use Tau-Argus (<a href="https://research.cbs.nl/casc/tau.htm" class="external-link">https://research.cbs.nl/casc/tau.htm</a>).</p>
+please report it or use Tau-Argus (<a href="https://github.com/sdcTools/tauargus" class="external-link">https://github.com/sdcTools/tauargus</a>).</p>
     </div>
     <div class="section level2">
     <h2 id="cell-status-codes">Cell Status Codes<a class="anchor" aria-label="anchor" href="#cell-status-codes"></a></h2>
