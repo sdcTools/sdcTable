@@ -585,7 +585,7 @@ One can see that the `r nrPrimSupps` cells having counts less or equal
 than 10 have been identified and marked as primary suppressed. However,
 we should note that it is very easy to implement custom suppression
 rules by manually changing the anonymization state of cells using
-functions `setInfo()` or `changeCellStatus()`. Information on how to use
+functions `setInfo()` or `change_cellstatus()`. Information on how to use
 these functions is of course provided in the manual and the
 corresponding help-pages.
 
