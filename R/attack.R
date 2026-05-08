@@ -220,7 +220,7 @@ attack <- function(object, to_attack = NULL, verbose = TRUE, threshold = 1e-8, n
   idx <- which(df$to_attack)
 
   if (verbose) {
-    p <- progressr::progressor(steps = length(idx), finalize = TRUE)
+    p <- progressr::progressor(steps = length(idx))
   }
 
   chunks <- split(idx, cut(seq_along(idx), n_workers, labels = FALSE))
