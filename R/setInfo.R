@@ -19,6 +19,7 @@
 #' - character vector if type matches 'sdcStatus'
 #' - a numeric vector if type matches 'lb', 'ub', 'LPL', 'SPL' or 'UPL'
 #' @return a `sdcProblem`- or `problemInstance` object
+#' @inheritSection makeProblem Cell Status Codes
 #' @md
 #' @examples
 #' # load example-problem with suppressions

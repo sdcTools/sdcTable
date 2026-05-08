@@ -42,11 +42,38 @@
 #' defining the column index or variable name of a variable holding sampling
 #' weights within `data`. In case a complete table is provided, this parameter is
 #' ignored.
+#' @section Cell Status Codes:
 #'
+#' When an object of class `sdcProblem` is created, every cell is assigned an
+#' internal anonymization state. These codes track the lifecycle of a
+#' cell throughout the suppression process:
+#'
+#' * `"s"` (*"Publishable"*): The cell is safe and can be published (default).
+#' * `"z"`(*"Forced Publishable"*): The cell must not be suppressed under any
+#' circumstances.
+#' * `"u"` (*"Primary Suppressed"): The cell is identified as sensitive and
+#' requires protection (typically assigned via [primarySuppression()]).
+#' * `"x"` (*"Secondary Suppressed"*): The cell is suppressed to protect
+#' primary sensitive cells (typically assigned via [protectTable()]).
+#' * `"w"` (*"Extension Cell"*): The cell exists in the object but will never
+#' be published. It is treated as a suppressed cell by internal algorithms.
+#' This is useful if it is known in advance that specific codes of a hierarchy
+#' will be excluded from publication.
+#'
+#' Initially in [makeProblem()], cells are coded as `"s"` or `"z"`. Their
+#' status transitions to `"u"` or `"x"` as suppression algorithms are applied.
+#'
+#' While [setInfo()] or [change_cellstatus()] allow for manual state
+#' modifications, [primarySuppression()] automatically identifies primary
+#' sensitive cells and assigns state `"u"`. In [protectTable()], additional
+#' cells are identified and set to `"x"` to ensure all primary sensitive
+#' cells are adequately protected.
+
 #' @return a [sdcProblem-class] object
 #' @rdname makeProblem
 #' @export
 #' @author Bernhard Meindl
+#' @seealso [sdcProb2df]
 #' @md
 #' @examples
 #' # loading micro data

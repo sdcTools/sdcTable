@@ -10,6 +10,8 @@
 #' require the identification of the numerical variable by name using the
 #' `numVarName` argument. Identification by index is no longer supported.
 #'
+#' @inheritSection makeProblem Cell Status Codes
+#'
 #' @param object an [sdcProblem-class] object.
 #' @param type character string defining the primary suppression rule.
 #' Allowed values are:

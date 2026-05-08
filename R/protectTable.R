@@ -93,6 +93,7 @@
 #'   (default) does not apply any function
 #'   * `singletonMethod`: parameter `singletonMethod` in [SSBtools::GaussSuppression()]; default `"anySum"`
 #' @return an [safeObj-class] object
+#' @inheritSection makeProblem Cell Status Codes
 #' @md
 #' @examples
 #' \dontrun{
