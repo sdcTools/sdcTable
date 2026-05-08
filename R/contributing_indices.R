@@ -1,107 +1,115 @@
 #' Compute contributing units to table cells
 #'
-#' This function computes (with respect to the raw input data) the indices of all
-#' contributing units to given cells identified by `ids`.
+#' This function maps aggregated table cells back to their constituent microdata.
+#' It returns the row indices of the raw input data that contribute to specific
+#' cells identified by `ids`.
 #'
-#' @param prob a [sdcProblem-class] object created with [makeProblem()]
-#' @param ids a character vector containing default ids (strIDs) that define table
-#' cells. Valid inputs can be extracted by using [sdcProb2df()] and looking at
-#' column `strID`. If this argument is `NULL`, the corresponding units are computed
-#' for all cells in the table.
+#' @param prob a [sdcProblem-class] object created with [makeProblem()].
+#' @param ids a character vector of cell identifiers (`strID`). If `NULL`,
+#' indices are computed for all cells in the table. Valid identifiers can
+#' be found in the `strID` column of the data frame returned by [sdcProb2df()].
 #'
-#' @return a named `list where names correspond to the given `ids` and the values
-#' to the row numbers within the raw input data.
+#' @return a named list where each element contains integer indices of the
+#' contributing rows in the raw microdata.
 #' @export
 #' @md
 #' @examples
-#' # loading test problem
+#' # load test problem
 #' p <- sdc_testproblem(with_supps = FALSE)
 #' dt <- sdcProb2df(p, dimCodes = "original")
 #'
-#' # question: which units contribute to cell region = "A" and gender = "female"?
+#' # find the strID for a specific cell (e.g., region "A" and gender "female")
+#' target_id <- dt[region == "A" & gender == "female", strID]
 #'
-#' # compute the id ("0102")
-#' dt[region == "A" & gender == "female", strID]
+#' # compute contributing indices for this cell
+#' contr_list <- contributing_indices(prob = p, ids = target_id)
 #'
-#' # which indices contribute to the cell?
-#' ids <- contributing_indices(prob = p, ids = "0101")
+#' # view the contributing raw data rows
+#' rawData <- slot(get.sdcProblem(p, "dataObj"), "rawData")
+#' rawData[contr_list[[target_id]]]
 #'
-#' # check
-#' dataObj <- get.sdcProblem(p, "dataObj")
-#' rawData <- slot(dataObj, "rawData")
-#' rawData[ids[["0101"]]]
-#'
-#' # compute contributing ids for all cells
-#' contributing_indices(p)
+#' # compute indices for all cells in the table
+#' all_indices <- contributing_indices(p)
 contributing_indices <- function(prob, ids = NULL) {
-  . <- NULL
+  strID <- NULL
   dt <- sdcProb2df(prob, addDups = FALSE, dimCodes = "original")
-  poss_ids <- dt$strID
 
-  if (is.null(ids)) {
-    ids <- poss_ids
-  } else {
+  # Validate input and restrict table to requested identifiers
+  if (!is.null(ids)) {
     if (!is.character(ids)) {
       stop("Please provide a character vector in argument `ids`.", call. = FALSE)
     }
-    if (!all(ids %in% poss_ids)) {
-      e <- c(
+
+    # Check for valid identifiers and subset table
+    if (!all(data.table::`%chin%`(ids, dt$strID))) {
+      stop(paste0(
         "Some values provided in `ids` are not valid. ",
         "See column `strID` in `sdcProb2df()` for valid ids."
-      )
-      stop(paste(e, collapse = " "), call. = FALSE)
+      ), call. = FALSE)
     }
+    dt <- dt[data.table::`%chin%`(strID, ids)]
   }
 
   dimvars <- slot(prob, "dimInfo")@vNames
-  nr_dims <- length(dimvars)
 
-  dt <- dt[, c("strID", "freq", dimvars), with = FALSE]
-  data.table::setnames(dt, old = "strID", new = "id")
+  # Convert micro data to list for faster column access
+  dt_inner_list <- as.list(prob@dataObj@rawData)
+  n_inner <- length(dt_inner_list[[1]])
+  inner_idx <- seq_len(n_inner)
 
-  # get contributing codes
+  # Fetch codes that contribute to each hierarchical node
   contr_codes <- .get_all_contributing_codes(prob)
 
-  # inner cells are raw data!
-  dt_inner <- prob@dataObj@rawData
-  dt_inner$idx <- 1:nrow(dt_inner)
-
-  # subsetting dt to those ids, we want to compute the contributing indices from
-  dt <- dt[.(ids), on = "id"]
-
-  # prepare output
-  res <- vector("list", length(ids))
-  names(res) <- ids
-
-  message("computing contributing indices | rawdata <--> table; this might take a while")
-  # compute contributing ids by dimvar and code
-  for (dv in dimvars) {
-    ll <- contr_codes[[dv]]
-    for (code in names(ll)) {
-      if (contr_codes[[dv]][[code]]$is_root) {
-        contr_codes[[dv]][[code]]$idx <- rep(TRUE, nrow(dt_inner))
-      } else {
-        contr_codes[[dv]][[code]]$idx <- data.table::`%chin%`(dt_inner[[dv]], ll[[code]]$contr_codes)
+  # Precompute boolean masks for each unique code
+  mask_cache <- lapply(dimvars, function(dv) {
+    unique_codes <- unique(dt[[dv]])
+    masks <- lapply(unique_codes, function(co) {
+      node <- contr_codes[[dv]][[co]]
+      # Skip filtering for root nodes
+      if (node$is_root) {
+        return(NULL)
       }
-    }
-  }
-  for (i in seq_len(nrow(dt))) {
-    strid <- dt$id[i]
+      return(dt_inner_list[[dv]] %in% node$contr_codes)
+    })
+    names(masks) <- unique_codes
+    return(masks)
+  })
+  names(mask_cache) <- dimvars
+
+  # Mapping of cellls to microdata indices
+  res <- lapply(seq_len(nrow(dt)), function(i) {
+    # Return empty for cells with no observations
     if (dt$freq[i] == 0) {
-      res[[strid]] <- integer()
-    } else {
-      for (dv in dimvars) {
-        code <- dt[[dv]][i]
-        if (dv == dimvars[1]) {
-          ii <- contr_codes[[dv]][[code]]$idx
-        } else {
-          if (!contr_codes[[dv]][[code]]$is_root) {
-            ii <- ii & contr_codes[[dv]][[code]]$idx
-          }
-        }
-      }
-      res[[strid]] <- dt_inner$idx[ii]
+      return(integer(0))
     }
-  }
+
+    final_mask <- NULL
+    for (dv in dimvars) {
+      code <- dt[[dv]][i]
+      m <- mask_cache[[dv]][[code]]
+
+      if (is.null(m)) {
+        next
+      }
+
+      if (is.null(final_mask)) {
+        # Initialize mask for the first constrained dimension
+        final_mask <- m
+      } else {
+        # Intersect current constraints with previous dimensions
+        final_mask <- final_mask & m
+      }
+    }
+
+    # Return all indices if no dimensional constraints exist
+    if (is.null(final_mask)) {
+      return(inner_idx)
+    }
+
+    # Filter original row positions
+    return(inner_idx[final_mask])
+  })
+
+  names(res) <- dt$strID
   return(res)
 }
