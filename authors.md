@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/sdcTools/userSupport/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/sdcTools/userSupport/blob/v0.34.0/DESCRIPTION)
 
 Meindl B (2026). *sdcTable: Methods for Statistical Disclosure Control
 in Tabular Data*. R package version 0.34.0,

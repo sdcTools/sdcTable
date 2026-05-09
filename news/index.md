@@ -2,6 +2,8 @@
 
 ## sdcTable 0.34.0
 
+CRAN release: 2026-05-09
+
 - New parallel processing support:
   - [`attack()`](https://sdctools.github.io/sdcTable/reference/attack.md)
     now features an `n_workers` argument, enabling parallel execution of

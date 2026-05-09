@@ -111,7 +111,7 @@ writeJJFormat(
   path = file.path(tempdir(), "prob_freqs.jj"),
   overwrite = TRUE
 )
-#> File '/tmp/Rtmp2yk0ss/prob_freqs.jj' successfully written.
+#> File '/tmp/RtmppqxnIu/prob_freqs.jj' successfully written.
 
 # or using the numeric variable `val` previously specified
 writeJJFormat(
@@ -120,5 +120,5 @@ writeJJFormat(
   path = file.path(tempdir(), "prob_val.jj"),
   overwrite = TRUE
 )
-#> File '/tmp/Rtmp2yk0ss/prob_val.jj' successfully written.
+#> File '/tmp/RtmppqxnIu/prob_val.jj' successfully written.
 ```
