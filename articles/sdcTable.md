@@ -79,7 +79,7 @@ library(sdcTable)
 packageVersion("sdcTable")
 ```
 
-    ## [1] '0.34.0'
+    ## [1] '0.34.1'
 
 ## A simple example
 
@@ -753,7 +753,7 @@ secondary suppressions required to protect the 15 primary sensitive
 cells (by default against exact re-calculation given sliding protection
 levels of 1 for each primary sensitive cell) differs.
 
-Using the *“OPT”*-algorithm, a total of 22 cells have been marked as
+Using the *“OPT”*-algorithm, a total of 23 cells have been marked as
 secondary suppressions. When using *“HITAS”*-algorithm, it was required
 to additionally suppress 13 cells. A total of 27 cells was selected and
 marked as secondary suppressions when the *“HYPERCUBE”* algorithm was
@@ -803,9 +803,9 @@ summary(resOPT)
 
     ## --> The input data have been protected using algorithm 'OPT'
 
-    ## --> To protect 15 primary sensitive cells, 22 cells were additionally suppressed
+    ## --> To protect 15 primary sensitive cells, 23 cells were additionally suppressed
 
-    ## --> A total of 131 cells may be published
+    ## --> A total of 130 cells may be published
 
     ## 
     ## ###################################
@@ -822,7 +822,7 @@ summary(resOPT)
     ##  $ numVal1  : num  294694 49116 49116 49116 49116 ...
     ##  $ numVal2  : num  298708 49785 49785 49785 49785 ...
     ##  $ sdcStatus: chr  "s" "s" "s" "s" ...
-    ##  - attr(*, ".internal.selfref")=<pointer: 0x561ce42c7ef0> 
+    ##  - attr(*, ".internal.selfref")=<pointer: 0x5d64ad8e0190> 
     ## NULL
 
 We see that the summary provides all kind of useful information such as

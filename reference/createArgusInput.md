@@ -127,6 +127,14 @@ createArgusInput(
 
   if specified, this variable contains information about records that
   should be grouped together. It is ignored, if tabular input is used.
+  The variable must be part of `numVarInd` when creating the
+  [sdcProblem](https://sdctools.github.io/sdcTable/reference/sdcProblem-class.md)
+  object and must contain integer values. Combining `holdingvar` with
+  sampling weights (argument `sampWeightInd` in
+  [`makeProblem()`](https://sdctools.github.io/sdcTable/reference/makeProblem.md))
+  is not recommended since the holding values are multiplied by the
+  sampling weights when the problem is created; a warning is issued in
+  this case.
 
 - ...:
 
