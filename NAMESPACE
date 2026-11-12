@@ -47,17 +47,21 @@ import(stringr)
 importFrom(Matrix,sparseMatrix)
 importFrom(SSBtools,GaussSuppression)
 importFrom(knitr,knit)
-importFrom(rlang,is_character)
-importFrom(rlang,is_integerish)
-importFrom(rlang,is_scalar_character)
-importFrom(rlang,is_scalar_double)
-importFrom(rlang,is_scalar_integerish)
-importFrom(rlang,is_scalar_logical)
+importFrom(rlang,
+  is_character,
+  is_integerish,
+  is_scalar_character,
+  is_scalar_double,
+  is_scalar_integerish,
+  is_scalar_logical
+)
 importFrom(slam,simple_triplet_matrix)
 importFrom(stats,na.omit)
-importFrom(utils,combn)
-importFrom(utils,read.table)
-importFrom(utils,str)
-importFrom(utils,tail)
-importFrom(utils,write.table)
+importFrom(utils,
+  combn,
+  read.table,
+  str,
+  tail,
+  write.table
+)
 useDynLib(sdcTable, .registration=TRUE)

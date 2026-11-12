@@ -38,7 +38,10 @@
 #' @param requestvar if specified, this variable (0/1-coded) contains information about records that request protection.
 #' Records with 1 will be protected in case a corresponding request rule matches. It is ignored, if tabular input is used.
 #' @param holdingvar if specified, this variable contains information about records that should be grouped together.
-#' It is ignored, if tabular input is used.
+#' It is ignored, if tabular input is used. The variable must be part of `numVarInd` when creating the
+#' [sdcProblem-class] object and must contain integer values. Combining `holdingvar` with sampling weights
+#' (argument `sampWeightInd` in [makeProblem()]) is not recommended since the holding values are multiplied
+#' by the sampling weights when the problem is created; a warning is issued in this case.
 #' @param ... allows to specify additional parameters for selected suppression-method as described above
 #' as well as `licensefile` in clase `"CPLEX"` was specified in argument `solver`.
 #' @return the filepath to the batch-file
