@@ -1,3 +1,8 @@
+# sdcTable next
+- `createArgusInput()` now checks the values (instead of the storage type) of the `holdingvar` argument. This fixes an error for integer-valued variables that are stored as doubles internally ([UserIssue #344](https://github.com/sdcTools/UserSupport/issues/344)).
+- Microdata files created by `createArgusInput()` no longer convert integer-valued variables with `as.integer()`, which produced `NA` for values larger than `.Machine$integer.max` ([UserIssue #302](https://github.com/sdcTools/UserSupport/issues/302)).
+- A warning is issued if `holdingvar` is combined with sampling weights, since holding values are multiplied by the sampling weights when the problem is created ([UserIssue #344](https://github.com/sdcTools/UserSupport/issues/344)).
+
 # sdcTable 0.34.0
 - New parallel processing support: 
   * `attack()` now features an `n_workers` argument, enabling parallel 

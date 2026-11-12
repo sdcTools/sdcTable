@@ -104,8 +104,11 @@ check_varinput <- function(obj, type, responsevar, shadowvar, costvar, requestva
     if (!holdingvar %in% cn) {
       stop("non-valid variable selected for choice 'holdingvar'.\n")
     }
-    if (!is.integer(obj@dataObj@rawData[[holdingvar]])) {
-      stop("holdingvar (", shQuote(holdingvar), ") is not an integer!")
+    # check values instead of the storage type: numeric variables in the raw
+    # data are always stored as doubles (see https://github.com/sdcTools/UserSupport/issues/344)
+    hv <- obj@dataObj@rawData[[holdingvar]]
+    if (!check_int(hv) || !all(is.finite(hv))) {
+      stop("holdingvar (", shQuote(holdingvar), ") must contain integer values!")
     }
   } else {
     holdingvar <- ""
@@ -194,15 +197,16 @@ create_microdata_and_metadata <- function(obj, verbose, digits=2, path=getwd(), 
   mdat <- get.dataObj(dataObj, "rawData")
   vNames <- names(mdat)
 
-  # convert num to integer
+  # convert integer-valued variables to character without loss
+  # note: as.integer() would produce NAs for values larger than .Machine$integer.max
+  # (see https://github.com/sdcTools/UserSupport/issues/302)
   ii <- which(sapply(mdat, class)%in% c("numeric","integer"))
   if (length(ii)>0) {
     cn <- vNames[ii]
 
     for (v in cn) {
       if (check_int(mdat[[v]])) {
-        cmd <- paste0("mdat[,",v,":=as.integer(",v,")]")
-        eval(parse(text=cmd))
+        set(mdat, NULL, v, format(mdat[[v]], scientific=FALSE, trim=TRUE))
       }
     }
   }
@@ -276,7 +280,8 @@ create_microdata_and_metadata <- function(obj, verbose, digits=2, path=getwd(), 
     vv <- num_vars[i]
 
     has_decimals <- FALSE
-    if (!check_int(mdat[[vv]])) {
+    # integer-valued variables have already been converted to character above
+    if (is.numeric(mdat[[vv]]) && !check_int(mdat[[vv]])) {
       digits <- digits
       mdat[[vv]] <- formatC(mdat[[vv]], format="f", digits=digits)
       has_decimals <- TRUE
@@ -721,6 +726,24 @@ tauBatchInput_microdata <- function(obj,
   costvar <- vars$costvar
   requestvar <- vars$requestvar
   holdingvar <- vars$holdingvar
+
+  # warn if a holding variable is combined with sampling weights: holding
+  # values were multiplied by the weights when the problem was created (see
+  # https://github.com/sdcTools/UserSupport/issues/344)
+  if (holdingvar != "") {
+    dataObj <- get.sdcProblem(obj, "dataObj")
+    sw_ind <- get.dataObj(dataObj, "sampWeightInd")
+    sw <- if (is.null(sw_ind)) NULL else get.dataObj(dataObj, "rawData")[[sw_ind]]
+    if (!is.null(sw) && any(sw != 1)) {
+      warning(paste0(
+        "Argument 'holdingvar' is combined with sampling weights. The values of ",
+        shQuote(holdingvar), " in the raw data were multiplied by the sampling ",
+        "weights when the problem was created and may no longer identify the ",
+        "original records. Consider creating the problem without sampling weights ",
+        "or restoring the original holding values in 'obj@dataObj@rawData'."
+      ), call. = FALSE)
+    }
+  }
 
   ## check argument 'method'
   method <- check_suppmethod(method)
